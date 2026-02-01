@@ -49,7 +49,7 @@ jobs:
     env:
       SCRIPTS_PATH: "./.github/scripts"
       SRC_PATH: "./src"
-      SRC_SLN: "AgentFrameworkBlazor.sln"
+      SRC_SLN: "Goodtocode.AgentFramework.Blazor.sln"
       API_PATH: "Presentation.WebApi"
       API_PROJECT: "Presentation.WebApi.csproj"
       TEST_PATH: "Tests.Specs.Integration"
