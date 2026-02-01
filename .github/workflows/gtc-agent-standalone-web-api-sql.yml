@@ -49,7 +49,7 @@ jobs:
     env:
       SCRIPTS_PATH: "./.github/scripts"
       SRC_PATH: "./src"
-      SRC_SLN: "SemanticKernelBlazor.sln"
+      SRC_SLN: "AgentFrameworkBlazor.sln"
       API_PATH: "Presentation.WebApi"
       API_PROJECT: "Presentation.WebApi.csproj"
       TEST_PATH: "Tests.Specs.Integration"
@@ -58,7 +58,7 @@ jobs:
       WEB_PROJECT: "Presentation.Blazor.csproj"
       INFRA_PATH: 'Infrastructure.SqlServer'
       INFRA_PROJECT: 'Infrastructure.SqlServer.csproj'
-      INFRA_DBCONTEXT: 'SemanticKernelContext'
+      INFRA_DBCONTEXT: 'AgentFrameworkContext'
       RUNTIME_ENV: "Development"
       CONFIGURATION: "Release"
       VERSION_MAJOR: '2'
@@ -220,13 +220,13 @@ jobs:
       matrix:
         DOTNET_VERSION: ["10.x"]
     env:
-      APPI_NAME: 'semker-dev-wus2-001-appi'
-      AZURE_APIAPP_NAME: semker-dev-wus2-001-api
+      APPI_NAME: 'agent-dev-wus2-001-appi'
+      AZURE_APIAPP_NAME: agent-dev-wus2-001-api
       AZURE_WEBAPP_PACKAGE_PATH: '.'
-      AZURE_WEBAPP_NAME: semker-dev-wus2-001-web
+      AZURE_WEBAPP_NAME: agent-dev-wus2-001-web
       AZURE_RG_NAME: 'gtc-agent-dev-wus2-001-rg'
-      SQL_NAME: 'semker-dev-wus2-001-sql'
-      SQLDB_NAME: 'semker-dev-wus2-001-sqldb'
+      SQL_NAME: 'agent-dev-wus2-001-sql'
+      SQLDB_NAME: 'agent-dev-wus2-001-sqldb'
       RUNTIME_ENV: "Development"
 
     steps:

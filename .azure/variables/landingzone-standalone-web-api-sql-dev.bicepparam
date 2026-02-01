@@ -1,7 +1,7 @@
 using '../templates/landingzone-standalone-web-api-sql.bicep'
 
 // Common
-var productIac = 'semker'
+var productIac = 'agent'
 var environmentIac = 'dev'
 var regionIac = 'wus2'
 var instanceIac = '001'
