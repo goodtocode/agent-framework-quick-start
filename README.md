@@ -303,94 +303,97 @@ dotnet run --project src/Presentation.WebApi/Presentation.WebApi.csproj
 Open Microsoft Edge or modern browser
 Navigate to: http://localhost:7777/swagger/index.html in your browser to the Swagger API Interface
 
-
-# DevOps Configuration for Azure IaC and CI/CD
-## Github Environment Secrets (development)
-The typical set of GitHub environment secrets, i.e. development, can be inserted below with this powershell script.
-```
-@{API_CLIENT_ID="your-api-client-id";AZURE_CLIENT_ID="your-azure-client-id";AZURE_SUBSCRIPTION_ID="your-azure-subscription-id";AZURE_TENANT_ID="your-azure-tenant-id";EEID_TENANT_ID="your-eeid-tenant-id";OPENAI_APIKEY="your-openai-apikey";SQL_ADMIN_PASSWORD="your-sql-admin-password";SQL_ADMIN_USER="your-sql-admin-user";WEB_CLIENT_ID="your-web-client-id";WEB_CLIENT_SECRET="your-web-client-secret"} | ForEach-Object {./github/scripts/repo/New-GithubSecret.ps1 -Owner your-github-handle -Repo your-repo -Environment development -SecretName $_.Key -SecretValue $_.Value}
-```
-
+# Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
-The GitHub action will automatically run upon commit to a repo. The triggers are set based on changes (PRs/Merges) to the main branch.
 
-### Azure Federation to GitHub Actions
-gtc-rg-AgentFramework-infrastructure.yml will deploy all necessary resources to Azure. To enable this functionality, two service principles are required: App Registration service principle (used for az login command) and a Enterprise Application service principle (allows GitHub to authenticate to Azure).
-#### Git Hub Environment Secret setup and Azure IAM privileges: 
-Note: The AZURE_SECRETS method uses: az ad sp create-for-rbac --name "COMPANY-SUB_OR_PRODUCTLINE-github-001" --role contributor --scopes /subscriptions/SUBSCRIPTION_ID --json-auth
+The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Below is a summary of the two main workflow files, their purposes, and triggers:
 
-[New-AzureGitHubFederation.ps1](https://github.com/goodtocode/cloud-admin/blob/main/scripts/cybersecurity/Azure-GitHub-Federation/New-AzureGitHubFederation.ps1)
-```
-# Install required modules
-Install-Module Az.Accounts,Az.Resources -Scope CurrentUser -Force
+### Triggers
+All workflow YAML files in this repo are designed to:
+- **Trigger CI**: On any Pull Request (PR) to any branch (runs build/test/validate only)
+- **Trigger CD**: On push to the `main` branch (runs full deployment)
 
-# Login to Azure
-Connect-AzAccount -SubscriptionId $SubscriptionId -UseDeviceAuthentication
+| Workflow File                        | Purpose                                                                                 | CI Trigger (PR)         | CD Trigger (Push to main) |
+|--------------------------------------|-----------------------------------------------------------------------------------------|-------------------------|---------------------------|
+| `COMPANY-PRODUCT-api.yml`            | CI/CD for .NET Web API (build, test, deploy to Azure App Service)                       | Yes                    | Yes                      |
+| `COMPANY-PRODUCT-api-sql.yml`        | CI/CD for .NET Web API with Azure SQL (includes DB migration)                           | Yes                    | Yes                      |
+| `COMPANY-PRODUCT-iac.yml`            | Deploy Azure infrastructure using Bicep templates                                       | Yes                    | Yes                      |
+| `COMPANY-PRODUCT-stapp-ci-cd.yml`    | CI/CD for Azure Static Web Apps (Blazor, SPA, etc.)                                     | Yes                    | Yes                      |
+| `COMPANY-PRODUCT-nuget.yml`          | Build, test, and publish NuGet packages                                                 | Yes                    | Yes                      |
+---
 
-# Get App Registration object (Application object)
-$app = Get-AzADApplication -DisplayName $PrincipalName
-if (-not $app) {
-    $app = New-AzADApplication -DisplayName $PrincipalName
-}
-Write-Host "App Registration (Client) Id: $($app.AppId)"
-$clientId = $app.AppId
-$appObjectId = $app.Id
+### Setting up GitHub Actions to Deploy to Azure
 
-# Create Service Principal and assign role
-$sp = Get-AzADServicePrincipal -DisplayName $PrincipalName
-if (-not $sp) {
-    $sp = New-AzADServicePrincipal -ApplicationId $clientId
-}
-Write-Host "Service Principal Id: $($sp.Id)"
-$spObjectId = $sp.Id
-New-AzRoleAssignment -ObjectId $spObjectId -RoleDefinitionName Contributor -Scope "/subscriptions/$SubscriptionId"
+Follow these steps to configure your environment for GitHub Actions CI/CD and Azure deployment:
 
-$tenantId = (Get-AzContext).Subscription.TenantId
+**Step 1: Create EEID Web and API App Registrations**
 
-# Create new App Registration Federated Credentials for the GitHub operations
-$subjectRepo = "repo:" + $Organization + "/" + $Repository + ":environment:" + $Environment
-New-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -Audience api://AzureADTokenExchange -Issuer 'https://token.actions.githubusercontent.com' -Name "$PrincipalName-repo" -Subject "$subjectRepo"
-$subjectRepoMain = "repo:" + $Organization + "/" + $Repository + ":ref:refs/heads/main"
-New-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -Audience api://AzureADTokenExchange -Issuer 'https://token.actions.githubusercontent.com' -Name "$PrincipalName-main" -Subject "$subjectRepoMain"
-$subjectRepoPR = "repo:" + $Organization + "/" + $Repository + ":pull_request"
-New-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -Audience api://AzureADTokenExchange -Issuer 'https://token.actions.githubusercontent.com' -Name "$PrincipalName-PR" -Subject "$subjectRepoPR"
+Use the provided PowerShell script to create both the Web and API app registrations in your Entra External ID (EEID) tenant. Replace the placeholders with your actual values:
 
-Write-Host "AZURE_TENANT_ID: $tenantId"
-Write-Host "AZURE_SUBSCRIPTION_ID: $SubscriptionId"
-Write-Host "AZURE_CLIENT_ID: $clientId"
+```powershell
+pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 \
+	-EntraInstanceUrl "https://<your-tenant-name>.ciamlogin.com" \
+	-TenantId "<your-tenant-id>" \
+	-WebAppRegistrationName "<web-app-registration-name>" \
+	-ApiAppRegistrationName "<api-app-registration-name>" \
+	-WebProjectPath "./src/Presentation.Blazor" \
+	-ApiProjectPath "./src/Presentation.WebApi"
 ```
 
-## Azure DevOps Pipelines (.azure-devops folder)
-Azure DevOps pipelines require an Azure Service Connection to authenticate and deploy resources to Azure.
+This script will output the required IDs and URIs for your environment.
 
-# Entity Framework vs. Semantic Kernel Memory
-This example uses Entity Framework (EF) to store messages and responses for Semantic Kernel, and does not rely on SK Memory (SM). EF and SM serve different purposes. If you need natural language querying and efficient indexing, Semantic Kernel Memory is a great fit. If you’re building a standard application with a relational database, Entity Framework is more appropriate.
+**Step 2: Set GitHub Environment Secrets**
 
-The key differences between Entity Framework (EF) and Semantic Kernel memory:
+Set the required secrets in your GitHub repository for the deployment workflows. You can use the provided script, replacing the placeholders with your actual values:
 
-## Purpose and Functionality
-- Entity Framework (EF): EF is an Object-Relational Mapping (ORM) framework for .NET applications. It allows you to map database tables to C# classes and provides an abstraction layer for database operations. EF focuses on CRUD (Create, Read, Update, Delete) operations and data modeling.
-- Semantic Kernel Memory: Semantic Kernel Memory (SM) is part of the Semantic Kernel project. It’s a library for C#, Python, and Java that wraps direct calls to databases and supports vector search. SM is designed for long-term memory and efficient indexing of datasets. It’s particularly useful for natural language querying and retrieval augmented generation (RAG).
+```powershell
+$secrets = @{
+	API_CLIENT_ID        = "<api-app-client-id>"
+	AZURE_CLIENT_ID      = "<azure-client-id>"
+	AZURE_SUBSCRIPTION_ID= "<azure-subscription-id>"
+	AZURE_TENANT_ID      = "<azure-tenant-id>"
+	EEID_TENANT_ID       = "<eeid-tenant-id>"
+	OPENAI_APIKEY        = "<openai-api-key>"
+	SQL_ADMIN_PASSWORD   = "<sql-admin-password>"
+	SQL_ADMIN_USER       = "<sql-admin-user>"
+	WEB_CLIENT_ID        = "<web-app-client-id>"
+	WEB_CLIENT_SECRET    = "<web-app-client-secret>"
+}
 
-## Data Storage and Retrieval
-- EF: EF stores data in relational databases (e.g., SQL Server, MySQL, PostgreSQL). It uses SQL queries to retrieve data.
-- SM: SM can use various storage mechanisms, including vector databases. It supports vector search, which allows efficient similarity-based retrieval. SM is well-suited for handling large volumes of data and complex queries.
+$secrets.GetEnumerator() | ForEach-Object {
+	./.github/scripts/repo/New-GithubSecret.ps1 \
+		-Owner <github-org-or-user> \
+		-Repo <repo-name> \
+		-Environment <environment-name> \
+		-SecretName $_.Key \
+		-SecretValue $_.Value
+}
+```
 
-## Querying
-- EF: EF queries are typically written in LINQ (Language Integrated Query) or SQL. You express queries in terms of C# objects and properties.
-- SM: SM supports natural language querying. You can search for information using text-based queries, making it more user-friendly for applications like chatbots.
+If you are using a hub-and-spoke topology, also set:
 
-## Integration with Chat Systems
-- EF: EF doesn’t directly integrate with chat systems. It’s primarily used for data persistence.
-- SM: SM integrates seamlessly with chat systems like ChatGPT, Copilot, and Semantic Kernel. It enhances data-driven features in AI applications.
+```powershell
+PLATFORM_SUBSCRIPTION_ID="<platform-subscription-id>"
+```
 
-## Scalability and Performance
-- EF: EF is suitable for small to medium-sized applications. It may not perform optimally with very large datasets.
-- SM: SM is designed for scalability. It can handle large volumes of data efficiently, making it suitable for memory-intensive applications.
+**Step 3: Federate Azure Subscription and GitHub Repo**
 
-## Use Cases
-- EF: Use EF for traditional CRUD operations, business logic, and data modeling.
-- SM: Use SM for long-term memory, chatbots, question-answering systems, and information retrieval.
+Run the following script to federate your Azure subscription with your GitHub repository. Replace the placeholders with your actual values:
+
+```powershell
+pwsh -File ./.github/scripts/repo/New-Github-Azure-Federation.ps1 \
+	-TenantId "<azure-tenant-id>" \
+	-SubscriptionId "<azure-subscription-id>" \
+	-PrincipalName "<federated-identity-name>" \
+	-Organization "<github-org-or-user>" \
+	-Repository "<repo-name>" \
+	-Environment "<environment-name>"
+```
+
+---
+
+This setup ensures your GitHub Actions workflows can securely deploy to Azure using federated credentials and the required secrets.
+
 
 # Contact
 * [GitHub Repo](https://www.github.com/goodtocode/agent-framework-quick-start)
@@ -421,18 +424,6 @@ The key differences between Entity Framework (EF) and Semantic Kernel memory:
 
 | Version | Date        | Release Notes                                                    |
 |---------|-------------|------------------------------------------------------------------|
-| 1.0.0   | 2024-Aug-05 | Initial WebAPI Release                                           |
-| 1.0.1   | 2024-Oct-27 | Updated Azure IaC ESA/CAF Standards                              |
-| 1.0.2   | 2025-Jan-19 | Updated to .NET 9 and SK 1.33                                    |
-| 1.0.3   | 2025-Feb-09 | Remove projects from File-New Project                            |
-| 1.1.0   | 2025-Jun-04 | Blazor copilot-ish UX, AuthorSession                             |
-| 1.1.1   | 2025-Jun-07 | Authors, Sessions & Messages Plugins                             |
-| 1.1.2   | 2025-Aug-16 | Deprecated Specflow, Automapper (removed from solution)          |
-| 1.1.5   | 2025-Aug-18 | Deprecated FluentValidation/Assertions (removed from solution)   |
-| 1.1.6   | 2025-Aug-19 | Fixed blazor copilot chat runtime error                          |
-| 1.1.7   | 2025-Aug-22 | Deprecated MediatR (removed from solution)                      |
-| 1.1.8   | 2025-Aug-23 | Updated docs. Fixed runtime message post                         |
-| 1.1.9   | 2025-Oct-31 | Added build/test precursor, plugin compatibility, improved code coverage |
-| 2.0.0   | 2026-Feb-02 | Blazor Fluent UI (Microsoft.Aspnetcore.FluentUI) fluentui-blazor.net |
+| 1.0.0   | 2026-Feb-02 | Initial Release                                                  |
 
 This project is licensed with the [MIT license](https://mit-license.org/).
