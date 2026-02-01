@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user",
+      "dynamicId": null
+    },
+    "appInsights1": {
+      "type": "appInsights.sdk",
+      "dynamicId": null
+    }
+  }
+}

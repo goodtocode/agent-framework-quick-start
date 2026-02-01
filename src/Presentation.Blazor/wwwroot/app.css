@@ -1,0 +1,14 @@
+
+:root {
+    /* Agent Framework (DI-UX) Branding Variables */
+    --di-font: 'Segoe UI', 'Inter', Arial, sans-serif;
+    /* Fluent UI variable overrides for light mode */
+    --fluent-header-background: #181f2a; /* dark header */
+    --fluent-header-foreground: #f3f4f6; /* light text */
+    --fluent-body-background: #F9FAFB; /* light body/nav */
+    --fluent-body-foreground: #111827; /* dark text */
+}
+
+html, body {
+    font-family: var(--di-font);
+}

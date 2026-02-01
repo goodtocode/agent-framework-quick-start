@@ -1,0 +1,160 @@
+using Goodtocode.AgentFramework.Core.Application.Common.Models;
+using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
+using Goodtocode.AgentFramework.Core.Application.ChatCompletion;
+
+namespace Goodtocode.AgentFramework.Specs.Integration.ChatCompletion
+{
+    [Binding]
+    [Scope(Tag = "getChatMessagesPaginatedQuery")]
+    public class GetChatMessagesPaginatedQueryStepDefinitions : TestBase
+    {
+        private bool _exists;
+        private readonly Guid _chatSessionId = Guid.NewGuid();
+        private DateTime _startDate;
+        private DateTime _endDate;
+        private bool _withinDateRangeExists;
+        private int _pageNumber;
+        private int _pageSize;
+        private PaginatedList<ChatMessageDto>? _response;
+
+        [Given(@"I have a definition ""([^""]*)""")]
+        public void GivenIHaveADefinition(string def)
+        {
+            base.def = def;
+        }
+
+        [Given(@"Chat Messages exist ""([^""]*)""")]
+        public void GivenChatMessagesExist(string exists)
+        {
+            bool.TryParse(exists, out _exists).ShouldBeTrue();
+        }
+
+        [Given(@"I have a start date ""([^""]*)""")]
+        public void GivenIHaveAStartDate(string startDate)
+        {
+            if (string.IsNullOrWhiteSpace(startDate)) return;
+            DateTime.TryParse(startDate, out _startDate).ShouldBeTrue();
+        }
+
+        [Given(@"I have a end date ""([^""]*)""")]
+        public void GivenIHaveAEndDate(string endDate)
+        {
+            if (string.IsNullOrWhiteSpace(endDate)) return;
+            DateTime.TryParse(endDate, out _endDate).ShouldBeTrue();
+        }
+
+        [Given(@"Chat Messages within the date range exists ""([^""]*)""")]
+        public void GivenChatMessagesWithinTheDateRangeExists(string withinDateRangeExists)
+        {
+            bool.TryParse(withinDateRangeExists, out _withinDateRangeExists).ShouldBeTrue();
+        }
+
+        [Given(@"I have a page number ""([^""]*)""")]
+        public void GivenIHaveAPageNumber(string pageNumber)
+        {
+            int.TryParse(pageNumber, out _pageNumber).ShouldBeTrue();
+        }
+
+        [Given(@"I have a page size ""([^""]*)""")]
+        public void GivenIHaveAPageSize(string pageSize)
+        {
+            int.TryParse(pageSize, out _pageSize).ShouldBeTrue(); ;
+        }
+
+        [When(@"I get the Chat Messages paginated")]
+        public async Task WhenIGetTheChatMessagesPaginated()
+        {
+            if (_exists)
+            {
+                var chatSession = ChatSessionEntity.Create(_chatSessionId, Guid.NewGuid(), "Test Session", ChatMessageRole.assistant, "First Message", "First Response");
+                context.ChatSessions.Add(chatSession);
+                await context.SaveChangesAsync(CancellationToken.None);
+            }
+
+            var request = new GetChatMessagesPaginatedQuery()
+            {
+                PageNumber = _pageNumber,
+                PageSize = _pageSize,
+                StartDate = _startDate == default ? null : _startDate,
+                EndDate = _endDate == default ? null : _endDate
+            };
+
+            var validator = new GetChatMessagesPaginatedQueryValidator();
+            validationResponse = validator.Validate(request);
+            if (validationResponse.IsValid)
+                try
+                {
+                    var handler = new GetChatMessagesPaginatedQueryHandler(context);
+                    _response = await handler.Handle(request, CancellationToken.None);
+                    responseType = CommandResponseType.Successful;
+                }
+                catch (Exception e)
+                {
+                    responseType = HandleAssignResponseType(e);
+                }
+            else
+                responseType = CommandResponseType.BadRequest;
+        }
+
+        [Then(@"The response is ""([^""]*)""")]
+        public void ThenTheResponseIs(string response)
+        {
+            HandleHasResponseType(response);
+        }
+
+        [Then(@"If the response has validation issues I see the ""([^""]*)"" in the response")]
+        public void ThenIfTheResponseHasValidationIssuesISeeTheInTheResponse(string expectedErrors)
+        {
+            HandleExpectedValidationErrorsAssertions(expectedErrors);
+        }
+
+        [Then(@"The response has a collection of Chat Messages")]
+        public void ThenTheResponseHasACollectionOfChatMessages()
+        {
+            if (responseType != CommandResponseType.Successful) return;
+            _response?.TotalCount.ShouldBe(_withinDateRangeExists == false ? 0 : _response.TotalCount);
+        }
+
+        [Then(@"Each Chat Message has a Key")]
+        public void ThenEachChatMessageHasAKey()
+        {
+            if (responseType != CommandResponseType.Successful) return;
+            _response?.Items.FirstOrDefault(x => x.Id == default).ShouldBeNull();
+        }
+
+        [Then(@"Each Chat Message has a Date greater than start date")]
+        public void ThenEachChatMessageHasADateGreaterThanStartDate()
+        {
+            if (responseType == CommandResponseType.Successful && _withinDateRangeExists)
+                _response?.Items.FirstOrDefault(x => _startDate == default || x.Timestamp > _startDate).ShouldNotBeNull();
+        }
+
+        [Then(@"Each Chat Message has a Date less than end date")]
+        public void ThenEachChatMessageHasADateLessThanEndDate()
+        {
+            if (responseType == CommandResponseType.Successful && _withinDateRangeExists)
+                _response?.Items.FirstOrDefault(x => _endDate == default || x.Timestamp < _endDate).ShouldNotBeNull();
+        }
+
+        [Then(@"The response has a Page Number")]
+        public void ThenTheResponseHasAPageNumber()
+        {
+            if (responseType != CommandResponseType.Successful) return;
+            _response?.PageNumber.Should();
+        }
+
+        [Then(@"The response has a Total Pages")]
+        public void ThenTheResponseHasATotalPages()
+        {
+            if (responseType != CommandResponseType.Successful) return;
+            _response?.TotalPages.Should();
+        }
+
+        [Then(@"The response has a Total Count")]
+        public void ThenTheResponseHasATotalCount()
+        {
+            if (responseType != CommandResponseType.Successful) return;
+            _response?.TotalCount.Should();
+        }
+    }
+}
