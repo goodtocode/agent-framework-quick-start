@@ -1,0 +1,92 @@
+﻿@using Goodtocode.AgentFramework.Presentation.Blazor.Components.Auth.Components
+@using Goodtocode.AgentFramework.Presentation.Blazor.Components.Auth.Routing
+@using Goodtocode.AgentFramework.Presentation.Blazor.Components.Auth.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Identity.Web
+
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject IUserSyncService UserSyncService
+
+<FluentMainLayout NavMenuTitle="Navigation Menu">
+    <Header>
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Left" Wrap="false">
+            <FluentNavLink Href="/">
+                <img src="img/goodtocode-logo.png" alt="Cloud in a Can" style="max-height:70px; background:rgba(255,255,255,0.03);" />
+            </FluentNavLink>
+            <FluentNavLink Href="/">
+                Microsoft Agent Framework Quick-start
+            </FluentNavLink>
+        </FluentStack>
+        <UserProfile />
+    </Header>
+    <Body>
+        <FluentBodyContent>            
+            <ErrorBoundary @ref="errorBoundaryRef">
+                <ChildContent>
+                    @Body
+                    <FluentMenuProvider />
+                    <FluentDialogProvider />
+                </ChildContent>
+                <ErrorContent Context="ex">
+                    <FluentDialog Modal="true">
+                        <FluentCard>
+                            <H3Label>
+                                Oops! Something went wrong.
+                            </H3Label>
+                            <PLabel>
+                                @ex.Message
+                            </PLabel>
+                            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
+                                <FluentButton Appearance="Appearance.Accent" OnClick="@(() => OnRecoverAndNavigate(ex))">
+                                    Go Home
+                                </FluentButton>
+                            </FluentStack>
+                        </FluentCard>
+                    </FluentDialog>
+                </ErrorContent>
+            </ErrorBoundary>
+        </FluentBodyContent>
+    </Body>
+    <NavMenuContent>
+        <FluentNavLink Href="/" Icon="@(new Icons.Regular.Size24.Home())">Home</FluentNavLink>
+        <FluentNavLink Href="chat" Icon="@(new Icons.Regular.Size24.Chat())" Match="NavLinkMatch.All">
+            Chat Session
+        </FluentNavLink>
+    </NavMenuContent>
+</FluentMainLayout>
+
+@code {
+    private ErrorBoundary? errorBoundaryRef;
+
+    private void OnRecoverAndNavigate(Exception ex)
+    {
+        errorBoundaryRef?.Recover();
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    private bool _synced = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender && !_synced)
+            {
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+
+                if (user.Identity?.IsAuthenticated == true)
+                {
+                    await UserSyncService.SyncUserAsync(user);
+                    _synced = true;
+                }
+            }
+        }
+        catch (MicrosoftIdentityWebChallengeUserException)
+        {
+            Navigation.NavigateTo(RouteConstants.SignIn, forceLoad: true);
+        }
+    }
+}

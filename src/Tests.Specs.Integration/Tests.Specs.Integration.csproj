@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>Goodtocode.AgentFramework.Specs.Integration</RootNamespace>
+		<AssemblyName>Goodtocode.AgentFramework.Specs.Integration</AssemblyName>
+		<Version>1.0.0</Version>
+		<TargetFramework>net10.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<UserSecretsId>998fefad-d248-4bad-9d33-8a060711dd88</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Actor\GetActorQueryStepDefinitions.cs~RFd5e051.TMP" />
+		<None Remove="appsettings.test.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="appsettings.test.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Goodtocode.Assertion" Version="1.1.30" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.2" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+		<PackageReference Include="Moq" Version="4.20.72" />
+		<PackageReference Include="MSTest.TestAdapter" Version="4.0.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="4.0.2" />
+		<PackageReference Include="Reqnroll.MsTest" Version="3.3.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Core.Application\Core.Application.csproj" />
+		<ProjectReference Include="..\Infrastructure.AgentFramework\Infrastructure.AgentFramework.csproj" />
+		<ProjectReference Include="..\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj" />
+	</ItemGroup>
+
+</Project>

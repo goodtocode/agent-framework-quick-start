@@ -1,0 +1,9 @@
+﻿global using Asp.Versioning;
+global using Asp.Versioning.ApiExplorer;
+global using Goodtocode.Mediator;
+global using Goodtocode.Validation;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.Filters;
+global using Microsoft.Extensions.Options;
+global using Swashbuckle.AspNetCore.SwaggerGen;
+global using System.Reflection;

@@ -1,0 +1,91 @@
+using Goodtocode.AgentFramework.Core.Application.ChatCompletion;
+using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
+
+namespace Goodtocode.AgentFramework.Specs.Integration.ChatCompletion;
+
+[Binding]
+[Scope(Tag = "getChatMessageQuery")]
+public class GetChatMessageQueryStepDefinitions : TestBase
+{
+    private Guid _id;
+    private bool _exists;
+    private readonly Guid _chatSessionId = Guid.NewGuid();
+    private ChatMessageDto? _response;
+
+    [Given(@"I have a definition ""([^""]*)""")]
+    public void GivenIHaveADefinition(string def)
+    {
+        base.def = def;
+    }
+
+    [Given(@"I have a Chat Message id ""([^""]*)""")]
+    public void GivenIHaveAChatMessageId(string ChatMessageKey)
+    {
+        if (string.IsNullOrWhiteSpace(ChatMessageKey)) return;
+        Guid.TryParse(ChatMessageKey, out _id).ShouldBeTrue();
+    }
+
+    [Given(@"The Chat Message exists ""([^""]*)""")]
+    public void GivenITheChatMessageExists(string exists)
+    {
+        bool.TryParse(exists, out _exists).ShouldBeTrue();
+    }
+
+    [When(@"I get a Chat Message")]
+    public async Task WhenIGetAChatMessage()
+    {
+        if (_exists)
+        {
+            var chatSession = ChatSessionEntity.Create(_chatSessionId, Guid.NewGuid(), "Test Session", ChatMessageRole.assistant, "First Message", "First Response");
+            chatSession.Messages.Add(ChatMessageEntity.Create(_id, _chatSessionId, ChatMessageRole.user, "Test Message Content"));
+            context.ChatSessions.Add(chatSession);
+            await context.SaveChangesAsync(CancellationToken.None);
+        }
+
+        var request = new GetChatMessageQuery()
+        {
+            Id = _id
+        };
+
+        var validator = new GetChatMessageQueryValidator();
+        validationResponse = validator.Validate(request);
+        if (validationResponse.IsValid)
+            try
+            {
+                var handler = new GetChatMessageQueryHandler(context);
+                _response = await handler.Handle(request, CancellationToken.None);
+                responseType = CommandResponseType.Successful;
+            }
+            catch (Exception e)
+            {
+                responseType = HandleAssignResponseType(e);
+            }
+        else
+            responseType = CommandResponseType.BadRequest;
+    }
+
+    [Then(@"The response is ""([^""]*)""")]
+    public void ThenTheResponseIs(string response)
+    {
+        HandleHasResponseType(response);
+    }
+
+    [Then(@"If the response has validation issues I see the ""([^""]*)"" in the response")]
+    public void ThenIfTheResponseHasValidationIssuesISeeTheInTheResponse(string expectedErrors)
+    {
+        HandleExpectedValidationErrorsAssertions(expectedErrors);
+    }
+
+    [Then(@"If the response is successful the response has a Id")]
+    public void ThenIfTheResponseIsSuccessfulTheResponseHasAId()
+    {
+        if (responseType != CommandResponseType.Successful) return;
+        _response?.Id.ShouldNotBeEmpty();
+    }
+
+    [Then(@"If the response is successful the response has a count matching ""([^""]*)""")]
+    public void ThenIfTheResponseIsSuccessfulTheResponseHasACountMatching(string messageContent)
+    {
+        _response?.Content?.ShouldBe(messageContent);
+    }
+}
