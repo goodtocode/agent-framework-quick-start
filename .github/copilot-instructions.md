@@ -9,7 +9,7 @@
 - **Frontend:** `src/Presentation.Blazor/` (Blazor WebAssembly)
 - **Backend:** `src/Presentation.WebApi/` (ASP.NET Core Web API)
 - **Core Logic:** `src/Core.Application/`, `src/Core.Domain/`
-- **AI Integration:** `src/Infrastructure.SemanticKernel/` (Semantic Kernel plugins, prompt orchestration)
+- **AI Integration:** `src/Infrastructure.AgentFramework/` (Semantic Kernel plugins, prompt orchestration)
 - **Persistence:** `src/Infrastructure.SqlServer/` (SQL Server, migrations)
 - **IaC:** `data/` (SQL), Azure Bicep in deployment scripts
 
@@ -28,15 +28,15 @@
 - See `docs/naming-conventions.md` for details.
 
 ## Integration & Extensibility
-- **Semantic Kernel:** Add plugins in `src/Infrastructure.SemanticKernel/Plugins/`.
-- **External Integrations:** Use `src/Core.Application/Common/` and `src/Infrastructure.SemanticKernel/` for connectors.
+- **Semantic Kernel:** Add plugins in `src/Infrastructure.AgentFramework/Plugins/`.
+- **External Integrations:** Use `src/Core.Application/Common/` and `src/Infrastructure.AgentFramework/` for connectors.
 - **RBAC & Security:** Enforced in API layer, see `ConfigureServicesAuth.cs`.
 
 ## References
 - [README.md](../README.md): Project overview and getting started
 
 ## Examples
-- To add a new agent plugin: create in `src/Infrastructure.SemanticKernel/Plugins/`, register in `ConfigureServices.cs`.
+- To add a new agent plugin: create in `src/Infrastructure.AgentFramework/Plugins/`, register in `ConfigureServices.cs`.
 - To add a new API endpoint: implement in `src/Presentation.WebApi/`, follow API naming conventions.
 
 ---
