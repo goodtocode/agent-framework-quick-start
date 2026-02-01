@@ -305,6 +305,12 @@ Navigate to: http://localhost:7777/swagger/index.html in your browser to the Swa
 
 
 # DevOps Configuration for Azure IaC and CI/CD
+## Github Environment Secrets (development)
+The typical set of GitHub environment secrets, i.e. development, can be inserted below with this powershell script.
+```
+@{API_CLIENT_ID="your-api-client-id";AZURE_CLIENT_ID="your-azure-client-id";AZURE_SUBSCRIPTION_ID="your-azure-subscription-id";AZURE_TENANT_ID="your-azure-tenant-id";EEID_TENANT_ID="your-eeid-tenant-id";OPENAI_APIKEY="your-openai-apikey";SQL_ADMIN_PASSWORD="your-sql-admin-password";SQL_ADMIN_USER="your-sql-admin-user";WEB_CLIENT_ID="your-web-client-id";WEB_CLIENT_SECRET="your-web-client-secret"} | ForEach-Object {./github/scripts/repo/New-GithubSecret.ps1 -Owner your-github-handle -Repo your-repo -Environment development -SecretName $_.Key -SecretValue $_.Value}
+```
+
 ## GitHub Actions (.github folder)
 The GitHub action will automatically run upon commit to a repo. The triggers are set based on changes (PRs/Merges) to the main branch.
 
