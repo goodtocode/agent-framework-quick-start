@@ -1,4 +1,4 @@
-# Semantic Kernel C# Quick-Start
+# Agent Framework C# Quick-Start
 **Azure Bicep Infrastucture as Standalone Landing Zone**
 
 [![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-iac.yml)
@@ -7,30 +7,17 @@
 
 [![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-web-api-sql.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-web-api-sql.yml)
 
-Microsoft Agent Framework Quick-start is a .NET Web API CRUD Microservice solution with Blazor Copilot-ish Chat client that demonstrates the most basic use cases of the Microsoft Semantic Kernel in a Clean Architecture C# Microservice. This microservice allows you to persist the following Azure Open AI services to SQL Server, so you can replay messages and maintain history of your interaction with AI. 
+Microsoft Agent Framework Quick-start is a 100% Microsoft, enterprise-ready starter kit for building modern, agentic applications with C#, Blazor (Fluent UI), and ASP.NET Core Web API. This solution demonstrates how to use the Microsoft Agent Framework to create a Copilot-style chat client, fully integrated with SQL Server for persistent storage of authors, chat sessions, and messages—all orchestrated through a clean architecture pattern. 
+
+With built-in tools (plugins) for querying and managing your own data, automated Azure infrastructure (Bicep), and seamless CI/CD (GitHub Actions), this repo provides everything you need to build, deploy, and extend real-world AI-powered apps on a traditional .NET stack—no JavaScript, no raw HTML, just pure Blazor and Fluent UI. Perfect for teams looking to modernize with AI while leveraging familiar, pragmatic enterprise patterns.
 
 ![Microsoft Agent Framework Quick-start Blazor](./docs/AgentFramework-Quick-start-Blazor-Side-by-Side.png)
 
-Semantic Kernel is an SDK that integrates Large Language Models (LLMs) like OpenAI, Azure OpenAI, and Hugging Face with conventional programming languages like C#, Python, and Java. Semantic Kernel allows developers to define plugins that can be chained together in just a few lines of code.
+Agent Framework is an SDK that integrates Large Language Models (LLMs) like OpenAI, Azure OpenAI, and Hugging Face with conventional programming languages like C#, Python, and Java. Agent Framework allows developers to define plugins that can be chained together in just a few lines of code.
 
-[Introduction to Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/)
+[Introduction to Microsoft Agent Framework](https://learn.microsoft.com/en-us/agent-framework/overview/)
 
-[Getting Started with Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/get-started/quick-start-guide?pivots=programming-language-csharp)
-
-This microservice supports:
-* Chat Completions: Generate responses based on user input, making it useful for chatbots and virtual assistants.
-* Text to Speech: Convert text into natural-sounding speech, enhancing user experiences.
-* Whisper (Text to Speech): Convert spoken language into text, useful for transcription and voice recognition.
-* Image to Text: Generate descriptions of an image.
-* Text to Image: Create an image based on a description prompt of the desired imagery.
-
-Upcoming relases will support more Semantic Kernel and Azure Open AI functionality such as:
-* Embeddings: Create vector representations of text, which can be used for semantic search and similarity matching.
-* Function Calling: Integrate custom functions into your AI models, allowing the model to call external APIs or perform specific tasks based on the context of the conversation.
-* Content Filtering: Automatically filter out inappropriate or harmful content from generated responses.
-* Fine-Tuning: Train models on your specific data to better align with your use cases and improve performance.
-* Assistants: Create and manage virtual assistants that can handle complex tasks and interactions.
-* Semantic Search: Perform searches based on the meaning of the text rather than just keywords, improving search relevance.
+[Getting Started with Microsoft Agent Framework](https://learn.microsoft.com/en-us/agent-framework/get-started/quick-start-guide?pivots=programming-language-csharp)
 
 # Quick-Start Steps
 To get started, follow the steps below:
@@ -318,7 +305,6 @@ All workflow YAML files in this repo are designed to:
 | `COMPANY-PRODUCT-api.yml`            | CI/CD for .NET Web API (build, test, deploy to Azure App Service)                       | Yes                    | Yes                      |
 | `COMPANY-PRODUCT-api-sql.yml`        | CI/CD for .NET Web API with Azure SQL (includes DB migration)                           | Yes                    | Yes                      |
 | `COMPANY-PRODUCT-iac.yml`            | Deploy Azure infrastructure using Bicep templates                                       | Yes                    | Yes                      |
-| `COMPANY-PRODUCT-stapp-ci-cd.yml`    | CI/CD for Azure Static Web Apps (Blazor, SPA, etc.)                                     | Yes                    | Yes                      |
 | `COMPANY-PRODUCT-nuget.yml`          | Build, test, and publish NuGet packages                                                 | Yes                    | Yes                      |
 ---
 
@@ -394,7 +380,6 @@ pwsh -File ./.github/scripts/repo/New-Github-Azure-Federation.ps1 \
 
 This setup ensures your GitHub Actions workflows can securely deploy to Azure using federated credentials and the required secrets.
 
-
 # Contact
 * [GitHub Repo](https://www.github.com/goodtocode/agent-framework-quick-start)
 * [@goodtocode](https://www.twitter.com/goodtocode)
@@ -405,11 +390,11 @@ This setup ensures your GitHub Actions workflows can securely deploy to Azure us
 * [ASP.NET .Net](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core)
 * [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/)
 
-# Semantic Kernel
-* [GitHub](https://github.com/microsoft/semantic-kernel.git)
-* [Getting Started Blog](https://devblogs.microsoft.com/semantic-kernel/how-to-get-started-using-semantic-kernel-net/)
-* [Understanding the Kernel](https://learn.microsoft.com/en-us/semantic-kernel/agents/kernel/?tabs=Csharp)
-* [Creating Plugins](https://devblogs.microsoft.com/semantic-kernel/using-semantic-kernel-to-create-a-time-plugin-with-net/)
+# Agent Framework
+* [GitHub](https://github.com/microsoft/agentframework)
+* [Getting Started Blog](https://devblogs.microsoft.com/semantic-kernel/introducing-microsoft-agent-framework/)
+* [Understanding the Kernel](https://learn.microsoft.com/en-us/agent-framework/agents/kernel/?tabs=Csharp)
+* [Creating Plugins](https://learn.microsoft.com/en-us/agent-framework/plugins/overview/)
 
 ## Additional Technologies References
 * AspNetCore.HealthChecks.UI
