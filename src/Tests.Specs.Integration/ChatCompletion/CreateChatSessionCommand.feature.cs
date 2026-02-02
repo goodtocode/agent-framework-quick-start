@@ -126,12 +126,12 @@ namespace Goodtocode.AgentFramework.Specs.Integration.ChatCompletion
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create Chat Session")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Create Chat Session Command")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("createChatSessionCommand")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "00000000-0000-0000-0000-000000000000", "false", "Hello, I am interested in an interactive chat session.", "0", null, DisplayName="CreateChatSession(success,Success,,00000000-0000-0000-0000-000000000000,false,Hel" +
-            "lo, I am interested in an interactive chat session.,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty message", "BadRequest", "Message", "00000000-0000-0000-0000-000000000000", "false", "", "1", null, DisplayName="CreateChatSession(bad request: empty message,BadRequest,Message,00000000-0000-000" +
-            "0-0000-000000000000,false,,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("already exists", "Error", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "Hello, I am interested in an interactive chat session.", "2", null, DisplayName="CreateChatSession(already exists,Error,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true" +
-            ",Hello, I am interested in an interactive chat session.,2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "00000000-0000-0000-0000-000000000000", "false", "Hello, I am interested in an interactive chat session.", "0", null, DisplayName="Create Chat Session(success,Success,,00000000-0000-0000-0000-000000000000,false,H" +
+            "ello, I am interested in an interactive chat session.,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty message", "BadRequest", "Message", "00000000-0000-0000-0000-000000000000", "false", "", "1", null, DisplayName="Create Chat Session(bad request: empty message,BadRequest,Message,00000000-0000-0" +
+            "000-0000-000000000000,false,,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("already exists", "Error", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "Hello, I am interested in an interactive chat session.", "2", null, DisplayName="Create Chat Session(already exists,Error,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,tr" +
+            "ue,Hello, I am interested in an interactive chat session.,2)")]
         public async global::System.Threading.Tasks.Task CreateChatSession(string def, string response, string responseErrors, string id, string chatSessionExists, string message, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

@@ -126,18 +126,20 @@ namespace Goodtocode.AgentFramework.Specs.Integration.Actor
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get actor chat sessions paginated")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Actor Chat Sessions Paginated Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getAuthorChatSessionsPaginatedQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no date range", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "true", "true", "1", "10", "0", null, DisplayName="GetActorChatSessionsPaginated(success no date range,Success,,038d8e7f-f18f-4a8e-8" +
-            "b3c-3b6a6889fed9,,,true,true,1,10,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", "10", "1", null, DisplayName="GetActorChatSessionsPaginated(success with date range,Success,,038d8e7f-f18f-4a8e" +
-            "-8b3c-3b6a6889fed9,2024-06-01T11:21:00Z,2034-06-03T11:21:00Z,true,true,1,10,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "9c5f2b35-b380-44f8-8c71-c24a43b3fe63", "2025-07-19T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", "10", "2", null, DisplayName="GetActorChatSessionsPaginated(success with date range,Success,,9c5f2b35-b380-44f8" +
-            "-8c71-c24a43b3fe63,2025-07-19T11:21:00Z,2034-06-03T11:21:00Z,true,true,1,10,2)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success empty results", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "false", "false", "1", "10", "3", null, DisplayName="GetActorChatSessionsPaginated(success empty results,Success,,038d8e7f-f18f-4a8e-8" +
-            "b3c-3b6a6889fed9,,,false,false,1,10,3)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request page number zero", "BadRequest", "PageNumber", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "false", "false", "0", "10", "4", null, DisplayName="GetActorChatSessionsPaginated(bad request page number zero,BadRequest,PageNumber," +
-            "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,,,false,false,0,10,4)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request page size zero", "BadRequest", "PageSize", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "false", "false", "1", "0", "5", null, DisplayName="GetActorChatSessionsPaginated(bad request page size zero,BadRequest,PageSize,038d" +
-            "8e7f-f18f-4a8e-8b3c-3b6a6889fed9,,,false,false,1,0,5)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no date range", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "true", "true", "1", "10", "0", null, DisplayName="Get actor chat sessions paginated(success no date range,Success,,038d8e7f-f18f-4a" +
+            "8e-8b3c-3b6a6889fed9,,,true,true,1,10,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", "10", "1", null, DisplayName="Get actor chat sessions paginated(success with date range,Success,,038d8e7f-f18f-" +
+            "4a8e-8b3c-3b6a6889fed9,2024-06-01T11:21:00Z,2034-06-03T11:21:00Z,true,true,1,10," +
+            "1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "9c5f2b35-b380-44f8-8c71-c24a43b3fe63", "2025-07-19T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", "10", "2", null, DisplayName="Get actor chat sessions paginated(success with date range,Success,,9c5f2b35-b380-" +
+            "44f8-8c71-c24a43b3fe63,2025-07-19T11:21:00Z,2034-06-03T11:21:00Z,true,true,1,10," +
+            "2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success empty results", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "false", "false", "1", "10", "3", null, DisplayName="Get actor chat sessions paginated(success empty results,Success,,038d8e7f-f18f-4a" +
+            "8e-8b3c-3b6a6889fed9,,,false,false,1,10,3)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request page number zero", "BadRequest", "PageNumber", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "false", "false", "0", "10", "4", null, DisplayName="Get actor chat sessions paginated(bad request page number zero,BadRequest,PageNum" +
+            "ber,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,,,false,false,0,10,4)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request page size zero", "BadRequest", "PageSize", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "false", "false", "1", "0", "5", null, DisplayName="Get actor chat sessions paginated(bad request page size zero,BadRequest,PageSize," +
+            "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,,,false,false,1,0,5)")]
         public async global::System.Threading.Tasks.Task GetActorChatSessionsPaginated(string def, string response, string responseErrors, string id, string startDate, string endDate, string exist, string chatSessionsResultExists, string pageNumber, string pageSize, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

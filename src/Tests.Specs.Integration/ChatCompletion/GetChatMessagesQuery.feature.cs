@@ -126,12 +126,12 @@ namespace Goodtocode.AgentFramework.Specs.Integration.ChatCompletion
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Chat Messages")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Chat Messages Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getChatMessagesQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no date range", "Success", "", "", "", "true", "true", "0", null, DisplayName="GetChatMessages(success no date range,Success,,,,true,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", null, DisplayName="GetChatMessages(success with date range,Success,,2024-06-01T11:21:00Z,2034-06-03T" +
-            "11:21:00Z,true,true,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success filtered results", "Success", "", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "false", "2", null, DisplayName="GetChatMessages(success filtered results,Success,,2024-06-01T11:21:00Z,2034-06-03" +
-            "T11:21:00Z,true,false,2)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success empty results", "Success", "", "", "", "false", "false", "3", null, DisplayName="GetChatMessages(success empty results,Success,,,,false,false,3)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no date range", "Success", "", "", "", "true", "true", "0", null, DisplayName="Get Chat Messages(success no date range,Success,,,,true,true,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", null, DisplayName="Get Chat Messages(success with date range,Success,,2024-06-01T11:21:00Z,2034-06-0" +
+            "3T11:21:00Z,true,true,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success filtered results", "Success", "", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "false", "2", null, DisplayName="Get Chat Messages(success filtered results,Success,,2024-06-01T11:21:00Z,2034-06-" +
+            "03T11:21:00Z,true,false,2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success empty results", "Success", "", "", "", "false", "false", "3", null, DisplayName="Get Chat Messages(success empty results,Success,,,,false,false,3)")]
         public async global::System.Threading.Tasks.Task GetChatMessages(string def, string response, string responseErrors, string startDate, string endDate, string exist, string chatMessagesResultExists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

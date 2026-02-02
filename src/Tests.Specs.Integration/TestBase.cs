@@ -2,12 +2,11 @@
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Core.Domain.Auth;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Plugins;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
+using Goodtocode.AgentFramework.Specs.Integration.Agent;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel;
 using System.Reflection;
 
 namespace Goodtocode.AgentFramework.Specs.Integration;
@@ -30,7 +29,7 @@ public abstract class TestBase : IDisposable
     internal ValidationResult validationResponse = new();
     internal AgentFrameworkContext context;
     internal IConfiguration configuration;
-    internal Kernel kernel = new();
+    internal MockAIAgent agent = new();
     internal OpenAIOptions optionsOpenAi = new();
     internal UserEntity userInfo = UserEntity.Create(firstName: "John", lastName: "Doe", email: "john.doe@goodtocode.com", 
                                                     ownerId: Guid.NewGuid(), tenantId: Guid.NewGuid(), roles: ["Admin"]);
@@ -49,35 +48,14 @@ public abstract class TestBase : IDisposable
             .AddEnvironmentVariables()
             .Build();
 
-        // The SK Plugins currently rely on GetRequiredService<IAgentFrameworkContext>(), so we need to register it as a scoped service.
-        // This is a workaround to allow the plugins to be registered in the DI container as Singleton which SK memory wants, despite an EF dependency which wants Scoped.
         var services = new ServiceCollection();
         services.AddDbContext<AgentFrameworkContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
-        services.AddScoped<IAgentFrameworkContext, AgentFrameworkContext>();        
+        services.AddScoped<IAgentFrameworkContext, AgentFrameworkContext>();
+        services.AddScoped<AIAgent, MockAIAgent>();
+        services.AddScoped<MockAIAgent>();
         var provider = services.BuildServiceProvider();
+        agent = provider.GetRequiredService<MockAIAgent>();
         configuration.GetSection(nameof(OpenAI)).Bind(optionsOpenAi);
-        var builder = Kernel.CreateBuilder();
-#pragma warning disable SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-        builder.Services
-            .AddOpenAIChatCompletion(modelId: optionsOpenAi.ChatCompletionModelId, apiKey: optionsOpenAi.ApiKey)
-            .AddOpenAIAudioToText(modelId: optionsOpenAi.AudioModelId, apiKey: optionsOpenAi.ApiKey)
-            .AddOpenAITextToAudio(modelId: optionsOpenAi.AudioModelId, apiKey: optionsOpenAi.ApiKey)
-            .AddOpenAITextToImage(modelId: optionsOpenAi.ImageModelId, apiKey: optionsOpenAi.ApiKey);
-#pragma warning restore SKEXP0010
-        builder.Services.AddLogging(logging =>
-        {
-            logging.SetMinimumLevel(LogLevel.Debug);
-        });
-        kernel = builder.Build();
-
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var authorsPlugin = new ActorsPlugin(serviceProvider);
-        var chatSessionsPlugin = new ChatSessionsPlugin(serviceProvider);
-        var chatMessagesPlugin = new ChatMessagesPlugin(serviceProvider);
-
-        kernel.ImportPluginFromObject(authorsPlugin, nameof(ActorsPlugin));
-        kernel.ImportPluginFromObject(chatSessionsPlugin, nameof(ChatSessionsPlugin));
-        kernel.ImportPluginFromObject(chatMessagesPlugin, nameof(ChatMessagesPlugin));
     }
 
     internal CommandResponseType HandleAssignResponseType

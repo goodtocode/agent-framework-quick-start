@@ -2,8 +2,8 @@
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Core.Domain.Actor;
 using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 
 namespace Goodtocode.AgentFramework.Core.Application.ChatCompletion;
 
@@ -15,9 +15,9 @@ public class CreateChatSessionCommand : IRequest<ChatSessionDto>
     public string? Message { get; set; }
 }
 
-public class CreateChatSessionCommandHandler(Kernel kernel, IAgentFrameworkContext context) : IRequestHandler<CreateChatSessionCommand, ChatSessionDto>
+public class CreateChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkContext context) : IRequestHandler<CreateChatSessionCommand, ChatSessionDto>
 {
-    private readonly Kernel _kernel = kernel;
+    private readonly AIAgent _agent = kernel;
     private readonly IAgentFrameworkContext _context = context;
 
     public async Task<ChatSessionDto> Handle(CreateChatSessionCommand request, CancellationToken cancellationToken)
@@ -26,14 +26,15 @@ public class CreateChatSessionCommandHandler(Kernel kernel, IAgentFrameworkConte
         GuardAgainstEmptyMessage(request?.Message);
         GuardAgainstIdExists(_context.ChatSessions, request!.Id);
 
-        var service = _kernel.GetRequiredService<IChatCompletionService>();
-        ChatHistory chatHistory = [];
-        chatHistory.AddUserMessage(request!.Message!);
-        var executionSettings = new PromptExecutionSettings
+        var chatHistory = new List<ChatMessage>
         {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+            new(ChatRole.User, request.Message!)
         };
-        var response = await service.GetChatMessageContentAsync(chatHistory, executionSettings, _kernel, cancellationToken);
+
+        var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
+        var response = agentResponse.Messages.LastOrDefault();
+
+        GuardAgainstNullAgentResponse(response);
 
         var actor = await _context.Actors
             .FirstOrDefaultAsync(x => x.OwnerId == request.ActorId, cancellationToken);
@@ -44,7 +45,7 @@ public class CreateChatSessionCommandHandler(Kernel kernel, IAgentFrameworkConte
             request.Id,
             actor!.Id,
             title,
-            Enum.TryParse<ChatMessageRole>(response.Role.ToString().ToLowerInvariant(), out var role) ? role : ChatMessageRole.assistant,
+            Enum.TryParse<ChatMessageRole>(response!.Role.ToString().ToLowerInvariant(), out var role) ? role : ChatMessageRole.assistant,
             request.Message!,
             response.ToString()
         );
@@ -85,5 +86,14 @@ public class CreateChatSessionCommandHandler(Kernel kernel, IAgentFrameworkConte
     {
         if (dbSet.Any(x => x.Id == id))
             throw new CustomConflictException("Id already exists");
+    }
+
+    private static void GuardAgainstNullAgentResponse(object? response)
+    {
+        if (response == null)
+            throw new CustomValidationException(
+            [
+                new("AgentResponse", "Failed to get a response from the AI agent")
+            ]);
     }
 }

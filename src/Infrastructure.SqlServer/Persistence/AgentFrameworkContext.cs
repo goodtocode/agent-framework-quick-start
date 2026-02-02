@@ -1,10 +1,7 @@
-﻿using Goodtocode.Domain.Entities;
-using Goodtocode.AgentFramework.Core.Application.Abstractions;
+﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Goodtocode.AgentFramework.Core.Domain.Actor;
-using Goodtocode.AgentFramework.Core.Domain.Audio;
 using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
-using Goodtocode.AgentFramework.Core.Domain.Image;
-using Goodtocode.AgentFramework.Core.Domain.TextGeneration;
+using Goodtocode.Domain.Entities;
 using System.Reflection;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
@@ -13,10 +10,6 @@ public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
 {
     public DbSet<ChatMessageEntity> ChatMessages => Set<ChatMessageEntity>();
     public DbSet<ChatSessionEntity> ChatSessions => Set<ChatSessionEntity>();
-    public DbSet<TextPromptEntity> TextPrompts => Set<TextPromptEntity>();
-    public DbSet<TextResponseEntity> TextResponses => Set<TextResponseEntity>();
-    public DbSet<TextImageEntity> TextImages => Set<TextImageEntity>();
-    public DbSet<TextAudioEntity> TextAudio => Set<TextAudioEntity>();
     public DbSet<ActorEntity> Actors => Set<ActorEntity>();
 
     protected AgentFrameworkContext() { }

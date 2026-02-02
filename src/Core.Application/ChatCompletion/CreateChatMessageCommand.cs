@@ -2,8 +2,8 @@
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Core.Domain.Auth;
 using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 
 namespace Goodtocode.AgentFramework.Core.Application.ChatCompletion;
 
@@ -15,9 +15,9 @@ public class CreateChatMessageCommand : IRequest<ChatMessageDto>, IUserInfoReque
     public IUserEntity? UserInfo { get; set; }
 }
 
-public class CreateChatMessageCommandHandler(Kernel kernel, IAgentFrameworkContext context) : IRequestHandler<CreateChatMessageCommand, ChatMessageDto>
+public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkContext context) : IRequestHandler<CreateChatMessageCommand, ChatMessageDto>
 {
-    private readonly Kernel _kernel = kernel;
+    private readonly AIAgent _agent = agent;
     private readonly IAgentFrameworkContext _context = context;
 
     public async Task<ChatMessageDto> Handle(CreateChatMessageCommand request, CancellationToken cancellationToken)
@@ -29,28 +29,38 @@ public class CreateChatMessageCommandHandler(Kernel kernel, IAgentFrameworkConte
         GuardAgainstUnauthorizedUser(_context.ChatSessions, request!.UserInfo!);
 
         var chatSession = _context.ChatSessions.Find(request.ChatSessionId);
-        
-        var chatHistory = new ChatHistory();
+
+        var chatHistory = new List<ChatMessage>();
         foreach (ChatMessageEntity message in chatSession!.Messages)
         {
-            chatHistory.AddUserMessage(message.Content);
+            chatHistory.Add(new ChatMessage(
+                message.Role == ChatMessageRole.user ? ChatRole.User : ChatRole.Assistant,
+                message.Content));
         }
-        chatHistory.AddUserMessage(request!.Message!);
-        var service = _kernel.GetRequiredService<IChatCompletionService>();
-        var executionSettings = new PromptExecutionSettings
-        {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
-        };
-        var response = await service.GetChatMessageContentAsync(chatHistory, executionSettings, _kernel, cancellationToken);
+        chatHistory.Add(new ChatMessage(ChatRole.User, request!.Message!));
 
-        var chatMessage = ChatMessageEntity.Create(Guid.NewGuid(), chatSession.Id, ChatMessageRole.user, request.Message!);
+        var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
+        var response = agentResponse.Messages.LastOrDefault();
+
+        GuardAgainstNullAgentResponse(response);
+
+        var chatMessage = ChatMessageEntity.Create(
+            request.Id,
+            chatSession.Id,
+            ChatMessageRole.user,
+            request.Message!
+        );
         chatSession.Messages.Add(chatMessage);
         _context.ChatMessages.Add(chatMessage);
 
-        var chatMessageResponse = ChatMessageEntity.Create(Guid.NewGuid(),
+        var agentReply = response.Contents.LastOrDefault().ToString() ?? string.Empty;
+
+        var chatMessageResponse = ChatMessageEntity.Create(
+            Guid.NewGuid(),
             chatSession.Id,
-            Enum.TryParse<ChatMessageRole>(response.Role.ToString().ToLowerInvariant(), out var role) ? role : ChatMessageRole.assistant,
-            response.ToString());
+            ChatMessageRole.assistant,
+            agentReply
+        );
         chatSession.Messages.Add(chatMessageResponse);
         _context.ChatMessages.Add(chatMessageResponse);
 
@@ -100,5 +110,11 @@ public class CreateChatMessageCommandHandler(Kernel kernel, IAgentFrameworkConte
             [
                 new("UserInfo", "User is not authorized to create a chat message in this session")
             ]);
+    }
+
+    private static void GuardAgainstNullAgentResponse(ChatMessage? response)
+    {
+        if (response == null)
+            throw new CustomValidationException([new("ChatMessage","Agent response cannot be null")]);
     }
 }

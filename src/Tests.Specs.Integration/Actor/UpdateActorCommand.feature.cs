@@ -125,8 +125,8 @@ namespace Goodtocode.AgentFramework.Specs.Integration.Actor
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Update Actor")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Update Actor Command")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("updateAuthorCommand")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="UpdateActor(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="UpdateActor(not found,NotFound,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="Update Actor(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="Update Actor(not found,NotFound,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,1)")]
         public async global::System.Threading.Tasks.Task UpdateActor(string def, string response, string responseErrors, string id, string exists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

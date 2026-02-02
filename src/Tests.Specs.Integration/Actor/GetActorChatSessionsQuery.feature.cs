@@ -126,14 +126,14 @@ namespace Goodtocode.AgentFramework.Specs.Integration.Actor
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get actor chat sessions")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Actor Chat Sessions Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getAuthorChatSessionsQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no date range", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "true", "true", "0", null, DisplayName="GetActorChatSessions(success no date range,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6" +
-            "889fed9,,,true,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", null, DisplayName="GetActorChatSessions(success with date range,Success,,038d8e7f-f18f-4a8e-8b3c-3b6" +
-            "a6889fed9,2024-06-01T11:21:00Z,2034-06-03T11:21:00Z,true,true,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success filtered results", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "false", "2", null, DisplayName="GetActorChatSessions(success filtered results,Success,,038d8e7f-f18f-4a8e-8b3c-3b" +
-            "6a6889fed9,2024-06-01T11:21:00Z,2034-06-03T11:21:00Z,true,false,2)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success empty results", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "false", "false", "3", null, DisplayName="GetActorChatSessions(success empty results,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6" +
-            "889fed9,,,false,false,3)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no date range", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "true", "true", "0", null, DisplayName="Get actor chat sessions(success no date range,Success,,038d8e7f-f18f-4a8e-8b3c-3b" +
+            "6a6889fed9,,,true,true,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", null, DisplayName="Get actor chat sessions(success with date range,Success,,038d8e7f-f18f-4a8e-8b3c-" +
+            "3b6a6889fed9,2024-06-01T11:21:00Z,2034-06-03T11:21:00Z,true,true,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success filtered results", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "false", "2", null, DisplayName="Get actor chat sessions(success filtered results,Success,,038d8e7f-f18f-4a8e-8b3c" +
+            "-3b6a6889fed9,2024-06-01T11:21:00Z,2034-06-03T11:21:00Z,true,false,2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success empty results", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "", "", "false", "false", "3", null, DisplayName="Get actor chat sessions(success empty results,Success,,038d8e7f-f18f-4a8e-8b3c-3b" +
+            "6a6889fed9,,,false,false,3)")]
         public async global::System.Threading.Tasks.Task GetActorChatSessions(string def, string response, string responseErrors, string id, string startDate, string endDate, string exist, string chatSessionsResultExists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

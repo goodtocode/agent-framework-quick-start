@@ -125,8 +125,8 @@ namespace Goodtocode.AgentFramework.Specs.Integration.Actor
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Actor By External Id")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Actor By External Id Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getAuthorByOwnerIdQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "true", "0", null, DisplayName="GetActorByExternalId(success,Success,,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "false", "1", null, DisplayName="GetActorByExternalId(not found,NotFound,,false,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "true", "0", null, DisplayName="Get Actor By External Id(success,Success,,true,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "false", "1", null, DisplayName="Get Actor By External Id(not found,NotFound,,false,1)")]
         public async global::System.Threading.Tasks.Task GetActorByExternalId(string def, string response, string responseErrors, string exists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
