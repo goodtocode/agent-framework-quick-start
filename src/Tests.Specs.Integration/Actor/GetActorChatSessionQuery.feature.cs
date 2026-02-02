@@ -126,10 +126,10 @@ namespace Goodtocode.AgentFramework.Specs.Integration.Actor
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get actor chat session")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Actor Chat Session Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getAuthorChatSessionQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "098d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "045d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="GetActorChatSession(success,Success,,098d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,045d8e7" +
-            "f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "023d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "078d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="GetActorChatSession(not found,NotFound,,023d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,078d" +
-            "8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "098d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "045d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="Get actor chat session(success,Success,,098d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,045d" +
+            "8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "023d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "078d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="Get actor chat session(not found,NotFound,,023d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,0" +
+            "78d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,1)")]
         public async global::System.Threading.Tasks.Task GetActorChatSession(string def, string response, string responseErrors, string id, string chatSessionId, string chatSessionExists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

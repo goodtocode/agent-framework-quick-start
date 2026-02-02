@@ -126,10 +126,10 @@ namespace Goodtocode.AgentFramework.Specs.Integration.Actor
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Save Actor")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Save Actor Command")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("saveAuthorCommand")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "00000000-0000-0000-0000-000000000000", "938d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "John Doe", "jdoe@goodtocode.com", "0", null, DisplayName="SaveActor(success,Success,,00000000-0000-0000-0000-000000000000,938d8e7f-f18f-4a8" +
-            "e-8b3c-3b6a6889fed9,false,John Doe,jdoe@goodtocode.com,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("already exists", "Error", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "938d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "Jane Doe", "jane@goodtocode.com", "1", null, DisplayName="SaveActor(already exists,Error,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,938d8e7f-f18" +
-            "f-4a8e-8b3c-3b6a6889fed9,true,Jane Doe,jane@goodtocode.com,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "00000000-0000-0000-0000-000000000000", "938d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "John Doe", "jdoe@goodtocode.com", "0", null, DisplayName="Save Actor(success,Success,,00000000-0000-0000-0000-000000000000,938d8e7f-f18f-4a" +
+            "8e-8b3c-3b6a6889fed9,false,John Doe,jdoe@goodtocode.com,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("already exists", "Error", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "938d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "Jane Doe", "jane@goodtocode.com", "1", null, DisplayName="Save Actor(already exists,Error,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,938d8e7f-f1" +
+            "8f-4a8e-8b3c-3b6a6889fed9,true,Jane Doe,jane@goodtocode.com,1)")]
         public async global::System.Threading.Tasks.Task SaveActor(string def, string response, string responseErrors, string id, string ownerId, string exists, string name, string email, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

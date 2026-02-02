@@ -126,11 +126,12 @@ namespace Goodtocode.AgentFramework.Specs.Integration.ChatCompletion
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Delete Chat Session")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Delete Chat Session Command")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("deleteChatSessionCommand")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="DeleteChatSession(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="DeleteChatSession(not found,NotFound,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false," +
-            "1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty id", "BadRequest", "Id", "00000000-0000-0000-0000-000000000000", "false", "2", null, DisplayName="DeleteChatSession(bad request: empty id,BadRequest,Id,00000000-0000-0000-0000-000" +
-            "000000000,false,2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="Delete Chat Session(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)" +
+            "")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="Delete Chat Session(not found,NotFound,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,fals" +
+            "e,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty id", "BadRequest", "Id", "00000000-0000-0000-0000-000000000000", "false", "2", null, DisplayName="Delete Chat Session(bad request: empty id,BadRequest,Id,00000000-0000-0000-0000-0" +
+            "00000000000,false,2)")]
         public async global::System.Threading.Tasks.Task DeleteChatSession(string def, string response, string responseErrors, string id, string exists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

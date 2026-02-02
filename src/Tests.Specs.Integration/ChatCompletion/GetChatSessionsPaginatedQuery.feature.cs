@@ -126,14 +126,14 @@ namespace Goodtocode.AgentFramework.Specs.Integration.ChatCompletion
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get chat sessions paginated")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Chat Sessions Paginated Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getChatSessionsPaginatedQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no date range", "Success", "", "", "", "true", "true", "1", "10", "0", null, DisplayName="GetChatSessionsPaginated(success no date range,Success,,,,true,true,1,10,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", "10", "1", null, DisplayName="GetChatSessionsPaginated(success with date range,Success,,2024-06-01T11:21:00Z,20" +
-            "34-06-03T11:21:00Z,true,true,1,10,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success empty results", "Success", "", "", "", "false", "false", "1", "10", "2", null, DisplayName="GetChatSessionsPaginated(success empty results,Success,,,,false,false,1,10,2)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request page number zero", "BadRequest", "PageNumber", "", "", "false", "false", "0", "10", "3", null, DisplayName="GetChatSessionsPaginated(bad request page number zero,BadRequest,PageNumber,,,fal" +
-            "se,false,0,10,3)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request page size zero", "BadRequest", "PageSize", "", "", "false", "false", "1", "0", "4", null, DisplayName="GetChatSessionsPaginated(bad request page size zero,BadRequest,PageSize,,,false,f" +
-            "alse,1,0,4)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no date range", "Success", "", "", "", "true", "true", "1", "10", "0", null, DisplayName="Get chat sessions paginated(success no date range,Success,,,,true,true,1,10,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success with date range", "Success", "", "2024-06-01T11:21:00Z", "2034-06-03T11:21:00Z", "true", "true", "1", "10", "1", null, DisplayName="Get chat sessions paginated(success with date range,Success,,2024-06-01T11:21:00Z" +
+            ",2034-06-03T11:21:00Z,true,true,1,10,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success empty results", "Success", "", "", "", "false", "false", "1", "10", "2", null, DisplayName="Get chat sessions paginated(success empty results,Success,,,,false,false,1,10,2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request page number zero", "BadRequest", "PageNumber", "", "", "false", "false", "0", "10", "3", null, DisplayName="Get chat sessions paginated(bad request page number zero,BadRequest,PageNumber,,," +
+            "false,false,0,10,3)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request page size zero", "BadRequest", "PageSize", "", "", "false", "false", "1", "0", "4", null, DisplayName="Get chat sessions paginated(bad request page size zero,BadRequest,PageSize,,,fals" +
+            "e,false,1,0,4)")]
         public async global::System.Threading.Tasks.Task GetChatSessionsPaginated(string def, string response, string responseErrors, string startDate, string endDate, string exist, string chatSessionsResultExists, string pageNumber, string pageSize, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

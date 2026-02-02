@@ -1,10 +1,9 @@
 ﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
 using System.ComponentModel;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Plugins;
+namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 
 public class ActorResponse : IActorResponse
 {
@@ -15,7 +14,7 @@ public class ActorResponse : IActorResponse
 }
 
 
-public sealed class ActorsPlugin(IServiceProvider serviceProvider) : IActorsPlugin
+public sealed class ActorsTool(IServiceProvider serviceProvider) : IActorsPlugin
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
@@ -26,7 +25,6 @@ public sealed class ActorsPlugin(IServiceProvider serviceProvider) : IActorsPlug
     private string _currentFunctionName = string.Empty;
     private Dictionary<string, object> _currentParameters = [];
 
-    [KernelFunction("get_actor_by_id")]
     [Description("Returns structured actor info by ID including name, status, and explanation.")]
     public async Task<IActorResponse> GetActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
     {
@@ -62,7 +60,6 @@ public sealed class ActorsPlugin(IServiceProvider serviceProvider) : IActorsPlug
         };
     }
 
-    [KernelFunction("get_actors_by_name")]
     [Description("Returns structured actor info by name including ID, status, and explanation.")]
     public async Task<ICollection<IActorResponse>> GetActorsByNameAsync(string name, CancellationToken cancellationToken)
     {

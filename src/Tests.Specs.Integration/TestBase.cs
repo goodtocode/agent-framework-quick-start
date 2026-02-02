@@ -4,10 +4,10 @@ using Goodtocode.AgentFramework.Core.Domain.Auth;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Plugins;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel;
 using System.Reflection;
 
 namespace Goodtocode.AgentFramework.Specs.Integration;
@@ -30,7 +30,7 @@ public abstract class TestBase : IDisposable
     internal ValidationResult validationResponse = new();
     internal AgentFrameworkContext context;
     internal IConfiguration configuration;
-    internal Kernel kernel = new();
+    internal AIAgent kernel = new();
     internal OpenAIOptions optionsOpenAi = new();
     internal UserEntity userInfo = UserEntity.Create(firstName: "John", lastName: "Doe", email: "john.doe@goodtocode.com", 
                                                     ownerId: Guid.NewGuid(), tenantId: Guid.NewGuid(), roles: ["Admin"]);

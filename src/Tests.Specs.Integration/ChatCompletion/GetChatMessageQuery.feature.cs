@@ -126,10 +126,11 @@ namespace Goodtocode.AgentFramework.Specs.Integration.ChatCompletion
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Chat Message")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Chat Message Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getChatMessageQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="GetChatMessage(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="GetChatMessage(not found,NotFound,,048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty id", "BadRequest", "Id", "00000000-0000-0000-0000-000000000000", "false", "2", null, DisplayName="GetChatMessage(bad request: empty id,BadRequest,Id,00000000-0000-0000-0000-000000" +
-            "000000,false,2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="Get Chat Message(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="Get Chat Message(not found,NotFound,,048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,1" +
+            ")")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty id", "BadRequest", "Id", "00000000-0000-0000-0000-000000000000", "false", "2", null, DisplayName="Get Chat Message(bad request: empty id,BadRequest,Id,00000000-0000-0000-0000-0000" +
+            "00000000,false,2)")]
         public async global::System.Threading.Tasks.Task GetChatMessage(string def, string response, string responseErrors, string id, string chatMessageExists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

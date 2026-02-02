@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Plugins;
+namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 
-public sealed class ChatSessionsPlugin(IServiceProvider serviceProvider) : IChatSessionsPlugin
+public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : IChatSessionsPlugin
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
@@ -17,7 +17,6 @@ public sealed class ChatSessionsPlugin(IServiceProvider serviceProvider) : IChat
     private string _currentFunctionName = string.Empty;
     private Dictionary<string, object> _currentParameters = [];
 
-    [KernelFunction("list_sessions")]
     [Description("Retrieves a list of recent chat sessions. Optionally, filter results by start and/or end date to narrow the search.")]
     public async Task<IEnumerable<string>> ListRecentSessionsAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
@@ -45,7 +44,6 @@ public sealed class ChatSessionsPlugin(IServiceProvider serviceProvider) : IChat
         return messages.Select(m => $"{m.Id}: {m.Timestamp} - {m.Title}");
     }
 
-    [KernelFunction("change_title")]
     [Description("Changes the title on this chat session.")]
     public async Task<string> UpdateChatSessionTitleAsync(Guid sessionId, string newTitle, CancellationToken cancellationToken = default)
     {

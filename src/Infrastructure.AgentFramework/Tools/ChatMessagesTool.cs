@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Plugins;
+namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 
-public sealed class ChatMessagesPlugin(IServiceProvider serviceProvider) : IChatMessagesPlugin
+public sealed class ChatMessagesTool(IServiceProvider serviceProvider) : IChatMessagesPlugin
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
@@ -17,7 +17,6 @@ public sealed class ChatMessagesPlugin(IServiceProvider serviceProvider) : IChat
     private string _currentFunctionName = string.Empty;
     private Dictionary<string, object> _currentParameters = [];
 
-    [KernelFunction("list_messages")]
     [Description("Retrieves the most recent messages from all chat sessions.")]
     public async Task<IEnumerable<string>> ListRecentMessagesAsync(DateTime? startDate = null, DateTime? endDate = null,
         CancellationToken cancellationToken = default)
@@ -40,7 +39,6 @@ public sealed class ChatMessagesPlugin(IServiceProvider serviceProvider) : IChat
         return messages.Select(m => $"{m.ChatSessionId}: {m.Timestamp:u} - {m.Role}: {m.Content}");
     }
 
-    [KernelFunction("get_messages")]
     [Description("Retrieves all messages from a specific chat session.")]
     public async Task<IEnumerable<string>> GetChatMessagesAsync(Guid sessionId,
         CancellationToken cancellationToken = default)

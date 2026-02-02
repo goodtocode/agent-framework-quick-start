@@ -126,11 +126,11 @@ namespace Goodtocode.AgentFramework.Specs.Integration.ChatCompletion
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get chat session")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Chat Session Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getChatSessionQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "2", "0", null, DisplayName="GetChatSession(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,2,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "0", "1", null, DisplayName="GetChatSession(not found,NotFound,,048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,0,1" +
-            ")")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty id", "BadRequest", "Id", "00000000-0000-0000-0000-000000000000", "false", "0", "2", null, DisplayName="GetChatSession(bad request: empty id,BadRequest,Id,00000000-0000-0000-0000-000000" +
-            "000000,false,0,2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "2", "0", null, DisplayName="Get chat session(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,2,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "0", "1", null, DisplayName="Get chat session(not found,NotFound,,048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,0" +
+            ",1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty id", "BadRequest", "Id", "00000000-0000-0000-0000-000000000000", "false", "0", "2", null, DisplayName="Get chat session(bad request: empty id,BadRequest,Id,00000000-0000-0000-0000-0000" +
+            "00000000,false,0,2)")]
         public async global::System.Threading.Tasks.Task GetChatSession(string def, string response, string responseErrors, string id, string chatSessionExists, string expectedChatSessionCount, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
