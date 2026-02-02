@@ -4,9 +4,9 @@ using Goodtocode.AgentFramework.Core.Domain.Auth;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
 using Goodtocode.AgentFramework.Specs.Integration.Agent;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace Goodtocode.AgentFramework.Specs.Integration;
@@ -51,6 +51,8 @@ public abstract class TestBase : IDisposable
         var services = new ServiceCollection();
         services.AddDbContext<AgentFrameworkContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
         services.AddScoped<IAgentFrameworkContext, AgentFrameworkContext>();
+        services.AddScoped<AIAgent, MockAIAgent>();
+        services.AddScoped<MockAIAgent>();
         var provider = services.BuildServiceProvider();
         agent = provider.GetRequiredService<MockAIAgent>();
         configuration.GetSection(nameof(OpenAI)).Bind(optionsOpenAi);
