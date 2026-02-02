@@ -5,6 +5,8 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OpenAI.Chat;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 
@@ -22,9 +24,15 @@ public static class ConfigureServices
         services.AddSingleton<ActorsTool>();
         services.AddSingleton<ChatMessagesTool>();
 
+        services.AddSingleton<ChatClient>(provider =>
+        {
+            var options = provider.GetRequiredService<IOptions<OpenAIOptions>>().Value;
+            return new ChatClient(options.ChatCompletionModelId, options.ApiKey);
+        });
+
         services.AddSingleton<AIAgent>(provider =>
         {
-            var chatClient = provider.GetRequiredService<IChatClient>();
+            var chatClient = provider.GetRequiredService<ChatClient>();
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
             var tools = new List<AITool>
             {
@@ -33,18 +41,18 @@ public static class ConfigureServices
                 provider.GetRequiredService<ChatMessagesTool>()
             };
 
-            var agent = new ChatClientAgent(
-                chatClient,
-                instructions: "You are a helpful assistant.",
-                name: "CopilotAgent",
-                description: "Agent Framework Quick-start Copilot",
-                tools: tools,
+            var agentOptions = new ChatClientAgentOptions
+            {                 
+                Name = "CopilotAgent",
+                Description = "Microsoft Agent Framework Quick-start Copilot",
+            };
+
+            return chatClient.AsAIAgent(
+                options: agentOptions,
+                clientFactory: null,
                 loggerFactory: loggerFactory,
                 services: provider
             );
-
-            var builder = new AIAgentBuilder(agent);
-            return builder.Build(provider);
         });
 
         return services;
