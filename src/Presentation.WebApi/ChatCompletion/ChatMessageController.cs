@@ -13,7 +13,7 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.ChatCompletion;
 [Route("api/v{version:apiVersion}/admin/messages")]
 [ApiVersion("1.0")]
 [Authorize]
-public class AdminChatMessageController : ApiControllerBase
+public class ChatMessageController : ApiControllerBase
 {
     /// <summary>Get Chat Message</summary>
     /// <remarks>

@@ -53,7 +53,7 @@ public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkConte
         chatSession.Messages.Add(chatMessage);
         _context.ChatMessages.Add(chatMessage);
 
-        var agentReply = response.Contents.LastOrDefault().ToString() ?? string.Empty;
+        var agentReply = (response?.Contents?.LastOrDefault()?.ToString()) ?? string.Empty;
 
         var chatMessageResponse = ChatMessageEntity.Create(
             Guid.NewGuid(),

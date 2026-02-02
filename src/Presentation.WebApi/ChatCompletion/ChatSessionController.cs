@@ -13,7 +13,7 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.ChatCompletion;
 [Route("api/v{version:apiVersion}/admin/sessions")]
 [ApiVersion("1.0")]
 [Authorize]
-public class AdminChatSessionController : ApiControllerBase
+public class ChatSessionController : ApiControllerBase
 {
     /// <summary>Get Chat Session with history</summary>
     /// <remarks>
