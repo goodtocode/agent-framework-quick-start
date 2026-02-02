@@ -1,5 +1,6 @@
 ﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 
@@ -14,7 +15,7 @@ public class ActorResponse : IActorResponse
 }
 
 
-public sealed class ActorsTool(IServiceProvider serviceProvider) : IActorsPlugin
+public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActorsPlugin
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 

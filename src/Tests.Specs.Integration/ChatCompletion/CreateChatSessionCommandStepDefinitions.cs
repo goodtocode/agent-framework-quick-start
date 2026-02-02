@@ -66,7 +66,7 @@ public class CreateChatSessionCommandStepDefinitions : TestBase
         {
             try
             {                
-                var handler = new CreateChatSessionCommandHandler(kernel, context);
+                var handler = new CreateChatSessionCommandHandler(agent, context);
                 await handler.Handle(request, CancellationToken.None);
                 responseType = CommandResponseType.Successful;
             }
