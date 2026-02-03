@@ -12,11 +12,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Actor\GetActorQueryStepDefinitions.cs~RFd5e051.TMP" />
-		<None Remove="appsettings.test.json" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Content Include="appsettings.test.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>

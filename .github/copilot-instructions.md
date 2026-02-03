@@ -15,7 +15,7 @@
 
 ## Developer Workflows
 - **Build:** Use `build.cmd` or `build.sh` in `src/` to build the solution.
-- **Test:** Integration specs in `src/gherkin Tests.Specs.Integration/` and `src/Tests.Specs.Integration/`.
+- **Test:** Integration specs in `src/gherkin Tests.Integration/` and `src/Tests.Integration/`.
 - **Run:** Launch via Visual Studio or `dotnet run` from solution root.
 - **CI/CD:** Managed by GitHub Actions (`.github/workflows/`).
 - **IaC Deploy:** See `can-digital-insights-iac.yml` for infrastructure deployment.
