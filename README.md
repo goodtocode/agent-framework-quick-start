@@ -81,7 +81,7 @@ To get started, follow the steps below:
 	dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
 	```
 	```
-	cd ../Tests.Specs.Integration
+	cd ../Tests.Integration
 	dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
 	```
 5. Create your SQL Server database & schema (via *dotnet ef* command)
@@ -89,9 +89,9 @@ To get started, follow the steps below:
 	cd ../../
 	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.WebApi\Presentation.WebApi.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
 	```
-6. Run Tests (Tests.Specs.Integration)
+6. Run Tests (Tests.Integration)
 	```
-	cd src/Tests.Specs.Integration
+	cd src/Tests.Integration
 	dotnet test
 	```
 7. Run Blazor Web Chat Client (Presentation.Blazor) and Web API (Presentation.WebApi)
@@ -214,14 +214,14 @@ Follow these steps to get your development environment set up:
 	```	
   
 ## Setup Azure Open AI or Open AI configuration
-**Important:** Do this for both Presentation.WebApi and Tests.Specs.Integration
+**Important:** Do this for both Presentation.WebApi and Tests.Integration
 ### Azure Open AI
 ```
 cd src/Presentation.WebApi
 dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
-cd ../Tests.Specs.Integration
+cd ../Tests.Integration
 dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
@@ -234,11 +234,11 @@ AzureOpenAI__ApiKey
 ```
 
 ### Open AI
-Set API Key in both Presentation.WebApi and Tests.Specs.Integration projects
+Set API Key in both Presentation.WebApi and Tests.Integration projects
 ```
 cd src/Presentation.WebApi
 dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
-cd ../Tests.Specs.Integration
+cd ../Tests.Integration
 dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
 ```
 Alternately you can set in Environment variables

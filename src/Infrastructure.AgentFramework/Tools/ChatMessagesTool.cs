@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
 using System.ComponentModel;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
@@ -11,7 +10,7 @@ public sealed class ChatMessagesTool(IServiceProvider serviceProvider) : AITool,
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public string PluginName => "ChatMessagesPlugin";
+    public static string PluginName => "ChatMessagesPlugin";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
 
