@@ -19,7 +19,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public string PluginName => "AuthorsPlugin";
+    public static string PluginName => "AuthorsPlugin";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
 

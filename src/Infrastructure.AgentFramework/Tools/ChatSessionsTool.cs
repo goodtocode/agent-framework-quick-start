@@ -10,7 +10,7 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool,
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public string PluginName => "ChatSessionsPlugin";
+    public static string PluginName => "ChatSessionsPlugin";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
 
