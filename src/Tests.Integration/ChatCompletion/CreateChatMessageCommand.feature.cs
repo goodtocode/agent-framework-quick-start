@@ -128,16 +128,16 @@ namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("createChatMessageCommand")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "00000000-0000-0000-0000-000000000000", "true", "Hello, I am interested in an interactive Chat Message.", "0", null, DisplayName="Create Chat Message(success,Success,,00000000-0000-0000-0000-000000000000,true,He" +
             "llo, I am interested in an interactive Chat Message.,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success actor plugin", "Success", "", "00000000-0000-0000-0000-000000000000", "true", "Please call get_author that Returns the actor\'s name for the specified actor ID, " +
-            "or \'Actor not found\' if no match exists", "1", null, DisplayName="Create Chat Message(success actor plugin,Success,,00000000-0000-0000-0000-0000000" +
-            "00000,true,Please call get_author that Returns the actor\'s name for the specifie" +
-            "d actor ID, or \'Actor not found\' if no match exists,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success session plugin", "Success", "", "00000000-0000-0000-0000-000000000000", "true", "Please call list_sessions that Lists all sessions, optionally by date", "2", null, DisplayName="Create Chat Message(success session plugin,Success,,00000000-0000-0000-0000-00000" +
-            "0000000,true,Please call list_sessions that Lists all sessions, optionally by da" +
-            "te,2)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success messages plugin", "Success", "", "00000000-0000-0000-0000-000000000000", "true", "Please call list_messages that Lists all sessions, optionally by date", "3", null, DisplayName="Create Chat Message(success messages plugin,Success,,00000000-0000-0000-0000-0000" +
-            "00000000,true,Please call list_messages that Lists all sessions, optionally by d" +
-            "ate,3)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success actor tool", "Success", "", "00000000-0000-0000-0000-000000000000", "true", "Please call get_author that Returns the actor\'s name for the specified actor ID, " +
+            "or \'Actor not found\' if no match exists", "1", null, DisplayName="Create Chat Message(success actor tool,Success,,00000000-0000-0000-0000-000000000" +
+            "000,true,Please call get_author that Returns the actor\'s name for the specified " +
+            "actor ID, or \'Actor not found\' if no match exists,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success session tool", "Success", "", "00000000-0000-0000-0000-000000000000", "true", "Please call list_sessions that Lists all sessions, optionally by date", "2", null, DisplayName="Create Chat Message(success session tool,Success,,00000000-0000-0000-0000-0000000" +
+            "00000,true,Please call list_sessions that Lists all sessions, optionally by date" +
+            ",2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success messages tool", "Success", "", "00000000-0000-0000-0000-000000000000", "true", "Please call list_messages that Lists all sessions, optionally by date", "3", null, DisplayName="Create Chat Message(success messages tool,Success,,00000000-0000-0000-0000-000000" +
+            "000000,true,Please call list_messages that Lists all sessions, optionally by dat" +
+            "e,3)")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty message", "BadRequest", "Message", "00000000-0000-0000-0000-000000000000", "false", "", "4", null, DisplayName="Create Chat Message(bad request: empty message,BadRequest,Message,00000000-0000-0" +
             "000-0000-000000000000,false,,4)")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("already exists", "Error", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "Hello, I am interested in an interactive Chat Message.", "5", null, DisplayName="Create Chat Message(already exists,Error,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,tr" +

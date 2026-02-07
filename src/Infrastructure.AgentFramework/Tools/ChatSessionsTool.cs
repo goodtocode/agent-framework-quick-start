@@ -6,11 +6,11 @@ using System.ComponentModel;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 
-public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool, IChatSessionsPlugin
+public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool, IChatSessionsTool
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public static string PluginName => "ChatSessionsPlugin";
+    public static string ToolName => "ChatSessionsTool";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
 
