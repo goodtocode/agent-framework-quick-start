@@ -15,11 +15,11 @@ public class ActorResponse : IActorResponse
 }
 
 
-public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActorsPlugin
+public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActorsTool
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public static string PluginName => "AuthorsPlugin";
+    public static string ToolName => "AuthorsTool";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
 
