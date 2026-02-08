@@ -18,10 +18,10 @@ public class GetActorQueryStepDefinitions : TestBase
     }
 
     [Given(@"I have a Actor id ""([^""]*)""")]
-    public void GivenIHaveAAuthorId(string authorId)
+    public void GivenIHaveAAuthorId(string actorId)
     {
-        if (string.IsNullOrWhiteSpace(authorId)) return;
-        Guid.TryParse(authorId, out _id).ShouldBeTrue();
+        if (string.IsNullOrWhiteSpace(actorId)) return;
+        Guid.TryParse(actorId, out _id).ShouldBeTrue();
     }
 
     [Given(@"the Actor exists ""([^""]*)""")]
@@ -35,7 +35,7 @@ public class GetActorQueryStepDefinitions : TestBase
     {
         if (_exists)
         {
-            var actor = ActorEntity.Create(_id, Guid.NewGuid(), Guid.NewGuid(), "John", "Doe", "jdoe@goodtocode.com");
+            var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com");
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
         }
@@ -50,7 +50,7 @@ public class GetActorQueryStepDefinitions : TestBase
         if (validationResponse.IsValid)
             try
             {
-                var handler = new GetAuthorQueryHandler(context);
+                var handler = new GetActorQueryHandler(context);
                 _response = await handler.Handle(request, CancellationToken.None);
                 responseType = CommandResponseType.Successful;
             }

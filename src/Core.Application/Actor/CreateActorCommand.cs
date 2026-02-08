@@ -14,7 +14,7 @@ public class CreateActorCommand : IRequest<ActorDto>
     public Guid TenantId { get; set; }
 }
 
-public class CreateAuthorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<CreateActorCommand, ActorDto>
+public class CreateActorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<CreateActorCommand, ActorDto>
 {
     private readonly IAgentFrameworkContext _context = context;
 
@@ -23,7 +23,7 @@ public class CreateAuthorCommandHandler(IAgentFrameworkContext context) : IReque
         GuardAgainstEmptyOwnerId(request?.OwnerId);
         GuardAgainstIdExists(_context.Actors, request!.Id);
 
-        var Actor = ActorEntity.Create(request!.Id == Guid.Empty ? Guid.NewGuid() : request!.Id, request.OwnerId, request.TenantId, request.FirstName, request.LastName, request.Email);
+        var Actor = ActorEntity.Create(request!.Id == Guid.Empty ? Guid.NewGuid() : request!.Id, request.FirstName, request.LastName, request.Email);
         _context.Actors.Add(Actor);
         try
         {

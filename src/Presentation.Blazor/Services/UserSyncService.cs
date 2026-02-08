@@ -9,7 +9,7 @@ namespace Goodtocode.AgentFramework.Presentation.Blazor.Services;
 public class UserSyncService(BackendApiClient apiClient, IUserClaimsInfo userInfo) : ApiService, IUserSyncService
 {
     private readonly BackendApiClient _apiClient = apiClient;
-    private readonly IUserClaimsInfo _userInfo = userInfo;
+    private readonly IUserClaimsInfo _userContext =  userInfo;
 
     public const string UserSyncClaimName = "user_sync_status";
 
@@ -40,10 +40,10 @@ public class UserSyncService(BackendApiClient apiClient, IUserClaimsInfo userInf
             {
                 await HandleApiException(() => _apiClient.SaveMyActorAsync(new SaveMyActorCommand
                 {
-                    TenantId = _userInfo.TenantId,
-                    FirstName = _userInfo.Givenname,
-                    LastName = _userInfo.Surname,
-                    Email = _userInfo.Email
+                    TenantId = _userContext.TenantId,
+                    FirstName = _userContext.Givenname,
+                    LastName = _userContext.Surname,
+                    Email = _userContext.Email
                 }));
             }
             SetSyncStatus(user, SyncStatus.Synced);

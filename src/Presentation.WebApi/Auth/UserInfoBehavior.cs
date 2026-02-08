@@ -4,59 +4,65 @@ using Goodtocode.AgentFramework.Core.Domain.Auth;
 namespace Goodtocode.AgentFramework.Presentation.WebApi.Auth;
 
 /// <summary>
-/// Represents a pipeline behavior that injects user information into a request  before passing it to the next
-/// delegate in the pipeline.
+/// Pipeline behavior that automatically injects authenticated user context into requests
+/// that implement <see cref="IRequiresUserContext"/>.
 /// </summary>
-/// <remarks>This behavior ensures that the <see cref="IUserEntity"/> instance is assigned to the  <see
-/// cref="IUserInfoRequest.UserInfo"/> property of the request before invoking the next delegate.</remarks>
-/// <typeparam name="TRequest">The type of the request. Must implement <see cref="IUserInfoRequest"/>.</typeparam>
-/// <param name="userInfo"></param>
-public class UserInfoBehavior<TRequest>(IClaimsUserInfo userInfo) : IPipelineBehavior<TRequest>
-       where TRequest : IUserInfoRequest
+/// <remarks>This behavior intercepts requests marked with <see cref="IRequiresUserContext"/> 
+/// and populates the <see cref="IRequiresUserContext.UserContext"/> property with the current
+/// authenticated user's context before invoking the request handler.</remarks>
+/// <typeparam name="TRequest">The type of the request. Must implement <see cref="IRequiresUserContext"/>.</typeparam>
+/// <param name="claimsReader">Service for reading claims from HTTP authentication context</param>
+public class UserContextBehavior<TRequest>(IClaimsReader claimsReader) : IPipelineBehavior<TRequest>
+       where TRequest : IRequiresUserContext
 {
     /// <summary>
-    /// Processes the specified request and invokes the next delegate in the request pipeline.
+    /// Processes the request by injecting user context before invoking the next handler.
     /// </summary>
-    /// <remarks>This method modifies the <paramref name="request"/> by setting its <c>UserInfo</c>
-    /// property before invoking the next handler. Ensure that <paramref name="nextInvoker"/> is not null and is
-    /// called to continue the request pipeline.</remarks>
-    /// <param name="request">The request to be processed. The request object may be modified during processing.</param>
-    /// <param name="nextInvoker">The delegate to invoke the next handler in the pipeline. This delegate must be called to continue processing
-    /// the request.</param>
+    /// <param name="request">The request to be processed.</param>
+    /// <param name="nextInvoker">The delegate to invoke the next handler in the pipeline.</param>
     /// <param name="cancellationToken">A token that can be used to propagate notification that the operation should be canceled.</param>    
     public async Task Handle(TRequest request, RequestDelegateInvoker nextInvoker, CancellationToken cancellationToken)
     {
-        request.UserInfo = UserEntity.Create(userInfo.ObjectId, userInfo.TenantId, userInfo.Givenname, userInfo.Surname, userInfo.Email, userInfo.Roles);
+        request.UserContext = UserContext.Create(
+            claimsReader.ObjectId, 
+            claimsReader.TenantId, 
+            claimsReader.FirstName, 
+            claimsReader.LastName, 
+            claimsReader.Email, 
+            claimsReader.Roles);
         await nextInvoker();
     }
 }
 
 /// <summary>
-/// Represents a pipeline behavior that injects user information into a request  before passing it to the next
-/// delegate in the pipeline.
+/// Pipeline behavior that automatically injects authenticated user context into requests
+/// that implement <see cref="IRequiresUserContext"/> and return a response.
 /// </summary>
-/// <remarks>This behavior ensures that the <see cref="IUserEntity"/> instance is assigned to the  <see
-/// cref="IUserInfoRequest.UserInfo"/> property of the request before invoking the next delegate.</remarks>
-/// <typeparam name="TRequest">The type of the request. Must implement <see cref="IUserInfoRequest"/>.</typeparam>
+/// <remarks>This behavior intercepts requests marked with <see cref="IRequiresUserContext"/> 
+/// and populates the <see cref="IRequiresUserContext.UserContext"/> property with the current
+/// authenticated user's context before invoking the request handler.</remarks>
+/// <typeparam name="TRequest">The type of the request. Must implement <see cref="IRequiresUserContext"/>.</typeparam>
 /// <typeparam name="TResponse">The type of the response.</typeparam>
-/// <param name="userInfo"></param>
-public class UserInfoBehavior<TRequest, TResponse>(IClaimsUserInfo userInfo) : IPipelineBehavior<TRequest, TResponse>
-       where TRequest : IUserInfoRequest
+/// <param name="claimsReader">Service for reading claims from HTTP authentication context</param>
+public class UserContextBehavior<TRequest, TResponse>(IClaimsReader claimsReader) : IPipelineBehavior<TRequest, TResponse>
+       where TRequest : IRequiresUserContext
 {
     /// <summary>
-    /// Processes the specified request and invokes the next delegate in the request pipeline.
+    /// Processes the request by injecting user context before invoking the next handler.
     /// </summary>
-    /// <remarks>This method modifies the <paramref name="request"/> by setting its <c>UserInfo</c>
-    /// property before invoking the next handler. Ensure that <paramref name="nextInvoker"/> is not null and is
-    /// called to continue the request pipeline.</remarks>
-    /// <param name="request">The request to be processed. The request object may be modified during processing.</param>
-    /// <param name="nextInvoker">The delegate to invoke the next handler in the pipeline. This delegate must be called to continue processing
-    /// the request.</param>
+    /// <param name="request">The request to be processed.</param>
+    /// <param name="nextInvoker">The delegate to invoke the next handler in the pipeline.</param>
     /// <param name="cancellationToken">A token that can be used to propagate notification that the operation should be canceled.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the response of type <typeparamref name="TResponse"/>.</returns>
     public async Task<TResponse> Handle(TRequest request, RequestDelegateInvoker<TResponse> nextInvoker, CancellationToken cancellationToken)
     {
-        request.UserInfo = UserEntity.Create(userInfo.ObjectId, userInfo.TenantId, userInfo.Givenname, userInfo.Surname, userInfo.Email, userInfo.Roles);
+        request.UserContext = UserContext.Create(
+            claimsReader.ObjectId, 
+            claimsReader.TenantId, 
+            claimsReader.FirstName, 
+            claimsReader.LastName, 
+            claimsReader.Email, 
+            claimsReader.Roles);
         return await nextInvoker();
     }
 }

@@ -10,7 +10,7 @@ public class GetActorChatSessionsQuery : IRequest<ICollection<ChatSessionDto>>
     public DateTime? EndDate { get; set; }
 }
 
-public class GetAuthorChatSessionsQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetActorChatSessionsQuery, ICollection<ChatSessionDto>>
+public class GetActorChatSessionsQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetActorChatSessionsQuery, ICollection<ChatSessionDto>>
 {
     private readonly IAgentFrameworkContext _context = context;
 

@@ -17,7 +17,7 @@ public interface IChatService
 public class ChatService(BackendApiClient client, IUserClaimsInfo userInfo) : ApiService, IChatService
 {
     private readonly BackendApiClient _apiClient = client;
-    private readonly IUserClaimsInfo _userInfo = userInfo;
+    private readonly IUserClaimsInfo _UserContext =  userInfo;
 
     public async Task<List<ChatSessionModel>> GetChatSessionsAsync()
     {
@@ -41,25 +41,24 @@ public class ChatService(BackendApiClient client, IUserClaimsInfo userInfo) : Ap
 
     public async Task<ChatSessionModel> CreateSessionAsync(string firstMessage)
     {
-        var command = new CreateChatSessionCommand
-        {
-            ActorId = _userInfo.ObjectId,
+        var command = new CreateMyChatSessionCommand
+        {            
             Message = firstMessage
         };
-        var response = await HandleApiException(() => _apiClient.CreateChatSessionCommandAsync(command));
+        var response = await HandleApiException(() => _apiClient.CreateMyChatSessionAsync(command));
 
         return ChatSessionModel.Create(response);
     }
 
     public async Task RenameSessionAsync(Guid chatSessionId, string newTitle)
     {
-        await HandleApiException(() => _apiClient.PatchChatSessionCommandAsync(chatSessionId, new PatchChatSessionCommand { Id = chatSessionId, Title = newTitle }));
+        await HandleApiException(() => _apiClient.PatchMyChatSessionAsync(chatSessionId, new PatchMyChatSessionCommand { Id = chatSessionId, Title = newTitle }));
     }
 
     public async Task<ChatMessageModel> SendMessageAsync(Guid chatSessionId, string newMessage)
     {
-        var response = await HandleApiException(() => _apiClient.CreateChatMessageCommandAsync(
-            new CreateChatMessageCommand
+        var response = await HandleApiException(() => _apiClient.CreateMyChatMessageAsync(
+            new CreateMyChatMessageCommand
             {
                 ChatSessionId = chatSessionId,
                 Message = newMessage

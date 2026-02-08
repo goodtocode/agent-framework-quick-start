@@ -14,7 +14,7 @@ public class GetActorChatSessionsPaginatedQuery : IRequest<PaginatedList<ChatSes
     public int PageSize { get; init; } = 10;
 }
 
-public class GetAuthorChatSessionsPaginatedQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetActorChatSessionsPaginatedQuery, PaginatedList<ChatSessionDto>>
+public class GetActorChatSessionsPaginatedQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetActorChatSessionsPaginatedQuery, PaginatedList<ChatSessionDto>>
 {
     private readonly IAgentFrameworkContext _context = context;
 

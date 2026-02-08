@@ -126,9 +126,6 @@ public static class ConfigureServicesAuth
         if (string.IsNullOrWhiteSpace(options.ClientName))
             throw new ArgumentNullException(nameof(configureOptions), "ClientName must be provided.");
 
-        services.AddOptions<AuthCodePkceOptions>()
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
         services.AddScoped<IAccessTokenProvider, DownstreamApiAccessTokenProvider>();
         services.AddScoped<TokenHandler>();
 

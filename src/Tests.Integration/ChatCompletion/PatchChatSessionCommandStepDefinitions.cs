@@ -38,10 +38,11 @@ namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
         [When(@"I patch the chatSession")]
         public async Task WhenIPatchTheChatSession()
         {
-            var request = new PatchChatSessionCommand()
+            var request = new PatchMyChatSessionCommand()
             {
                 Id = _id,
-                Title = _title
+                Title = _title,
+                UserContext = userContext
             };
 
             if (_exists)
@@ -51,7 +52,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
                 await context.SaveChangesAsync(CancellationToken.None);
             }
 
-            var validator = new PatchChatSessionCommandValidator();
+            var validator = new PatchMyChatSessionCommandValidator();
             validationResponse = await validator.ValidateAsync(request);
 
             if (validationResponse.IsValid)

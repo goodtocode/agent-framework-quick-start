@@ -1,34 +1,45 @@
 ﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Core.Domain.Auth;
 
 namespace Goodtocode.AgentFramework.Core.Application.ChatCompletion;
 
-public class GetMyChatSessionsQuery : IRequest<ICollection<ChatSessionDto>>, IUserInfoRequest
+public class GetMyChatSessionsQuery : IRequest<ICollection<ChatSessionDto>>, IRequiresUserContext
 {
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
-    public IUserEntity? UserInfo { get; set; }
+    public IUserContext? UserContext { get; set; }
 }
 
-public class GetAuthorChatSessionsByOwnerIdQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyChatSessionsQuery, ICollection<ChatSessionDto>>
+public class GetMyChatSessionsQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyChatSessionsQuery, ICollection<ChatSessionDto>>
 {
     private readonly IAgentFrameworkContext _context = context;
 
     public async Task<ICollection<ChatSessionDto>> Handle(GetMyChatSessionsQuery request, CancellationToken cancellationToken)
     {
+        GuardAgainstEmptyUser(request?.UserContext);
+
+        var startDate = request?.StartDate;
+        var endDate = request?.EndDate;
+        var userContext =  request?.UserContext;
+
         var returnData = await _context.ChatSessions
+            .Where(x => userContext != null && x.OwnerId == userContext.OwnerId)
             .OrderByDescending(x => x.Timestamp)
-            .Where(x => (request.StartDate == null || x.Timestamp > request.StartDate)
-                    && (request.EndDate == null || x.Timestamp < request.EndDate))
-            .Join(_context.Actors,
-                  cs => cs.ActorId,
-                  a => a.Id,
-                  (cs, a) => new { ChatSession = cs, Actor = a })
-            .Where(joined => joined.Actor.OwnerId == request.UserInfo!.OwnerId)
-            .Select(joined => joined.ChatSession)
+            .Where(x => (startDate == null || x.Timestamp > startDate)
+                    && (endDate == null || x.Timestamp < endDate))
             .Select(x => ChatSessionDto.CreateFrom(x))
             .ToListAsync(cancellationToken);
 
         return returnData;
+    }
+
+    private static void GuardAgainstEmptyUser(IUserContext? userContext)
+    {
+        if (userContext == null || userContext.OwnerId == Guid.Empty || userContext.TenantId == Guid.Empty)
+            throw new CustomValidationException(
+            [
+                new("UserInfo", "User information is required to retrieve chat sessions")
+            ]);
     }
 }

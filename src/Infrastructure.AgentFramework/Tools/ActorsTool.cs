@@ -19,7 +19,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public static string ToolName => "AuthorsTool";
+    public static string ToolName => "ActorsTool";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
 
@@ -75,7 +75,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
         var nameTokens = name?.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
         var normalizedInput = name?.Trim() ?? string.Empty;
 
-        var authors = await context.Actors
+        var actors = await context.Actors
             .Where(a =>
                 nameTokens.Any(token =>
                     EF.Functions.Like(a.FirstName, $"%{token}%") ||
@@ -96,7 +96,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
             )
             .ToListAsync(cancellationToken);
 
-        if (authors.Count == 0)
+        if (actors.Count == 0)
         {
             return [ new ActorResponse
             {
@@ -108,7 +108,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
         }
         else
         {
-            return [.. authors.Select(a => new ActorResponse
+            return [.. actors.Select(a => new ActorResponse
             {
                 ActorId = a.Id,
                 Name = $"{a.FirstName} {a.LastName}",

@@ -10,7 +10,7 @@ public class UpdateActorCommand : IRequest
     public string Name { get; set; } = string.Empty;
 }
 
-public class UpdateAuthorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<UpdateActorCommand>
+public class UpdateActorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<UpdateActorCommand>
 {
     private readonly IAgentFrameworkContext _context = context;
 

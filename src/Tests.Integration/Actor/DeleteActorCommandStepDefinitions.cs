@@ -1,5 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Actor;
 using Goodtocode.AgentFramework.Core.Domain.Actor;
+using Microsoft.AspNetCore.Identity;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.Actor
 {
@@ -33,14 +34,14 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         {
             if (_exists)
             {
-                var actor = ActorEntity.Create(_id, _id, Guid.NewGuid(), "John", "Doe", "jdoe@goodtocode.com");
+                var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com");
                 context.Actors.Add(actor);
                 await context.SaveChangesAsync(CancellationToken.None);
             }
 
             var request = new DeleteActorByOwnerIdCommand()
             {
-                OwnerId = _id
+                OwnerId = userContext.OwnerId
             };
 
             var validator = new DeleteActorByOwnerIdCommandValidator();
@@ -49,7 +50,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
             if (validationResponse.IsValid)
                 try
                 {
-                    var handler = new DeleteAuthorByOwnerIdCommandHandler(context);
+                    var handler = new DeleteActorByOwnerIdCommandHandler(context);
                     await handler.Handle(request, CancellationToken.None);
                     responseType = CommandResponseType.Successful;
                 }

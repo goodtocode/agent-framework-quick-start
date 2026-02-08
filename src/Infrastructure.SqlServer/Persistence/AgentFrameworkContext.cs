@@ -2,19 +2,27 @@
 using Goodtocode.AgentFramework.Core.Domain.Actor;
 using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 using Goodtocode.Domain.Entities;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Reflection;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
 
 public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
 {
+    private readonly ICurrentUserContext? _currentUserContext;
+
     public DbSet<ChatMessageEntity> ChatMessages => Set<ChatMessageEntity>();
     public DbSet<ChatSessionEntity> ChatSessions => Set<ChatSessionEntity>();
     public DbSet<ActorEntity> Actors => Set<ActorEntity>();
 
     protected AgentFrameworkContext() { }
 
-    public AgentFrameworkContext(DbContextOptions<AgentFrameworkContext> options) : base(options) { }
+    public AgentFrameworkContext(
+        DbContextOptions<AgentFrameworkContext> options,
+        ICurrentUserContext currentUserContext) : base(options)
+    {
+        _currentUserContext = currentUserContext;
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,8 +34,41 @@ public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        SetSecurityFields();
         SetAuditFields();
         return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void SetSecurityFields()
+    {
+        if (_currentUserContext is null ||
+            _currentUserContext.OwnerId == Guid.Empty ||
+            _currentUserContext.TenantId == Guid.Empty)
+        {
+            return;
+        }
+
+        var entries = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Added && HasSecurityFields(e));
+
+        foreach (var entry in entries)
+        {
+            SetIfEmpty(entry, "OwnerId", _currentUserContext.OwnerId);
+            SetIfEmpty(entry, "TenantId", _currentUserContext.TenantId);
+        }
+    }
+
+    private static bool HasSecurityFields(EntityEntry entry) =>
+        entry.Metadata.FindProperty("OwnerId") != null &&
+        entry.Metadata.FindProperty("TenantId") != null;
+
+    private static void SetIfEmpty(EntityEntry entry, string propertyName, Guid value)
+    {
+        var property = entry.Property(propertyName);
+        if (property.CurrentValue is Guid guid && guid == Guid.Empty)
+        {
+            property.CurrentValue = value;
+        }
     }
 
     private void SetAuditFields()

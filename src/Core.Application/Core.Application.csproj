@@ -10,8 +10,8 @@
 		<Nullable>enable</Nullable>		
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Goodtocode.Mediator" Version="1.1.7" />
-		<PackageReference Include="Goodtocode.Validation" Version="1.1.12" />
+		<PackageReference Include="Goodtocode.Mediator" Version="1.1.9" />
+		<PackageReference Include="Goodtocode.Validation" Version="1.1.14" />
 		<PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.0.0-preview.260128.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
 	</ItemGroup>

@@ -55,7 +55,7 @@ public class SaveActorCommandStepDefinitions : TestBase
     {
         if (_exists)
         {
-            var actor = ActorEntity.Create(_id, _ownerId, _tenantId, "John", "Doe", "jdoe@goodtocode.com");
+            var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com");
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
         }
@@ -66,7 +66,7 @@ public class SaveActorCommandStepDefinitions : TestBase
             FirstName = _name.Split(" ").FirstOrDefault(),
             LastName = _name.Split(" ").LastOrDefault(),
             Email = _email,
-            UserInfo = userInfo
+            UserContext = userContext
         };
 
         var validator = new SaveMyActorCommandValidator();
@@ -76,7 +76,7 @@ public class SaveActorCommandStepDefinitions : TestBase
         {
             try
             {
-                var handler = new SaveAuthorCommandHandler(context);
+                var handler = new SaveActorCommandHandler(context);
                 await handler.Handle(request, CancellationToken.None);
                 responseType = CommandResponseType.Successful;
             }

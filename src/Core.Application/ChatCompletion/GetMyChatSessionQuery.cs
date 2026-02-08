@@ -5,36 +5,45 @@ using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 
 namespace Goodtocode.AgentFramework.Core.Application.ChatCompletion;
 
-public class GetMyChatSessionQuery : IRequest<ChatSessionDto>, IUserInfoRequest
+public class GetMyChatSessionQuery : IRequest<ChatSessionDto>, IRequiresUserContext
 {
-    public Guid ChatSessionId { get; set; }
-    public IUserEntity? UserInfo { get; set; }
+    public Guid Id { get; set; }
+    public IUserContext? UserContext { get; set; }
 }
 
-public class GetAuthorChatSessionByOwnerIdQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyChatSessionQuery, ChatSessionDto>
+public class GetMyChatSessionQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyChatSessionQuery, ChatSessionDto>
 {
     private readonly IAgentFrameworkContext _context = context;
 
     public async Task<ChatSessionDto> Handle(GetMyChatSessionQuery request, CancellationToken cancellationToken)
     {
-        var returnData = await _context.ChatSessions
-            .Where(cs => cs.Id == request.ChatSessionId)
-            .Join(_context.Actors,
-                  cs => cs.ActorId,
-                  a => a.Id,
-                  (cs, a) => new { ChatSession = cs, Actor = a })
-            .Where(joined => joined.Actor.OwnerId == request.UserInfo!.OwnerId)
-            .Select(joined => joined.ChatSession)
-            .FirstOrDefaultAsync(cancellationToken);
+        GuardAgainstEmptyUser(request?.UserContext);
 
-        GuardAgainstNotFound(returnData);
+        var chatSession = await _context.ChatSessions.FindAsync([request!.Id], cancellationToken: cancellationToken);
+        GuardAgainstNotFound(chatSession);
+        GuardAgainstUnauthorized(chatSession!, request.UserContext!);
 
-        return ChatSessionDto.CreateFrom(returnData);
+        return ChatSessionDto.CreateFrom(chatSession);
     }
 
     private static void GuardAgainstNotFound(ChatSessionEntity? entity)
     {
         if (entity is null)
             throw new CustomNotFoundException("Chat Session Not Found");
+    }
+
+    private static void GuardAgainstEmptyUser(IUserContext? userContext)
+    {
+        if (userContext == null || userContext.OwnerId == Guid.Empty || userContext.TenantId == Guid.Empty)
+            throw new CustomValidationException(
+            [
+                new("UserInfo", "User information is required to retrieve a chat session")
+            ]);
+    }
+
+    private static void GuardAgainstUnauthorized(ChatSessionEntity chatSession, IUserContext userInfo)
+    {
+        if (chatSession.OwnerId != userInfo.OwnerId)
+            throw new CustomForbiddenAccessException("ChatSession", chatSession.Id);
     }
 }

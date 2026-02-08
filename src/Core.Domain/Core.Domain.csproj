@@ -12,6 +12,6 @@
 	
 	<ItemGroup>
 		<PackageReference Include="CSharpFunctionalExtensions" Version="3.6.0" />
-		<PackageReference Include="Goodtocode.Domain" Version="1.1.6" />
+		<PackageReference Include="Goodtocode.Domain" Version="1.1.8" />
 	</ItemGroup>
 </Project>

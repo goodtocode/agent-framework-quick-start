@@ -71,15 +71,16 @@ namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
                 await context.SaveChangesAsync(CancellationToken.None);
             }
 
-            var request = new GetChatMessagesPaginatedQuery()
+            var request = new GetMyChatMessagesPaginatedQuery()
             {
                 PageNumber = _pageNumber,
                 PageSize = _pageSize,
                 StartDate = _startDate == default ? null : _startDate,
-                EndDate = _endDate == default ? null : _endDate
+                EndDate = _endDate == default ? null : _endDate,
+                UserContext = userContext
             };
 
-            var validator = new GetChatMessagesPaginatedQueryValidator();
+            var validator = new GetMyChatMessagesPaginatedQueryValidator();
             validationResponse = validator.Validate(request);
             if (validationResponse.IsValid)
                 try

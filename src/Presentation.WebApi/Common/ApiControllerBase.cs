@@ -22,8 +22,8 @@ public abstract class ApiControllerBase : ControllerBase
     /// <summary>
     /// Gets the user information associated with the current HTTP context.
     /// </summary>
-    /// <remarks>The <see cref="IUserEntity"/> instance is resolved from the dependency injection container 
+    /// <remarks>The <see cref="IUserContext"/> instance is resolved from the dependency injection container
     /// using the current HTTP context's request services. Ensure that the required service  is registered in the
     /// application's service collection.</remarks>
-    protected IUserEntity UserInfo => HttpContext.RequestServices.GetRequiredService<IUserEntity>();
+    protected IUserContext UserContext => HttpContext.RequestServices.GetRequiredService<IUserContext>();
 }

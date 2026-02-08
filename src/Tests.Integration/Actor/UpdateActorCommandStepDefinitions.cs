@@ -33,14 +33,14 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         {
             if (_exists)
             {
-                var actor = ActorEntity.Create(_id, _id, Guid.NewGuid(), "John", "Doe", "jdoe@goodtocode.com");
+                var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com");
                 context.Actors.Add(actor);
                 await context.SaveChangesAsync(CancellationToken.None);
             }
 
             var request = new UpdateActorCommand()
             {
-                OwnerId = _id,
+                OwnerId = userContext.OwnerId,
                 Name = "Joe Doe"
             };
 
@@ -50,7 +50,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
             if (validationResponse.IsValid)
                 try
                 {
-                    var handler = new UpdateAuthorCommandHandler(context);
+                    var handler = new UpdateActorCommandHandler(context);
                     await handler.Handle(request, CancellationToken.None);
                     responseType = CommandResponseType.Successful;
                 }
