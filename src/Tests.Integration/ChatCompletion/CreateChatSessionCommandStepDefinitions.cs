@@ -10,7 +10,7 @@ public class CreateChatSessionCommandStepDefinitions : TestBase
 {
     private string _message = string.Empty;
     private Guid _id;
-    private readonly Guid _authorId = Guid.NewGuid();
+    private readonly Guid _actorId = Guid.NewGuid();
     private bool _exists;
 
     [Given(@"I have a def ""([^""]*)""")]
@@ -41,25 +41,25 @@ public class CreateChatSessionCommandStepDefinitions : TestBase
     public async Task WhenICreateAChatSessionWithTheMessage()
     {
         // Setup the database if want to test existing records
-        var actor = ActorEntity.Create(_authorId, _authorId, Guid.NewGuid(), "Test", "Actor", "actor@goodtocode.com");
+        var actor = ActorEntity.Create(_actorId, "Test", "Actor", "actor@goodtocode.com");
         context.Actors.Add(actor);        
         if (_exists)
         {
-            var chatSession = ChatSessionEntity.Create(_id, _authorId, "Test Session", ChatMessageRole.assistant, _message, "First Response");
+            var chatSession = ChatSessionEntity.Create(_id, _actorId, "Test Session", ChatMessageRole.assistant, _message, "First Response");
             context.ChatSessions.Add(chatSession);            
         }
         await context.SaveChangesAsync(CancellationToken.None);
 
         // Test command
-        var request = new CreateChatSessionCommand()
+        var request = new CreateMyChatSessionCommand()
         {
             Id = _id,
-            Title = def,
-            ActorId = _authorId,
-            Message = _message
+            Title = def,            
+            Message = _message,
+            UserContext = userContext
         };
 
-        var validator = new CreateChatSessionCommandValidator();
+        var validator = new CreateMyChatSessionCommandValidator();
         validationResponse = await validator.ValidateAsync(request);
 
         if (validationResponse.IsValid)

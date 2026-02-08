@@ -2,7 +2,10 @@
 
 namespace Goodtocode.AgentFramework.Tests.Integration;
 
-public class TestUserInfo() : IUserEntity
+/// <summary>
+/// Test implementation of IUserContext for integration testing.
+/// </summary>
+public class TestUserContext() : IUserContext
 {
     private readonly Guid _userId = Guid.NewGuid();
     private readonly Guid _tenantId = Guid.NewGuid();

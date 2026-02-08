@@ -17,7 +17,7 @@ public class CustomForbiddenAccessException : Exception
     }
 
     public CustomForbiddenAccessException(string name, object id)
-        : base($"Entity \"{name}\" ({id}) was not found.")
+        : base($"Access to entity \"{name}\" ({id}) is forbidden.")
     {
     }
 }

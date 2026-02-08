@@ -9,7 +9,7 @@ public class DeleteActorByOwnerIdCommand : IRequest
     public Guid OwnerId { get; set; }
 }
 
-public class DeleteAuthorByOwnerIdCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeleteActorByOwnerIdCommand>
+public class DeleteActorByOwnerIdCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeleteActorByOwnerIdCommand>
 {
     private readonly IAgentFrameworkContext _context = context;
 

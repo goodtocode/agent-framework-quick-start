@@ -42,12 +42,13 @@ public class GetChatMessageQueryStepDefinitions : TestBase
             await context.SaveChangesAsync(CancellationToken.None);
         }
 
-        var request = new GetChatMessageQuery()
+        var request = new GetMyChatMessageQuery()
         {
-            Id = _id
+            Id = _id,
+            UserContext = userContext
         };
 
-        var validator = new GetChatMessageQueryValidator();
+        var validator = new GetMyChatMessageQueryValidator();
         validationResponse = validator.Validate(request);
         if (validationResponse.IsValid)
             try

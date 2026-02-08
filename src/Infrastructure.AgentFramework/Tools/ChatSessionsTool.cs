@@ -69,6 +69,6 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool,
         context.ChatSessions.Update(chatSession);
         await context.SaveChangesAsync(cancellationToken);
 
-        return $"{chatSession.Id}: {chatSession.Timestamp} - {chatSession.Title}: {chatSession.Actor?.FirstName} {chatSession.Actor?.LastName}";
+        return $"{chatSession.Id}: {chatSession.Timestamp} - {chatSession.Title}";
     }
 }

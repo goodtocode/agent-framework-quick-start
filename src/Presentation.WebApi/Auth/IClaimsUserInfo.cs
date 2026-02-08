@@ -1,50 +1,50 @@
 ﻿namespace Goodtocode.AgentFramework.Presentation.WebApi.Auth;
 
 /// <summary>
-/// Represents a user's information, including identifiers, personal details, and contact information.
+/// Infrastructure service for reading user identity claims from HTTP authentication context.
 /// </summary>
-/// <remarks>This interface provides a standardized structure for accessing user-related data, such as unique
-/// identifiers, name details, and email address. It is commonly used in scenarios where user identity and contact
-/// information need to be retrieved or processed.</remarks>
-public interface IClaimsUserInfo
+/// <remarks>This interface provides access to claims extracted from the HTTP authentication token,
+/// including user identifiers, personal information, and authorization scopes. Implementations
+/// typically read from HttpContext.User claims. Property names align with Microsoft Identity claim types.</remarks>
+public interface IClaimsReader
 {
     /// <summary>
-    /// Gets the unique identifier for the object.
+    /// Gets the unique identifier for the authenticated user (object identifier from IdP).
     /// </summary>
     Guid ObjectId { get; }
 
     /// <summary>
-    /// Gets the unique identifier of the tenant associated with the current context.
+    /// Gets the unique identifier of the tenant associated with the authenticated user.
     /// </summary>
     Guid TenantId { get; }
 
     /// <summary>
-    /// Gets the first name of the individual.
+    /// Gets the first name of the authenticated user.
     /// </summary>
-    string Givenname { get; }
+    string FirstName { get; }
 
     /// <summary>
-    /// Gets the last name of the individual.
+    /// Gets the last name of the authenticated user.
     /// </summary>
-    string Surname { get; }
+    string LastName { get; }
 
     /// <summary>
-    /// Gets the email address associated with the entity.
+    /// Gets the email address associated with the authenticated user.
     /// </summary>
     string Email { get; }
 
     /// <summary>
-    /// Gets the highest role
+    /// Gets the collection of roles assigned to the authenticated user.
     /// </summary>
-    ICollection<string>  Roles { get; }
+    ICollection<string> Roles { get; }
 
     /// <summary>
-    /// Gets the collection of scopes associated with the current operation.
+    /// Gets the collection of OAuth scopes granted to the current request.
     /// </summary>
     ICollection<string> Scopes { get; }
 
     /// <summary>
-    /// Gets the collection of group names associated with the current user.
+    /// Gets the collection of security group identifiers associated with the authenticated user.
     /// </summary>
     ICollection<string> Groups { get; }
 }

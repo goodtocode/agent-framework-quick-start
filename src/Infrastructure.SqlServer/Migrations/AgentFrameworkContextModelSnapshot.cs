@@ -100,8 +100,14 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Role")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("Timestamp")
                         .HasColumnType("datetimeoffset");
@@ -143,6 +149,12 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("Timestamp")
                         .HasColumnType("datetimeoffset");
 
@@ -152,8 +164,6 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.HasKey("Id");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
-
-                    b.HasIndex("ActorId");
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -177,17 +187,6 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                         .IsRequired();
 
                     b.Navigation("ChatSession");
-                });
-
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.ChatCompletion.ChatSessionEntity", b =>
-                {
-                    b.HasOne("Goodtocode.AgentFramework.Core.Domain.Actor.ActorEntity", "Actor")
-                        .WithMany()
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Actor");
                 });
 
             modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.ChatCompletion.ChatSessionEntity", b =>

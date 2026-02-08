@@ -9,7 +9,7 @@ public class DeleteActorCommand : IRequest
     public Guid Id { get; set; }
 }
 
-public class DeleteAuthorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeleteActorCommand>
+public class DeleteActorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeleteActorCommand>
 {
     private readonly IAgentFrameworkContext _context = context;
 

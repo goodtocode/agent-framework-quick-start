@@ -5,18 +5,18 @@ using Goodtocode.AgentFramework.Core.Domain.Auth;
 
 namespace Goodtocode.AgentFramework.Core.Application.Actor;
 
-public class GetMyActorQuery : IRequest<ActorDto>, IUserInfoRequest
+public class GetMyActorQuery : IRequest<ActorDto>, IRequiresUserContext
 {
-    public IUserEntity? UserInfo { get; set; }
+    public IUserContext? UserContext { get; set; }
 }
 
-public class GetAuthorByOwnerIdQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyActorQuery, ActorDto>
+public class GetActorByOwnerIdQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyActorQuery, ActorDto>
 {
     private readonly IAgentFrameworkContext _context = context;
 
     public async Task<ActorDto> Handle(GetMyActorQuery request, CancellationToken cancellationToken)
     {
-        var actor = await _context.Actors.Where(x => x.OwnerId == request!.UserInfo!.OwnerId).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        var actor = await _context.Actors.Where(x => x.OwnerId == request!.UserContext!.OwnerId).FirstOrDefaultAsync(cancellationToken: cancellationToken);
         GuardAgainstNotFound(actor);
 
         return ActorDto.CreateFrom(actor);

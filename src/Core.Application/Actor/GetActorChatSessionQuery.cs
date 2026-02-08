@@ -11,7 +11,7 @@ public class GetActorChatSessionQuery : IRequest<ChatSessionDto>
     public Guid ChatSessionId { get; set; }
 }
 
-public class GetAuthorChatSessionQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetActorChatSessionQuery, ChatSessionDto>
+public class GetActorChatSessionQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetActorChatSessionQuery, ChatSessionDto>
 {
     private readonly IAgentFrameworkContext _context = context;
 

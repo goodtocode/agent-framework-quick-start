@@ -2,7 +2,7 @@ using Goodtocode.Domain.Entities;
 
 namespace Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 
-public class ChatMessageEntity : DomainEntity<ChatMessageEntity>, IDomainEntity<ChatMessageEntity>
+public class ChatMessageEntity : SecuredEntity<ChatMessageEntity>, IDomainEntity<ChatMessageEntity>
 {
     protected ChatMessageEntity() { }
     public Guid ChatSessionId { get; private set; }

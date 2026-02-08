@@ -4,6 +4,6 @@ public class GetMyActorQueryValidator : Validator<GetMyActorQuery>
 {
     public GetMyActorQueryValidator()
     {
-        RuleFor(x => x.UserInfo).NotEmpty();
+        RuleFor(x => x.UserContext).NotEmpty();
     }
 }

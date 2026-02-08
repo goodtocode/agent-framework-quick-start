@@ -1,11 +1,11 @@
-﻿
+﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 
 namespace Goodtocode.AgentFramework.Presentation.WebApi.Auth;
 
 /// <summary>
-/// Presentation Layer WebApi Configuration
+/// Presentation Layer WebApi Authentication Configuration
 /// </summary>
 public static class ConfigureServices
 {
@@ -16,11 +16,11 @@ public static class ConfigureServices
     }
 
     /// <summary>
-    /// AddUserInfo
+    /// Configures authentication with Microsoft Identity Platform and registers user context services.
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="services">The service collection to configure.</param>
+    /// <param name="configuration">The application configuration.</param>
+    /// <returns>The configured service collection.</returns>
     public static IServiceCollection AddAuthenticationWithRoles(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -35,9 +35,10 @@ public static class ConfigureServices
                         configuration.GetSection("EntraExternalId").Bind(identityOptions);
                     });
 
-        services.AddScoped<IClaimsUserInfo, ClaimsUserInfo>();
-        services.AddScoped(typeof(IPipelineBehavior<>), typeof(UserInfoBehavior<>));
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UserInfoBehavior<,>));
+        services.AddScoped<IClaimsReader, HttpClaimsReader>();
+        services.AddScoped<ICurrentUserContext, ClaimsCurrentUserContext>();
+        services.AddScoped(typeof(IPipelineBehavior<>), typeof(UserContextBehavior<>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UserContextBehavior<,>));
 
         return services;
     }

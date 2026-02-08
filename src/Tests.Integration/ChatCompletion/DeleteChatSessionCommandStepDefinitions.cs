@@ -31,9 +31,10 @@ namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
         [When(@"I delete the chat session")]
         public async Task WhenIDeleteTheChatSession()
         {
-            var request = new DeleteChatSessionCommand()
+            var request = new DeleteMyChatSessionCommand()
             {
-                Id = _id
+                Id = _id,
+                UserContext = userContext
             };
 
             if (_exists)
@@ -43,7 +44,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
                 await context.SaveChangesAsync(CancellationToken.None);
             }
 
-            var validator = new DeleteChatSessionCommandValidator();
+            var validator = new DeleteMyChatSessionCommandValidator();
             validationResponse = await validator.ValidateAsync(request);
 
             if (validationResponse.IsValid)

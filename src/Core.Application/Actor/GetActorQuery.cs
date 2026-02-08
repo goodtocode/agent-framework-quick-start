@@ -9,7 +9,7 @@ public class GetActorQuery : IRequest<ActorDto>
     public Guid ActorId { get; set; }
 }
 
-public class GetAuthorQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetActorQuery, ActorDto>
+public class GetActorQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetActorQuery, ActorDto>
 {
     private readonly IAgentFrameworkContext _context = context;
 
