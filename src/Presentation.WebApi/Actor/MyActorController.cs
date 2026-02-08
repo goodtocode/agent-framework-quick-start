@@ -9,7 +9,7 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Actor;
 /// </summary>
 [ApiController]
 [ApiConventionType(typeof(DefaultApiConventions))]
-[Route("api/v{version:apiVersion}my/actors")]
+[Route("api/v{version:apiVersion}/my/actors")]
 [ApiVersion("1.0")]
 [Authorize]
 public class MyActorController : ApiControllerBase

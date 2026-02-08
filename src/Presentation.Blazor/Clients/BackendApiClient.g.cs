@@ -632,9 +632,9 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ChatMessageDtoPaginatedList> GetMyChatMessagesPaginatedAsync(System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, int? pageNumber, int? pageSize, System.Guid? userInfo_OwnerId, System.Guid? userInfo_TenantId, string userInfo_FirstName, string userInfo_LastName, string userInfo_Email, System.Collections.Generic.IEnumerable<string> userInfo_Roles, bool? userInfo_CanView, bool? userInfo_CanEdit, bool? userInfo_CanDelete)
+        public virtual System.Threading.Tasks.Task<ChatMessageDtoPaginatedList> GetMyChatMessagesPaginatedAsync(System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, int? pageNumber, int? pageSize, System.Guid? userContext_OwnerId, System.Guid? userContext_TenantId, string userContext_FirstName, string userContext_LastName, string userContext_Email, System.Collections.Generic.IEnumerable<string> userContext_Roles, bool? userContext_CanView, bool? userContext_CanEdit, bool? userContext_CanDelete)
         {
-            return GetMyChatMessagesPaginatedAsync(startDate, endDate, pageNumber, pageSize, userInfo_OwnerId, userInfo_TenantId, userInfo_FirstName, userInfo_LastName, userInfo_Email, userInfo_Roles, userInfo_CanView, userInfo_CanEdit, userInfo_CanDelete, System.Threading.CancellationToken.None);
+            return GetMyChatMessagesPaginatedAsync(startDate, endDate, pageNumber, pageSize, userContext_OwnerId, userContext_TenantId, userContext_FirstName, userContext_LastName, userContext_Email, userContext_Roles, userContext_CanView, userContext_CanEdit, userContext_CanDelete, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -652,7 +652,7 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ChatMessageDtoPaginatedList> GetMyChatMessagesPaginatedAsync(System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, int? pageNumber, int? pageSize, System.Guid? userInfo_OwnerId, System.Guid? userInfo_TenantId, string userInfo_FirstName, string userInfo_LastName, string userInfo_Email, System.Collections.Generic.IEnumerable<string> userInfo_Roles, bool? userInfo_CanView, bool? userInfo_CanEdit, bool? userInfo_CanDelete, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ChatMessageDtoPaginatedList> GetMyChatMessagesPaginatedAsync(System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, int? pageNumber, int? pageSize, System.Guid? userContext_OwnerId, System.Guid? userContext_TenantId, string userContext_FirstName, string userContext_LastName, string userContext_Email, System.Collections.Generic.IEnumerable<string> userContext_Roles, bool? userContext_CanView, bool? userContext_CanEdit, bool? userContext_CanDelete, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -684,41 +684,41 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
                     {
                         urlBuilder_.Append(System.Uri.EscapeDataString("PageSize")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(pageSize, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
-                    if (userInfo_OwnerId != null)
+                    if (userContext_OwnerId != null)
                     {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.OwnerId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userInfo_OwnerId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                        urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.OwnerId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userContext_OwnerId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
-                    if (userInfo_TenantId != null)
+                    if (userContext_TenantId != null)
                     {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.TenantId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userInfo_TenantId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                        urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.TenantId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userContext_TenantId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
-                    if (userInfo_FirstName != null)
+                    if (userContext_FirstName != null)
                     {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.FirstName")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userInfo_FirstName, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                        urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.FirstName")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userContext_FirstName, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
-                    if (userInfo_LastName != null)
+                    if (userContext_LastName != null)
                     {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.LastName")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userInfo_LastName, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                        urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.LastName")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userContext_LastName, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
-                    if (userInfo_Email != null)
+                    if (userContext_Email != null)
                     {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.Email")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userInfo_Email, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                        urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.Email")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userContext_Email, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
-                    if (userInfo_Roles != null)
+                    if (userContext_Roles != null)
                     {
-                            foreach (var item_ in userInfo_Roles) { urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.Roles")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append('&'); }
+                            foreach (var item_ in userContext_Roles) { urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.Roles")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append('&'); }
                     }
-                    if (userInfo_CanView != null)
+                    if (userContext_CanView != null)
                     {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.CanView")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userInfo_CanView, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                        urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.CanView")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userContext_CanView, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
-                    if (userInfo_CanEdit != null)
+                    if (userContext_CanEdit != null)
                     {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.CanEdit")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userInfo_CanEdit, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                        urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.CanEdit")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userContext_CanEdit, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
-                    if (userInfo_CanDelete != null)
+                    if (userContext_CanDelete != null)
                     {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("UserInfo.CanDelete")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userInfo_CanDelete, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                        urlBuilder_.Append(System.Uri.EscapeDataString("UserContext.CanDelete")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(userContext_CanDelete, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
                     urlBuilder_.Length--;
 
@@ -1782,8 +1782,8 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
         [System.Text.Json.Serialization.JsonPropertyName("Message")]
         public string Message { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("UserInfo")]
-        public IUserEntity UserInfo { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("UserContext")]
+        public IUserContext UserContext { get; set; }
 
     }
 
@@ -1800,13 +1800,13 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
         [System.Text.Json.Serialization.JsonPropertyName("Message")]
         public string Message { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("UserInfo")]
-        public IUserEntity UserInfo { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("UserContext")]
+        public IUserContext UserContext { get; set; }
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class IUserEntity
+    public partial class IUserContext
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("OwnerId")]
@@ -1848,8 +1848,8 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
         [System.Text.Json.Serialization.JsonPropertyName("Title")]
         public string Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("UserInfo")]
-        public IUserEntity UserInfo { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("UserContext")]
+        public IUserContext UserContext { get; set; }
 
     }
 
@@ -1899,8 +1899,8 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
         [System.Text.Json.Serialization.JsonPropertyName("TenantId")]
         public System.Guid TenantId { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("UserInfo")]
-        public IUserEntity UserInfo { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("UserContext")]
+        public IUserContext UserContext { get; set; }
 
     }
 
