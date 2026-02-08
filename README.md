@@ -275,9 +275,9 @@ Right-click Presentation.WebApi and select Set as Default Project
 dotnet run --project src/Presentation.WebApi/Presentation.WebApi.csproj
 ```
 
-## Open http://localhost:7777/swagger/index.html 
+## Open http://localhost:7175/swagger/index.html 
 Open Microsoft Edge or modern browser
-Navigate to: http://localhost:7777/swagger/index.html in your browser to the Swagger API Interface
+Navigate to: http://localhost:7175/swagger/index.html in your browser to the Swagger API Interface
 
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
