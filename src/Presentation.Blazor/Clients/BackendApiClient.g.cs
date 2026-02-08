@@ -113,8 +113,8 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/v1my/actors"
-                    urlBuilder_.Append("api/v1my/actors");
+                    // Operation Path: "api/v1/my/actors"
+                    urlBuilder_.Append("api/v1/my/actors");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -255,8 +255,8 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/v1my/actors"
-                    urlBuilder_.Append("api/v1my/actors");
+                    // Operation Path: "api/v1/my/actors"
+                    urlBuilder_.Append("api/v1/my/actors");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
