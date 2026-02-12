@@ -159,7 +159,7 @@ jobs:
       - name: Test
         run: |
           cd ${{ env.SRC_PATH }}/${{ env.TEST_PATH }}
-          dotnet run --configuration Release --no-build
+          dotnet run --configuration ${{ env.CONFIGURATION }} --no-build
         shell: pwsh
 
       - name: Copy test results
@@ -234,7 +234,7 @@ jobs:
       matrix:
         DOTNET_VERSION: ["10.x"]
     env:
-      APPI_NAME: 'gtc-dev-wus2-001-appi'
+      APPI_NAME: 'agent-dev-wus2-001-appi'
       AZURE_APIAPP_NAME: agent-dev-wus2-001-api
       AZURE_WEBAPP_PACKAGE_PATH: '.'
       AZURE_WEBAPP_NAME: agent-dev-wus2-001-web
