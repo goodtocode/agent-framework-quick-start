@@ -1,6 +1,6 @@
+using Goodtocode.AgentFramework.Core.Application.ChatCompletion;
 using Goodtocode.AgentFramework.Core.Application.Common.Models;
 using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
-using Goodtocode.AgentFramework.Core.Application.ChatCompletion;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
 {
@@ -76,7 +76,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
                 PageSize = _pageSize,
                 StartDate = _startDate == default ? null : _startDate,
                 EndDate = _endDate == default ? null : _endDate,
-                UserContext =  userContext
+                UserContext = userContext
             };
 
             var validator = new GetMyChatSessionsPaginatedQueryValidator();

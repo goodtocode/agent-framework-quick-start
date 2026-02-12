@@ -38,9 +38,9 @@ public class GetActorByOwnerIdQueryStepDefinitions : TestBase
             await context.SaveChangesAsync(CancellationToken.None);
         }
 
-        var request = new GetMyActorQuery() 
+        var request = new GetMyActorQuery()
         {
-            UserContext =  userContext
+            UserContext = userContext
         };
 
         var validator = new GetMyActorQueryValidator();

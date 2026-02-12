@@ -1,5 +1,5 @@
-﻿using Goodtocode.Domain.Entities;
-using Goodtocode.AgentFramework.Core.Domain.Actor;
+﻿using Goodtocode.AgentFramework.Core.Domain.Actor;
+using Goodtocode.Domain.Entities;
 
 namespace Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 
@@ -27,6 +27,6 @@ public class ChatSessionEntity : SecuredEntity<ChatSessionEntity>
 
     public void Update(string? title)
     {
-            Title = title ?? Title;
+        Title = title ?? Title;
     }
 }

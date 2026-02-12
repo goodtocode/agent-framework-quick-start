@@ -42,7 +42,7 @@ public static class ConfigureServices
             };
 
             var agentOptions = new ChatClientAgentOptions
-            {                 
+            {
                 Name = "CopilotAgent",
                 Description = "Microsoft Agent Framework Quick-start Copilot",
             };

@@ -30,15 +30,15 @@ public class CreateChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCont
         GuardAgainstEmptyUser(request?.UserContext);
 
         var actor = await _context.Actors
-            .FirstOrDefaultAsync(a => a.OwnerId == request!.UserContext!.OwnerId 
+            .FirstOrDefaultAsync(a => a.OwnerId == request!.UserContext!.OwnerId
                 && a.TenantId == request.UserContext.TenantId, cancellationToken);
-        
+
         if (actor == null)
         {
             actor = ActorEntity.Create(
                 Guid.NewGuid(),
-                request?.UserContext?.FirstName, 
-                request?.UserContext?.LastName, 
+                request?.UserContext?.FirstName,
+                request?.UserContext?.LastName,
                 request?.UserContext?.Email
             );
             _context.Actors.Add(actor);

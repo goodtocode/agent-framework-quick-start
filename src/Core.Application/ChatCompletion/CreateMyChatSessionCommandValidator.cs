@@ -3,7 +3,7 @@
 public class CreateMyChatSessionCommandValidator : Validator<CreateMyChatSessionCommand>
 {
     public CreateMyChatSessionCommandValidator()
-    {        
+    {
         RuleFor(x => x.Message)
             .NotEmpty("Message is required");
 

@@ -1,5 +1,5 @@
-using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 using Goodtocode.AgentFramework.Core.Application.ChatCompletion;
+using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion;
 
@@ -60,7 +60,7 @@ public class GetMyChatSessionsQueryStepDefinitions : TestBase
         {
             StartDate = _startDate == default ? null : _startDate,
             EndDate = _endDate == default ? null : _endDate,
-            UserContext =  userContext
+            UserContext = userContext
         };
 
         var validator = new GetMyChatSessionsQueryValidator();

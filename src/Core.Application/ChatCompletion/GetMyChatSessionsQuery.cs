@@ -21,7 +21,7 @@ public class GetMyChatSessionsQueryHandler(IAgentFrameworkContext context) : IRe
 
         var startDate = request?.StartDate;
         var endDate = request?.EndDate;
-        var userContext =  request?.UserContext;
+        var userContext = request?.UserContext;
 
         var returnData = await _context.ChatSessions
             .Where(x => userContext != null && x.OwnerId == userContext.OwnerId)

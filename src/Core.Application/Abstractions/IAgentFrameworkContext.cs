@@ -7,7 +7,7 @@ namespace Goodtocode.AgentFramework.Core.Application.Abstractions;
 public interface IAgentFrameworkContext
 {
     DbSet<ChatMessageEntity> ChatMessages { get; }
-    DbSet<ChatSessionEntity> ChatSessions {get; }
+    DbSet<ChatSessionEntity> ChatSessions { get; }
     DbSet<ActorEntity> Actors { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

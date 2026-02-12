@@ -4,7 +4,7 @@ public struct UserRoles
 {
     public const string ChatOwner = "AssetOwner";
     public const string ChatEditor = "AssetEditor";
-    public const string ChatViewer = "AssetViewer";    
+    public const string ChatViewer = "AssetViewer";
 }
 
 /// <summary>

@@ -29,7 +29,7 @@ public class SaveActorCommandHandler(IAgentFrameworkContext context) : IRequestH
         }
         else
         {
-        actor = ActorEntity.Create(Guid.NewGuid(), request?.FirstName, request?.LastName, request?.Email);
+            actor = ActorEntity.Create(Guid.NewGuid(), request?.FirstName, request?.LastName, request?.Email);
             _context.Actors.Add(actor);
         }
 

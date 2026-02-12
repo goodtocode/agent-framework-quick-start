@@ -1,4 +1,4 @@
-﻿global using Goodtocode.Validation;
+﻿global using System.Reflection;
 global using Goodtocode.Mediator;
+global using Goodtocode.Validation;
 global using Microsoft.EntityFrameworkCore;
-global using System.Reflection;
