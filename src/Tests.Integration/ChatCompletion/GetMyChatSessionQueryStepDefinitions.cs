@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 using System.Globalization;
 using Goodtocode.AgentFramework.Core.Application.ChatCompletion;
+using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion;
 
@@ -51,7 +51,7 @@ public class GetMyChatSessionQueryStepDefinitions : TestBase
         var request = new GetMyChatSessionQuery()
         {
             Id = _id,
-            UserContext =  userContext
+            UserContext = userContext
         };
 
         var validator = new GetMyChatSessionQueryValidator();

@@ -154,11 +154,21 @@ jobs:
         with:
           name: ${{ env.MIGRATION_ARTIFACT_NAME }}
           path: ${{ env.MIGRATION_ARTIFACT_PATH }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         
       - name: Test
         run: |
+          cd ${{ env.SRC_PATH }}/${{ env.TEST_PATH }}
+          dotnet run --configuration ${{ env.CONFIGURATION }} --no-build
+        shell: pwsh
+
+      - name: Copy test results
+        if: ${{ always() }}
+        run: |
           mkdir -p TestResults-${{ matrix.DOTNET_VERSION }}
-          dotnet test ${{ env.SRC_PATH }}/${{ env.TEST_PATH }}/${{ env.TEST_PROJECT }} --configuration ${{ env.CONFIGURATION }} --results-directory TestResults-${{ matrix.DOTNET_VERSION }} --collect:"Code Coverage" --verbosity normal
+          if (Test-Path "${{ env.SRC_PATH }}/${{ env.TEST_PATH }}/bin/Release/net10.0/TestResults") {
+            Copy-Item -Path "${{ env.SRC_PATH }}/${{ env.TEST_PATH }}/bin/Release/net10.0/TestResults/*" -Destination "TestResults-${{ matrix.DOTNET_VERSION }}" -Recurse -Force
+          }
         shell: pwsh
 
       - name: Upload test results
@@ -178,6 +188,7 @@ jobs:
         with:
           name: ${{ env.API_ARTIFACT_NAME }}
           path: ${{ env.API_ARTIFACT_OUTPUT }}/**
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
 
       - name: Pack Blazor artifact
         run: |
@@ -189,6 +200,7 @@ jobs:
         with:
           name: ${{ env.WEB_ARTIFACT_NAME }}
           path: ${{ env.WEB_ARTIFACT_OUTPUT }}/**
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
@@ -196,9 +208,10 @@ jobs:
 
       - name: Run Coverage Script
         run: |
-          pwsh ${{ env.SRC_PATH }}/Get-CodeCoverage.ps1 `
+          pwsh ${{ env.SCRIPTS_PATH }}/ci/Get-CodeCoverage.ps1 `
             -TestProjectFilter '${{ env.TEST_PROJECT }}' `
-            -ProdPackagesOnly            
+            -Configuration '${{ env.CONFIGURATION }}' `
+            -TestRootPath '${{ env.SRC_PATH }}'
         shell: pwsh
 
       - name: Upload Coverage Report

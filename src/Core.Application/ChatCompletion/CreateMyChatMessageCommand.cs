@@ -108,6 +108,6 @@ public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkConte
     private static void GuardAgainstNullAgentResponse(ChatMessage? response)
     {
         if (response == null)
-            throw new CustomValidationException([new("ChatMessage","Agent response cannot be null")]);
+            throw new CustomValidationException([new("ChatMessage", "Agent response cannot be null")]);
     }
 }

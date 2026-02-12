@@ -42,11 +42,11 @@ public class CreateChatSessionCommandStepDefinitions : TestBase
     {
         // Setup the database if want to test existing records
         var actor = ActorEntity.Create(_actorId, "Test", "Actor", "actor@goodtocode.com");
-        context.Actors.Add(actor);        
+        context.Actors.Add(actor);
         if (_exists)
         {
             var chatSession = ChatSessionEntity.Create(_id, _actorId, "Test Session", ChatMessageRole.assistant, _message, "First Response");
-            context.ChatSessions.Add(chatSession);            
+            context.ChatSessions.Add(chatSession);
         }
         await context.SaveChangesAsync(CancellationToken.None);
 
@@ -54,7 +54,7 @@ public class CreateChatSessionCommandStepDefinitions : TestBase
         var request = new CreateMyChatSessionCommand()
         {
             Id = _id,
-            Title = def,            
+            Title = def,
             Message = _message,
             UserContext = userContext
         };
@@ -65,7 +65,7 @@ public class CreateChatSessionCommandStepDefinitions : TestBase
         if (validationResponse.IsValid)
         {
             try
-            {                
+            {
                 var handler = new CreateChatSessionCommandHandler(agent, context);
                 await handler.Handle(request, CancellationToken.None);
                 responseType = CommandResponseType.Successful;

@@ -22,7 +22,7 @@ public class GetChatMessagesPaginatedQueryHandler(IAgentFrameworkContext context
     {
         GuardAgainstEmptyUser(request?.UserContext);
 
-        var userContext =  request!.UserContext!;
+        var userContext = request!.UserContext!;
 
         var returnData = await _context.ChatMessages
             .Where(x => x.ChatSession != null && x.ChatSession.OwnerId == userContext.OwnerId)

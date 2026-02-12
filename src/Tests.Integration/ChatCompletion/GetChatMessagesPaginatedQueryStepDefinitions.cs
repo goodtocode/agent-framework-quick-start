@@ -1,6 +1,6 @@
+using Goodtocode.AgentFramework.Core.Application.ChatCompletion;
 using Goodtocode.AgentFramework.Core.Application.Common.Models;
 using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
-using Goodtocode.AgentFramework.Core.Application.ChatCompletion;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.ChatCompletion
 {

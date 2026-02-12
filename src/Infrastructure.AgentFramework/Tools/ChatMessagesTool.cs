@@ -1,8 +1,8 @@
-﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
+﻿using System.ComponentModel;
+using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 

@@ -1,6 +1,6 @@
-﻿using Microsoft.Agents.AI;
+﻿using System.Text.Json;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using System.Text.Json;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.Agent;
 

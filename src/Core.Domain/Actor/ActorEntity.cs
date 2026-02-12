@@ -15,7 +15,7 @@ public class ActorEntity : SecuredEntity<ActorEntity>
     {
         return new ActorEntity
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id,            
+            Id = id == Guid.Empty ? Guid.NewGuid() : id,
             FirstName = firstName,
             LastName = lastName,
             Email = email
@@ -37,8 +37,8 @@ public class ActorEntity : SecuredEntity<ActorEntity>
 
     public void Update(string? firstName, string? lastName, string? email)
     {
-            FirstName = firstName ?? FirstName;
-            LastName = lastName ?? LastName;
-            Email = email ?? Email;
+        FirstName = firstName ?? FirstName;
+        LastName = lastName ?? LastName;
+        Email = email ?? Email;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
+﻿using System.Reflection;
+using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Core.Domain.Auth;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
@@ -7,7 +8,6 @@ using Goodtocode.AgentFramework.Tests.Integration.Agent;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Goodtocode.AgentFramework.Tests.Integration;
 
@@ -31,7 +31,7 @@ public abstract class TestBase : IDisposable
     internal IConfiguration configuration;
     internal MockAIAgent agent = new();
     internal OpenAIOptions optionsOpenAi = new();
-    internal UserContext userContext = UserContext.Create(firstName: "John", lastName: "Doe", email: "john.doe@goodtocode.com", 
+    internal UserContext userContext = UserContext.Create(firstName: "John", lastName: "Doe", email: "john.doe@goodtocode.com",
                                                     ownerId: Guid.NewGuid(), tenantId: Guid.NewGuid(), roles: ["Admin"]);
 
     private readonly ICurrentUserContext? _currentUserContext;
