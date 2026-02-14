@@ -14,13 +14,13 @@
 		<PackageReference Include="Azure.Identity" Version="1.17.1" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.6.0" />
-		<PackageReference Include="Goodtocode.SecuredHttpClient" Version="1.1.9" />
+		<PackageReference Include="Goodtocode.SecuredHttpClient" Version="1.1.11" />
 		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.2.0" />
-		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.13.2" />		
-		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.13.2" />		
-		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.13.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.3.0" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.0" />		
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.14.0" />		
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.0" />
 		<PackageReference Include="Microsoft.Identity.Web" Version="4.3.0" />
 		<PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.3.0" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />		

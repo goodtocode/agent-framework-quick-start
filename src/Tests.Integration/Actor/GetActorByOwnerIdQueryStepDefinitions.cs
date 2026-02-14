@@ -33,7 +33,7 @@ public class GetActorByOwnerIdQueryStepDefinitions : TestBase
     {
         if (_exists)
         {
-            var actor = ActorEntity.Create(userContext.OwnerId, "John", "Doe", "jdoe@goodtocode.com");
+            var actor = ActorEntity.Create(userContext.OwnerId, "John", "Doe", "jdoe@goodtocode.com", userContext.OwnerId, userContext.TenantId);
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
         }

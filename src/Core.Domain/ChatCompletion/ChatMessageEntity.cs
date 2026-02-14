@@ -4,20 +4,19 @@ namespace Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 
 public class ChatMessageEntity : SecuredEntity<ChatMessageEntity>, IDomainEntity<ChatMessageEntity>
 {
-    protected ChatMessageEntity() { }
+    protected ChatMessageEntity() : base(Guid.Empty, Guid.Empty, Guid.Empty) { }
+    private ChatMessageEntity(Guid id, Guid ownerId, Guid tenantId) : base(id, ownerId, tenantId) { }
     public Guid ChatSessionId { get; private set; }
     public ChatMessageRole Role { get; private set; }
     public string Content { get; private set; } = string.Empty;
     public virtual ChatSessionEntity? ChatSession { get; private set; }
-    public static ChatMessageEntity Create(Guid id, Guid chatSessionId, ChatMessageRole role, string content)
+    public static ChatMessageEntity Create(Guid id, Guid chatSessionId, ChatMessageRole role, string content, Guid ownerId, Guid tenantId)
     {
-        return new ChatMessageEntity
+        return new ChatMessageEntity(id, ownerId, tenantId)
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id,
             ChatSessionId = chatSessionId,
             Role = role,
-            Content = content,
-            Timestamp = DateTime.UtcNow
+            Content = content
         };
     }
 }

@@ -40,7 +40,6 @@ public class UserSyncService(BackendApiClient apiClient, IUserClaimsInfo userInf
             {
                 await HandleApiException(() => _apiClient.SaveMyActorAsync(new SaveMyActorCommand
                 {
-                    TenantId = _userContext.TenantId,
                     FirstName = _userContext.Givenname,
                     LastName = _userContext.Surname,
                     Email = _userContext.Email

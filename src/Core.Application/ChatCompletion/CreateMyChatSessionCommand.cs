@@ -3,9 +3,7 @@ using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Core.Domain.Actor;
 using Goodtocode.AgentFramework.Core.Domain.Auth;
 using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
-using Goodtocode.Domain.Entities;
 using Microsoft.Agents.AI;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 
 namespace Goodtocode.AgentFramework.Core.Application.ChatCompletion;
@@ -39,7 +37,9 @@ public class CreateChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCont
                 Guid.NewGuid(),
                 request?.UserContext?.FirstName,
                 request?.UserContext?.LastName,
-                request?.UserContext?.Email
+                request?.UserContext?.Email,
+                request!.UserContext!.OwnerId,
+                request.UserContext.TenantId
             );
             _context.Actors.Add(actor);
             await _context.SaveChangesAsync(cancellationToken);
@@ -62,7 +62,9 @@ public class CreateChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCont
             title,
             Enum.TryParse<ChatMessageRole>(response!.Role.ToString().ToLowerInvariant(), out var role) ? role : ChatMessageRole.assistant,
             request.Message!,
-            response.ToString()
+            response.ToString(),
+            request!.UserContext!.OwnerId,
+            request.UserContext.TenantId
         );
         _context.ChatSessions.Add(chatSession);
         await _context.SaveChangesAsync(cancellationToken);

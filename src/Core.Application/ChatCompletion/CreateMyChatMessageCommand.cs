@@ -48,7 +48,9 @@ public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkConte
             request.Id,
             chatSession.Id,
             ChatMessageRole.user,
-            request.Message!
+            request.Message!,
+            request!.UserContext!.OwnerId,
+            request.UserContext.TenantId
         );
         chatSession.Messages.Add(chatMessage);
         _context.ChatMessages.Add(chatMessage);
@@ -59,7 +61,9 @@ public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkConte
             Guid.NewGuid(),
             chatSession.Id,
             ChatMessageRole.assistant,
-            agentReply
+            agentReply,
+            request!.UserContext!.OwnerId,
+            request.UserContext.TenantId
         );
         chatSession.Messages.Add(chatMessageResponse);
         _context.ChatMessages.Add(chatMessageResponse);

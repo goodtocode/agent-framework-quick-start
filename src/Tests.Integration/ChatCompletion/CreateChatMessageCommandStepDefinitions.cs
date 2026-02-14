@@ -46,7 +46,7 @@ public class CreateChatMessageCommandStepDefinitions : TestBase
             var actor = ActorEntity.Create(userContext);
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
-            var chatSession = ChatSessionEntity.Create(_chatSessionId, actor.Id, "Test Session", ChatMessageRole.assistant, "First Message", "First Response");
+            var chatSession = ChatSessionEntity.Create(_chatSessionId, actor.Id, "Test Session", ChatMessageRole.assistant, "First Message", "First Response", userContext.OwnerId, userContext.TenantId);
             context.ChatSessions.Add(chatSession);
             await context.SaveChangesAsync(CancellationToken.None);
         }
