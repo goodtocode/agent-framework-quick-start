@@ -4,7 +4,8 @@ namespace Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 
 public class ChatMessageEntity : SecuredEntity<ChatMessageEntity>, IDomainEntity<ChatMessageEntity>
 {
-    protected ChatMessageEntity(Guid id, Guid ownerId, Guid tenantId) : base(id, ownerId, tenantId) { }
+    protected ChatMessageEntity() : base(Guid.Empty, Guid.Empty, Guid.Empty) { }
+    private ChatMessageEntity(Guid id, Guid ownerId, Guid tenantId) : base(id, ownerId, tenantId) { }
     public Guid ChatSessionId { get; private set; }
     public ChatMessageRole Role { get; private set; }
     public string Content { get; private set; } = string.Empty;

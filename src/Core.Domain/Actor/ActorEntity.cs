@@ -5,6 +5,7 @@ namespace Goodtocode.AgentFramework.Core.Domain.Actor;
 
 public class ActorEntity : SecuredEntity<ActorEntity>
 {
+    protected ActorEntity() : base(Guid.Empty, Guid.Empty, Guid.Empty) {    }
     public string? FirstName { get; private set; } = string.Empty;
     public string? LastName { get; private set; } = string.Empty;
     public string? Email { get; private set; } = string.Empty;
