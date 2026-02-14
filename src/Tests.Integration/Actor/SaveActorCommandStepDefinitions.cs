@@ -55,14 +55,13 @@ public class SaveActorCommandStepDefinitions : TestBase
     {
         if (_exists)
         {
-            var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com");
+            var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com", userContext.OwnerId, userContext.TenantId);
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
         }
 
         var request = new SaveMyActorCommand()
         {
-            TenantId = _tenantId,
             FirstName = _name.Split(" ").FirstOrDefault(),
             LastName = _name.Split(" ").LastOrDefault(),
             Email = _email,

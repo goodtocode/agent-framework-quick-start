@@ -41,11 +41,11 @@ public class CreateChatSessionCommandStepDefinitions : TestBase
     public async Task WhenICreateAChatSessionWithTheMessage()
     {
         // Setup the database if want to test existing records
-        var actor = ActorEntity.Create(_actorId, "Test", "Actor", "actor@goodtocode.com");
+        var actor = ActorEntity.Create(_actorId, "Test", "Actor", "actor@goodtocode.com", userContext.OwnerId, userContext.TenantId);
         context.Actors.Add(actor);
         if (_exists)
         {
-            var chatSession = ChatSessionEntity.Create(_id, _actorId, "Test Session", ChatMessageRole.assistant, _message, "First Response");
+            var chatSession = ChatSessionEntity.Create(_id, _actorId, "Test Session", ChatMessageRole.assistant, _message, "First Response", userContext.OwnerId, userContext.TenantId);
             context.ChatSessions.Add(chatSession);
         }
         await context.SaveChangesAsync(CancellationToken.None);

@@ -5,23 +5,21 @@ namespace Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 
 public class ChatSessionEntity : SecuredEntity<ChatSessionEntity>
 {
-    protected ChatSessionEntity() { }
+    protected ChatSessionEntity(Guid id, Guid ownerId, Guid tenantId) : base(id, ownerId, tenantId) { }
 
     public Guid ActorId { get; private set; }
     public string? Title { get; private set; } = string.Empty;
     public virtual ICollection<ChatMessageEntity> Messages { get; private set; } = [];
 
-    public static ChatSessionEntity Create(Guid id, Guid actorId, string? title, ChatMessageRole responseRole, string initialMessage, string responseMessage)
+    public static ChatSessionEntity Create(Guid id, Guid actorId, string? title, ChatMessageRole responseRole, string initialMessage, string responseMessage, Guid ownerId, Guid tenantId)
     {
-        var session = new ChatSessionEntity
+        var session = new ChatSessionEntity(id, ownerId, tenantId)
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id,
             ActorId = actorId,
             Title = title,
-            Timestamp = DateTime.UtcNow
         };
-        session.Messages.Add(ChatMessageEntity.Create(Guid.NewGuid(), session.Id, ChatMessageRole.user, initialMessage));
-        session.Messages.Add(ChatMessageEntity.Create(Guid.NewGuid(), session.Id, responseRole, responseMessage));
+        session.Messages.Add(ChatMessageEntity.Create(Guid.NewGuid(), session.Id, ChatMessageRole.user, initialMessage, ownerId, tenantId));
+        session.Messages.Add(ChatMessageEntity.Create(Guid.NewGuid(), session.Id, responseRole, responseMessage, ownerId, tenantId));
         return session;
     }
 

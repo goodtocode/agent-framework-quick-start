@@ -1896,9 +1896,6 @@ namespace Goodtocode.AgentFramework.Presentation.WebApi.Client
         [System.Text.Json.Serialization.JsonPropertyName("Email")]
         public string Email { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("TenantId")]
-        public System.Guid TenantId { get; set; }
-
         [System.Text.Json.Serialization.JsonPropertyName("UserContext")]
         public IUserContext UserContext { get; set; }
 

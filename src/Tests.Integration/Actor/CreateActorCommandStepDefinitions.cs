@@ -55,7 +55,7 @@ public class CreateActorCommandStepDefinitions : TestBase
     {
         if (_exists)
         {
-            var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com");
+            var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com", _ownerId, _tenantId);
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
         }

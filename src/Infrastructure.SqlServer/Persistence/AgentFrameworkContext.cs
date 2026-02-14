@@ -1,9 +1,9 @@
-﻿using System.Reflection;
-using Goodtocode.AgentFramework.Core.Application.Abstractions;
+﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Goodtocode.AgentFramework.Core.Domain.Actor;
 using Goodtocode.AgentFramework.Core.Domain.ChatCompletion;
 using Goodtocode.Domain.Entities;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Reflection;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
 
@@ -34,67 +34,37 @@ public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        SetSecurityFields();
-        SetAuditFields();
+        SetAuditAndSecurityFields();
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    private void SetSecurityFields()
+    private void SetAuditAndSecurityFields()
     {
-        if (_currentUserContext is null ||
-            _currentUserContext.OwnerId == Guid.Empty ||
-            _currentUserContext.TenantId == Guid.Empty)
+        foreach (var entry in ChangeTracker.Entries())
         {
-            return;
-        }
-
-        var entries = ChangeTracker.Entries()
-            .Where(e => e.State == EntityState.Added && HasSecurityFields(e));
-
-        foreach (var entry in entries)
-        {
-            SetIfEmpty(entry, "OwnerId", _currentUserContext.OwnerId);
-            SetIfEmpty(entry, "TenantId", _currentUserContext.TenantId);
-        }
-    }
-
-    private static bool HasSecurityFields(EntityEntry entry) =>
-        entry.Metadata.FindProperty("OwnerId") != null &&
-        entry.Metadata.FindProperty("TenantId") != null;
-
-    private static void SetIfEmpty(EntityEntry entry, string propertyName, Guid value)
-    {
-        var property = entry.Property(propertyName);
-        if (property.CurrentValue is Guid guid && guid == Guid.Empty)
-        {
-            property.CurrentValue = value;
-        }
-    }
-
-    private void SetAuditFields()
-    {
-        var entries = ChangeTracker.Entries()
-            .Where(e => IsDomainEntity(e.Entity) &&
-                       (e.State == EntityState.Modified || e.State == EntityState.Added || e.State == EntityState.Deleted));
-
-        foreach (var entry in entries)
-        {
-            dynamic entity = entry.Entity;
-            if (entry.State == EntityState.Added)
+            if (entry.Entity is IAuditable auditable)
             {
-                entity.SetCreatedOn(DateTime.UtcNow);
-                entity.SetModifiedOn(null);
-                entity.SetDeletedOn(null);
+                if (entry.State == EntityState.Modified)
+                {
+                    auditable.MarkModified();
+                    auditable.MarkDeleted();
+                }
+                else if (entry.State == EntityState.Deleted)
+                {
+                    auditable.MarkDeleted();
+                    entry.State = EntityState.Modified;
+                }
             }
-            else if (entry.State == EntityState.Modified)
+
+            if (entry.Entity is ISecurable securable && _currentUserContext is not null)
             {
-                entity.SetModifiedOn(DateTime.UtcNow);
-                entity.SetDeletedOn(null);
-            }
-            else if (entry.State == EntityState.Deleted)
-            {
-                entity.SetDeletedOn(DateTime.UtcNow);
-                entry.State = EntityState.Modified;
+                if (entry.State == EntityState.Added)
+                {
+                    if (securable.OwnerId == Guid.Empty)
+                        securable.ChangeOwner(_currentUserContext.OwnerId);
+                    if (securable.TenantId == Guid.Empty)
+                        securable.ChangeTenant(_currentUserContext.TenantId);
+                }
             }
         }
     }

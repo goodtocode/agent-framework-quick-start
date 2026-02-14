@@ -23,7 +23,7 @@ public class CreateActorCommandHandler(IAgentFrameworkContext context) : IReques
         GuardAgainstEmptyOwnerId(request?.OwnerId);
         GuardAgainstIdExists(_context.Actors, request!.Id);
 
-        var Actor = ActorEntity.Create(request!.Id == Guid.Empty ? Guid.NewGuid() : request!.Id, request.FirstName, request.LastName, request.Email);
+        var Actor = ActorEntity.Create(request!.Id == Guid.Empty ? Guid.NewGuid() : request!.Id, request.FirstName, request.LastName, request.Email, request.OwnerId, request.TenantId);
         _context.Actors.Add(Actor);
         try
         {

@@ -24,7 +24,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     OwnerId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false),
-                    TenantId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false)
+                    TenantId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -44,7 +47,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -65,7 +71,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
