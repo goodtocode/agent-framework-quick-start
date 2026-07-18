@@ -18,7 +18,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "3.0.0.0")]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute()]
-    public partial class GetActorByExternalIdQueryFeature
+    public partial class GetActorByOwnerIdQueryFeature
     {
         
         private global::Reqnroll.ITestRunner testRunner;
@@ -28,7 +28,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         private static string[] featureTags = new string[] {
                 "getAuthorByOwnerIdQuery"};
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Actor", "Get Actor By External Id Query", "As a actor owner\r\nWhen I select an existing Actor\r\nI can see the actor detail", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Actor", "Get Actor By OwnerId Query", "As a actor owner\r\nWhen I select an existing Actor\r\nI can see the actor detail", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
 #line 1 "GetActorByOwnerIdQuery.feature"
 #line hidden
@@ -121,13 +121,13 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
             return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Actor/GetActorByOwnerIdQuery.feature.ndjson", 4);
         }
         
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Get Actor By External Id")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Actor By External Id")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Actor By External Id Query")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Get Actor By OwnerId")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get Actor By OwnerId")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Get Actor By OwnerId Query")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getAuthorByOwnerIdQuery")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "true", "0", null, DisplayName="Get Actor By External Id(success,Success,,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "false", "1", null, DisplayName="Get Actor By External Id(not found,NotFound,,false,1)")]
-        public async global::System.Threading.Tasks.Task GetActorByExternalId(string def, string response, string responseErrors, string exists, string @__pickleIndex, string[] exampleTags)
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "true", "0", null, DisplayName="Get Actor By OwnerId(success,Success,,true,0)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "false", "1", null, DisplayName="Get Actor By OwnerId(not found,NotFound,,false,1)")]
+        public async global::System.Threading.Tasks.Task GetActorByOwnerId(string def, string response, string responseErrors, string exists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
@@ -136,7 +136,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
             argumentsOfScenario.Add("responseErrors", responseErrors);
             argumentsOfScenario.Add("exists", exists);
             string pickleIndex = @__pickleIndex;
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Get Actor By External Id", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Get Actor By OwnerId", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 7
@@ -153,7 +153,7 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
  await testRunner.GivenAsync(string.Format("I have a definition \"{0}\"", def), ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 9
- await testRunner.AndAsync("I have a Actor External Id", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+ await testRunner.AndAsync("I have a Actor OwnerId", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 10
  await testRunner.AndAsync(string.Format("the Actor exists \"{0}\"", exists), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");

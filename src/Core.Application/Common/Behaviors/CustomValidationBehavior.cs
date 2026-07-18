@@ -1,17 +1,13 @@
 ﻿
 namespace Goodtocode.AgentFramework.Core.Application.Common.Behaviors;
 
-public class CustomValidationBehavior<TRequest, TResponse>(
-    IEnumerable<IValidator<TRequest>> validators)
+public class CustomValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators = validators;
 
-    public async Task<TResponse> Handle(
-        TRequest request,
-        RequestDelegateInvoker<TResponse> nextInvoker,
-        CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestDelegateInvoker<TResponse> nextInvoker, CancellationToken cancellationToken)
     {
         foreach (var validator in _validators)
         {
@@ -22,17 +18,13 @@ public class CustomValidationBehavior<TRequest, TResponse>(
     }
 }
 
-public class CustomValidationBehavior<TRequest>(
-    IEnumerable<IValidator<TRequest>> validators)
+public class CustomValidationBehavior<TRequest>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest>
     where TRequest : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators = validators;
 
-    public Task Handle(
-        TRequest request,
-        RequestDelegateInvoker nextInvoker,
-        CancellationToken cancellationToken)
+    public Task Handle(TRequest request, RequestDelegateInvoker nextInvoker, CancellationToken cancellationToken)
     {
         foreach (var validator in _validators)
         {

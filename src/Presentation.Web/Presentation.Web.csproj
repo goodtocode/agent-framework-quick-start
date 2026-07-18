@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<RootNamespace>Goodtocode.AgentFramework.Presentation.Web</RootNamespace>
+		<AssemblyName>Goodtocode.AgentFramework.Presentation.Web</AssemblyName>
+		<Version>1.0.0</Version>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>c2325466-9b0d-494a-984a-11ad18457d3f</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Identity" Version="1.21.0" />
+		<PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.5.0" />
+		<PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.8.2" />
+		<PackageReference Include="Goodtocode.SecuredHttpClient" Version="1.1.11" />
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.1.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.7.0" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.3" />		
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.14.3" />		
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.3" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="4.12.2" />
+		<PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.12.2" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0" />		
+	</ItemGroup>
+</Project>

@@ -49,13 +49,13 @@ jobs:
     env:
       SCRIPTS_PATH: "./.github/scripts"
       SRC_PATH: "./src"
-      SRC_SLN: "Goodtocode.AgentFramework.Blazor.sln"
-      API_PATH: "Presentation.WebApi"
-      API_PROJECT: "Presentation.WebApi.csproj"
+      SRC_SLN: "Goodtocode.AgentFramework.Web.sln"
+      API_PATH: "Presentation.Api"
+      API_PROJECT: "Presentation.Api.csproj"
       TEST_PATH: "Tests.Integration"
       TEST_PROJECT: "Tests.Integration.csproj"
-      WEB_PATH: "Presentation.Blazor"
-      WEB_PROJECT: "Presentation.Blazor.csproj"
+      WEB_PATH: "Presentation.Web"
+      WEB_PROJECT: "Presentation.Web.csproj"
       INFRA_PATH: 'Infrastructure.SqlServer'
       INFRA_PROJECT: 'Infrastructure.SqlServer.csproj'
       INFRA_DBCONTEXT: 'AgentFrameworkContext'

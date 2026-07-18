@@ -17,7 +17,8 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasDefaultSchema("Chat")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -61,6 +62,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("UNIQUEIDENTIFIER");
 
+                    b.Property<string>("RowKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("UNIQUEIDENTIFIER");
 
@@ -71,11 +76,6 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
 
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
-
                     b.HasIndex("Timestamp")
                         .IsUnique();
 
@@ -84,10 +84,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.HasIndex("TenantId", "OwnerId")
                         .IsUnique();
 
-                    b.ToTable("Actors", (string)null);
+                    b.ToTable("Actors", "Chat");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.ChatCompletion.ChatMessageEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chat.ChatMessageEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -124,6 +124,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
+                    b.Property<string>("RowKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
@@ -136,20 +140,15 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
                     b.HasIndex("ChatSessionId");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
-
                     b.HasIndex("Timestamp")
                         .IsUnique();
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Timestamp"));
 
-                    b.ToTable("ChatMessages", (string)null);
+                    b.ToTable("ChatMessages", "Chat");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.ChatCompletion.ChatSessionEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chat.ChatSessionEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -179,6 +178,16 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("PersonaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("PersonaVersion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RowKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
@@ -192,22 +201,17 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
 
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
-
                     b.HasIndex("Timestamp")
                         .IsUnique();
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Timestamp"));
 
-                    b.ToTable("ChatSessions", (string)null);
+                    b.ToTable("ChatSessions", "Chat");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.ChatCompletion.ChatMessageEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chat.ChatMessageEntity", b =>
                 {
-                    b.HasOne("Goodtocode.AgentFramework.Core.Domain.ChatCompletion.ChatSessionEntity", "ChatSession")
+                    b.HasOne("Goodtocode.AgentFramework.Core.Domain.Chat.ChatSessionEntity", "ChatSession")
                         .WithMany("Messages")
                         .HasForeignKey("ChatSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -216,7 +220,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Navigation("ChatSession");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.ChatCompletion.ChatSessionEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chat.ChatSessionEntity", b =>
                 {
                     b.Navigation("Messages");
                 });

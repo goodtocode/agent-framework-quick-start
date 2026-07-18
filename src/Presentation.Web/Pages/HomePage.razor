@@ -1,0 +1,112 @@
+﻿@page "/"
+@using Goodtocode.AgentFramework.Presentation.Web.Components.Models
+@using Goodtocode.AgentFramework.Presentation.Web.Components.Typography
+@using Goodtocode.AgentFramework.Presentation.Web.Metadata
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+
+<PageTitle>Home</PageTitle>
+
+<FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" VerticalGap="24">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="width: 100%; max-width: 1400px;">
+        <FluentSpacer />
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="16" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentLabel Typo="Typography.H1">
+                    GoodToCode AgentFramework - Where cans are forged
+                </FluentLabel>
+                <FluentSpacer />
+                <FluentLabel Typo="Typography.Body">
+                    Compose, operate, and connect AI capabilities using the AgentFramework. Forge your conductor agents, curator resources, compliance policies, codex chronicles and more...here in the AgentFramework.
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body">
+                    AgentFramework is the AI Fabric that powers the AgentFramework ecosystem. Cans provide reusable capabilities while AgentFramework supplies orchestration, execution, and administration.
+                </FluentLabel>
+            </FluentStack>
+        </FluentCard>
+
+        <FluentCard Style="width: 100%; max-width: 980px; margin-inline: auto;">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentLabel Typo="Typography.H2">AgentFramework</FluentLabel>
+                <FluentLabel Alignment="HorizontalAlignment.Center">
+                    AI Fabric, orchestration, administration, runtime execution, diagnostics, and system management.
+                </FluentLabel>
+                <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
+                    @foreach (var capability in AgentFrameworkCapabilities)
+                    {
+                        <FluentBadge Appearance="Appearance.Neutral">@capability</FluentBadge>
+                    }
+                </FluentStack>
+                <WorkspaceNavigation Model="PlatformNavigationModel.AgentFramework" />
+            </FluentStack>
+        </FluentCard>
+
+        <FluentCard Style="width: 100%; max-width: 980px; margin-inline: auto;">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+                <FluentLabel Typo="Typography.H4">Platform Status</FluentLabel>
+                <FluentLabel>Environment: Local Development</FluentLabel>
+                <FluentLabel>Active Cans: @Cans.Count()</FluentLabel>
+                <FluentLabel>Playbooks: 0</FluentLabel>
+                <FluentLabel>Executions: 0</FluentLabel>
+            </FluentStack>
+        </FluentCard>
+
+        <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="24" VerticalGap="24" HorizontalAlignment="HorizontalAlignment.Center">
+            @foreach (var can in Cans)
+            {
+                <FluentCard Disabled="@(!can.Enabled)" Style="width: 30%; height: 280px;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" HorizontalAlignment="HorizontalAlignment.Center">
+                        <FluentIcon Value="@(can.Icon)" />
+                        <FluentLabel Alignment="HorizontalAlignment.Center" Typo="Typography.H3">@can.DisplayName</FluentLabel>
+                        <FluentSpacer />
+                        <FluentLabel Alignment="HorizontalAlignment.Center">@can.Description</FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="4" HorizontalAlignment="HorizontalAlignment.Center">
+                            @foreach (var cap in can.Capabilities)
+                            {
+                                <FluentBadge Appearance="Appearance.Neutral">@cap</FluentBadge>
+                            }
+                        </FluentStack>
+                        <FluentSpacer />
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" HorizontalAlignment="HorizontalAlignment.Center">
+                            <FluentButton Appearance="Appearance.Accent"
+                                          Disabled="@(!can.Enabled)"
+                                          OnClick="@(() => OpenCan(can))">
+                                Open Can
+                            </FluentButton>
+                            <FluentButton Appearance="Appearance.Accent" Disabled="@(!can.Enabled)">
+                                View contexts
+                            </FluentButton>
+                        </FluentStack>
+                        @if (!can.Enabled)
+                        {
+                            <FluentLabel Typo="Typography.H6">Not deployed in this environment</FluentLabel>
+                        }
+                    </FluentStack>
+                </FluentCard>
+            }
+        </FluentStack>
+    </FluentStack>
+</FluentStack>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private IEnumerable<CanPresentationInfo> Cans => CanPresentationMetadata.All;
+
+    private static IReadOnlyList<string> AgentFrameworkCapabilities => [
+        "Runtime",
+        "Playbooks",
+        "Pipelines",
+        "Diagnostics",
+        "Settings"
+    ];
+
+    private void OpenCan(CanPresentationInfo can)
+    {
+        if (can.Enabled)
+        {
+            Navigation.NavigateTo($"/{can.Scheme.ToString().ToLowerInvariant()}");
+        }
+    }
+}

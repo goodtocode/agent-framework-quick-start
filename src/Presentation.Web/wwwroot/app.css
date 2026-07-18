@@ -1,0 +1,18 @@
+:root {
+    --font-family-base: 'Segoe UI', Arial, sans-serif;
+    --neutral-foreground-rest: #222b3a;
+    /* Fluent UI variable overrides for light mode */
+    --fluent-header-background: #181f2a;
+    --fluent-header-foreground: #f3f4f6;
+    --fluent-body-background: #F9FAFB;
+    --fluent-body-foreground: #111827;
+}
+
+body {
+    font-family: var(--font-family-base);
+    font-size: var(--type-ramp-base-font-size);
+    line-height: var(--type-ramp-base-line-height);
+    font-weight: var(--font-weight);
+    color: var(--neutral-foreground-rest);
+    background: var(--neutral-fill-layer-rest);
+}

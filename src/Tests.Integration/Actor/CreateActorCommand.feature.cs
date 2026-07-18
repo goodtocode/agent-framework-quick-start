@@ -26,7 +26,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         private Microsoft.VisualStudio.TestTools.UnitTesting.TestContext _testContext;
         
         private static string[] featureTags = new string[] {
-                "createAuthorCommand"};
+                "createActorCommand"};
         
         private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Actor", "Create Actor Command", "As a owner\r\nWhen I want to save a new Actor\r\nThen I should see the Actor created " +
                 "with the initial response", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
@@ -119,17 +119,15 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Actor/CreateActorCommand.feature.ndjson", 4);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Actor/CreateActorCommand.feature.ndjson", 3);
         }
         
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Create Actor")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create Actor")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Create Actor Command")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("createAuthorCommand")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("createActorCommand")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "00000000-0000-0000-0000-000000000000", "938d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "John Doe", "jdoe@goodtocode.com", "0", null, DisplayName="Create Actor(success,Success,,00000000-0000-0000-0000-000000000000,938d8e7f-f18f-" +
             "4a8e-8b3c-3b6a6889fed9,false,John Doe,jdoe@goodtocode.com,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("already exists", "Error", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "938d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "Jane Doe", "jane@goodtocode.com", "1", null, DisplayName="Create Actor(already exists,Error,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,938d8e7f-" +
-            "f18f-4a8e-8b3c-3b6a6889fed9,true,Jane Doe,jane@goodtocode.com,1)")]
         public async global::System.Threading.Tasks.Task CreateActor(string def, string response, string responseErrors, string id, string ownerId, string exists, string name, string email, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
@@ -166,7 +164,7 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
  await testRunner.AndAsync(string.Format("I have a Actor id \"{0}\"", id), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 11
- await testRunner.AndAsync(string.Format("I have a External id \"{0}\"", ownerId), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+ await testRunner.AndAsync(string.Format("I have a OwnerId \"{0}\"", ownerId), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 12
  await testRunner.AndAsync(string.Format("I have a Email \"{0}\"", email), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");

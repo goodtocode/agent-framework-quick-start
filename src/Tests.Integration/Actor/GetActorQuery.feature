@@ -17,4 +17,4 @@ Examples:
 	| def                   | response   | responseErrors | id                                   | exists |
 	| success               | Success    |                | 038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9 | true   |
 	| not found             | NotFound   |                | 048d8e7f-f18f-4a8e-8b3c-3b6a6889fed9 | false  |
-	| bad request: empty id | BadRequest | ActorId       | 00000000-0000-0000-0000-000000000000 | false  |
+	| bad request: empty id | BadRequest | ActorId        | 00000000-0000-0000-0000-000000000000 | false  |

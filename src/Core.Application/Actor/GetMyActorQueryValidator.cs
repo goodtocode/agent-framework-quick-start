@@ -1,9 +1,9 @@
 ﻿namespace Goodtocode.AgentFramework.Core.Application.Actor;
 
-public class GetMyActorQueryValidator : Validator<GetMyActorQuery>
+public class GetMyActorQueryValidator : SecuredValidator<GetMyActorQuery>
 {
     public GetMyActorQueryValidator()
     {
-        RuleFor(x => x.UserContext).NotEmpty();
+
     }
 }

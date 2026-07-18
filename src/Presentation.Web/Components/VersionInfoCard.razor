@@ -1,0 +1,45 @@
+<FluentCard>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+        <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H3">Version Information</FluentLabel>
+
+        <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8" VerticalGap="8">
+            <FluentTextField Label="Current Version" Value="@CurrentVersionLabel" ReadOnly="true" />
+            <FluentTextField Label="Pinned Version" Value="@PinnedVersionLabel" ReadOnly="true" />
+            <FluentTextField Label="Previous Version" Value="@PreviousVersionLabel" ReadOnly="true" />
+            <FluentTextField Label="Status" Value="@Status" ReadOnly="true" />
+            <FluentTextField Label="Created By" Value="@CreatedBy" ReadOnly="true" />
+            <FluentTextField Label="Created UTC" Value="@CreatedUtcLabel" ReadOnly="true" />
+        </FluentStack>
+
+        <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8" VerticalGap="8">
+            <FluentButton Appearance="Appearance.Accent" Disabled="@(!CanSaveDraft)" OnClick="OnSaveDraft">Save Draft</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" Disabled="@(!CanCreateNewVersion)" OnClick="OnCreateVersion">Create New Version</FluentButton>
+            <FluentButton Appearance="Appearance.Neutral" Disabled="@(!CanPinVersion)" OnClick="OnPinVersion">Pin Version</FluentButton>
+            <FluentButton Appearance="Appearance.Neutral" Disabled="@(!CanFreezeVersion)" OnClick="OnFreezeVersion">Freeze Version</FluentButton>
+        </FluentStack>
+    </FluentStack>
+</FluentCard>
+
+@code {
+    [Parameter] public int CurrentVersion { get; set; }
+    [Parameter] public int? PinnedVersion { get; set; }
+    [Parameter] public int? PreviousVersion { get; set; }
+    [Parameter] public string Status { get; set; } = "Draft";
+    [Parameter] public string CreatedBy { get; set; } = "-";
+    [Parameter] public DateTimeOffset? CreatedUtc { get; set; }
+
+    [Parameter] public bool CanSaveDraft { get; set; }
+    [Parameter] public bool CanCreateNewVersion { get; set; }
+    [Parameter] public bool CanPinVersion { get; set; }
+    [Parameter] public bool CanFreezeVersion { get; set; }
+
+    [Parameter] public EventCallback OnSaveDraft { get; set; }
+    [Parameter] public EventCallback OnCreateVersion { get; set; }
+    [Parameter] public EventCallback OnPinVersion { get; set; }
+    [Parameter] public EventCallback OnFreezeVersion { get; set; }
+
+    private string CurrentVersionLabel => $"v{CurrentVersion}";
+    private string PinnedVersionLabel => PinnedVersion.HasValue ? $"v{PinnedVersion.Value}" : "-";
+    private string PreviousVersionLabel => PreviousVersion.HasValue ? $"v{PreviousVersion.Value}" : "-";
+    private string CreatedUtcLabel => CreatedUtc?.ToUniversalTime().ToString("u") ?? "-";
+}

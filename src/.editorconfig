@@ -36,7 +36,7 @@ dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case
 
 dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
-dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
+dotnot_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
 # Symbol specifications
 
@@ -86,3 +86,12 @@ dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
 end_of_line = crlf
+trim_trailing_whitespace = true
+
+[*]
+max_line_length = 100
+
+[*.g.cs]
+# Allow the nswag generated files to have using directives inside the namespace
+csharp_using_directive_placement = inside_namespace
+dotnet_diagnostic.IDE0065.severity = none

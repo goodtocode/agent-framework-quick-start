@@ -1,0 +1,29 @@
+<FluentCard>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H3">Version History</FluentLabel>
+
+        @if (!Items.Any())
+        {
+            <FluentLabel>No version history available.</FluentLabel>
+        }
+        else
+        {
+            @foreach (var item in Items.OrderByDescending(x => x.Version))
+            {
+                <FluentButton Appearance="@(item.Version == SelectedVersion ? Appearance.Accent : Appearance.Stealth)"
+                              OnClick="@(() => OnSelectVersion.InvokeAsync(item.Version))">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="4">
+                        <FluentLabel>@($"v{item.Version} {item.Status}")</FluentLabel>
+                        <FluentLabel>@(item.CreatedUtc?.ToUniversalTime().ToString("u") ?? "-")</FluentLabel>
+                    </FluentStack>
+                </FluentButton>
+            }
+        }
+    </FluentStack>
+</FluentCard>
+
+@code {
+    [Parameter] public IReadOnlyList<VersionHistoryItem> Items { get; set; } = [];
+    [Parameter] public int? SelectedVersion { get; set; }
+    [Parameter] public EventCallback<int> OnSelectVersion { get; set; }
+}

@@ -4,7 +4,7 @@ using Goodtocode.AgentFramework.Core.Domain.Actor;
 namespace Goodtocode.AgentFramework.Tests.Integration.Actor;
 
 [Binding]
-[Scope(Tag = "createAuthorCommand")]
+[Scope(Tag = "createActorCommand")]
 public class CreateActorCommandStepDefinitions : TestBase
 {
     private string _name = string.Empty;
@@ -38,7 +38,7 @@ public class CreateActorCommandStepDefinitions : TestBase
         _id = Guid.Parse(id);
     }
 
-    [Given("I have a External id {string}")]
+    [Given("I have a OwnerId {string}")]
     public void GivenIHaveAExternalId(string ownerId)
     {
         _ownerId = Guid.Parse(ownerId);
@@ -55,39 +55,34 @@ public class CreateActorCommandStepDefinitions : TestBase
     {
         if (_exists)
         {
-            var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com", _ownerId, _tenantId);
+            var actor = ActorEntity.Create(
+                firstName: "John",
+                lastName: "Doe",
+                email: "jdoe@goodtocode.com",
+                ownerId: rlsContext.OwnerId,
+                tenantId: rlsContext.TenantId
+            );
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
         }
 
-        var request = new CreateActorCommand()
+        var request = new CreateOurActorCommand()
         {
-            Id = _id,
-            OwnerId = _ownerId,
-            TenantId = _tenantId,
             FirstName = _name.Split(" ").FirstOrDefault(),
             LastName = _name.Split(" ").LastOrDefault(),
             Email = _email
         };
 
-        var validator = new CreateActorCommandValidator();
-        validationResponse = await validator.ValidateAsync(request);
-
-        if (validationResponse.IsValid)
+        try
         {
-            try
-            {
-                var handler = new CreateActorCommandHandler(context);
-                await handler.Handle(request, CancellationToken.None);
-                responseType = CommandResponseType.Successful;
-            }
-            catch (Exception e)
-            {
-                HandleAssignResponseType(e);
-            }
+            var created = await Sender.Send(request, CancellationToken.None);
+            _id = created.Id;
+            responseType = CommandResponseType.Successful;
         }
-        else
-            responseType = CommandResponseType.BadRequest;
+        catch (Exception e)
+        {
+            HandleAssignResponseType(e);
+        }
     }
 
     [Then(@"I see the Actor created with the initial response ""([^""]*)""")]
