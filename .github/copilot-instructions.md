@@ -1,7 +1,7 @@
 # Copilot Instructions for Microsoft Agent Framework Quick-start
 
 ## Project Overview
-- **Microsoft Agent Framework Quick-start** is a C# solution for AI-powered monitoring, classification, and mitigation of digital assets.
+- **Goodtocode Quick-start for Microsoft Agent Framework** is a C# solution for AI-powered monitoring, classification, and mitigation of digital assets.
 - Built on a clean architecture: ASP.NET Core Web API backend, Blazor WebAssembly frontend, SQL Server storage, and Microsoft Semantic Kernel for AI/LLM integration.
 - Infrastructure is managed via Azure Bicep and deployed using GitHub Actions.
 
@@ -14,7 +14,7 @@
 - **IaC:** `.azure` (Bicep), Azure Bicep in deployment scripts
 
 ## Developer Workflows
-- **Build:** Use `dotnet build GoodToCode.AgentFramework.Web.slnx` in `/` to build the solution.
+- **Build:** Use `dotnet build Goodtocode.Quick-start.AgentFramework.Web.slnx` in `/` to build the solution.
 - **Test:** Integration gherkin specs in `src/Tests.Integration/`.
 - **Run:** Launch via Visual Studio or `dotnet run` from solution root.
 - **CI/CD:** Managed by GitHub Actions (`.github/workflows/`).

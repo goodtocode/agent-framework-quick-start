@@ -25,4 +25,8 @@
 		<PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.12.2" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0" />		
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Metadata\" />
+	</ItemGroup>
 </Project>

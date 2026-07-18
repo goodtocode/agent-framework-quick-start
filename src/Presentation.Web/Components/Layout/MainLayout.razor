@@ -3,7 +3,6 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Components.Auth.Routing
 @using Goodtocode.AgentFramework.Presentation.Web.Components.Auth.Services
 @using Goodtocode.AgentFramework.Presentation.Web.Components.Models
-@using Goodtocode.AgentFramework.Presentation.Web.Metadata
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.Identity.Web
 
@@ -19,7 +18,7 @@
                 <img src="img/logo.png" alt="GoodToCode" style="max-height:70px; background:rgba(255,255,255,0.03);" />
             </FluentNavLink>
             <FluentNavLink Href="/">
-                GoodToCode AgentFramework
+                Goodtocode Quick-start for Microsoft Agent Framework
             </FluentNavLink>
         </FluentStack>
         <UserProfile />
@@ -62,10 +61,6 @@
         <FluentNavLink Href="chat" Icon="@(new Icons.Regular.Size24.Chat())" Match="NavLinkMatch.All">
             Chat Session
         </FluentNavLink>
-        @foreach (var can in CanPresentationMetadata.All.Where(c => c.Enabled))
-        {
-            <FluentNavLink Href="@($"/{can.Scheme.ToString().ToLowerInvariant()}")" Icon="@(can.Icon)">@can.DisplayName</FluentNavLink>
-        }
     </NavMenuContent>
 </FluentMainLayout>
 
