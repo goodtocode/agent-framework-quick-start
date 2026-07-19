@@ -1,6 +1,4 @@
-using Goodtocode.AgentFramework.Presentation.Web.Library.HorizontalMenu.Models;
-
-namespace Goodtocode.AgentFramework.Presentation.Web.Library.Models;
+namespace Goodtocode.AgentFramework.Presentation.Web.Library.HorizontalMenu.Models;
 
 public sealed class PlatformNavigationModel
 {

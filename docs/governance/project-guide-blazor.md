@@ -39,6 +39,7 @@ Presentation.Web
 ├── Properties
 ├── wwwroot
 │
+├── _Imports.razor
 ├── Program.cs
 ├── ConfigureServices.cs
 └── ...
@@ -125,6 +126,11 @@ Form Components
 Reusable Workflows
 ```
 
+Auth is mission-critical and is intentionally allowed in two clear boundaries:
+
+- `Library/Auth` for reusable authentication UI and routing helpers.
+- `Infrastructure/Auth` for application-locked authentication implementation services.
+
 Each library item follows the same functional cohesion pattern as features.
 
 ## Structure
@@ -137,7 +143,9 @@ Library
 ├── Auth
 │   ├── AuthComponent.razor
 │   ├── Components
+│   ├── Routing
 │   ├── Models
+│   ├── Middleware
 │   └── Services
 │
 ├── Skeleton
@@ -160,6 +168,7 @@ Library
 - Library items should be candidates for future Razor Class Libraries.
 - Library items should not contain application shell concerns.
 - Library items should not contain business-specific functionality.
+- `Library/Auth` should contain reusable auth UI concerns such as auth components, redirect flows, routing helpers, and auth-facing view models.
 
 ---
 
@@ -178,6 +187,7 @@ Infrastructure is not reusable UI.
 ```text
 Infrastructure
 │
+├── Auth
 ├── Clients
 ├── Http
 ├── Options
@@ -234,6 +244,19 @@ Infrastructure
     └── ResilientHttpClientOptions.cs
 ```
 
+### Auth
+
+Contains application infrastructure for authentication implementation.
+
+Examples:
+
+```text
+Infrastructure
+└── Auth
+    ├── UserSyncService.cs
+    └── [implementation services]
+```
+
 ## Rules
 
 - Infrastructure contains technical services.
@@ -241,6 +264,16 @@ Infrastructure
 - Infrastructure should not contain pages.
 - Infrastructure should not contain user-facing features.
 - Infrastructure should not become a dumping ground for miscellaneous code.
+- `Infrastructure/Auth` should contain auth implementation services only (token/user synchronization, provider integration, and policy plumbing).
+
+### Auth Boundary Clarification
+
+`Library/Auth` and `Infrastructure/Auth` are both valid and intentional.
+
+- `Library/Auth`: reusable authentication UI.
+- `Infrastructure/Auth`: authentication implementation services.
+
+This split preserves clear ownership while respecting mission-critical auth requirements.
 
 ---
 
@@ -272,7 +305,6 @@ Shell
 │   ├── Error.razor
 │   └── NotFound.razor
 │
-├── _Imports.razor
 ├── App.razor
 └── Routes.razor
 ```
