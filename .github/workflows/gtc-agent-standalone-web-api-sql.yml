@@ -111,7 +111,7 @@ jobs:
 
       - name: Build
         run: |
-          dotnet build ${{ env.SRC_PATH }}/${{ env.SRC_SLN }} --configuration ${{ env.CONFIGURATION }}
+          dotnet build ${{ env.SRC_SLN }} --configuration ${{ env.CONFIGURATION }}
         shell: pwsh
 
       - name: Install dotnet-ef
