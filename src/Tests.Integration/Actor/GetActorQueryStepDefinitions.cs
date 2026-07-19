@@ -20,7 +20,11 @@ public class GetActorQueryStepDefinitions : TestBase
     [Given(@"I have a Actor id ""([^""]*)""")]
     public void GivenIHaveAAuthorId(string actorId)
     {
-        if (string.IsNullOrWhiteSpace(actorId)) return;
+        if (string.IsNullOrWhiteSpace(actorId))
+        {
+            return;
+        }
+
         Guid.TryParse(actorId, out _id).ShouldBeTrue();
     }
 
@@ -35,31 +39,32 @@ public class GetActorQueryStepDefinitions : TestBase
     {
         if (_exists)
         {
-            var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com", userContext.OwnerId, userContext.TenantId);
+            var actor = ActorEntity.Create(
+                firstName: "John",
+                lastName: "Doe",
+                email: "jdoe@goodtocode.com",
+                ownerId: rlsContext.OwnerId,
+                tenantId: rlsContext.TenantId
+            );
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
+            _id = actor.Id;
         }
 
-        var request = new GetActorQuery()
+        var request = new GetOurActorQuery()
         {
             ActorId = _id
         };
 
-        var validator = new GetActorQueryValidator();
-        validationResponse = validator.Validate(request);
-        if (validationResponse.IsValid)
-            try
-            {
-                var handler = new GetActorQueryHandler(context);
-                _response = await handler.Handle(request, CancellationToken.None);
-                responseType = CommandResponseType.Successful;
-            }
-            catch (Exception e)
-            {
-                responseType = HandleAssignResponseType(e);
-            }
-        else
-            responseType = CommandResponseType.BadRequest;
+        try
+        {
+            _response = await Sender.Send(request, CancellationToken.None);
+            responseType = CommandResponseType.Successful;
+        }
+        catch (Exception e)
+        {
+            responseType = HandleAssignResponseType(e);
+        }
     }
 
     [Then(@"The response is ""([^""]*)""")]
@@ -77,7 +82,11 @@ public class GetActorQueryStepDefinitions : TestBase
     [Then(@"If the response is successful the response has a Id")]
     public void ThenIfTheResponseIsSuccessfulTheResponseHasAKey()
     {
-        if (responseType != CommandResponseType.Successful) return;
+        if (responseType != CommandResponseType.Successful)
+        {
+            return;
+        }
+
         _response?.Id.ShouldNotBeEmpty();
     }
 }

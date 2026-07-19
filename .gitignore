@@ -4,10 +4,11 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 # Documentation
-*.Presentation.WebApi.xml
+*.Presentation.Api.xml
 [Ss]wagger/
 swagger.json
 .config/
+/dotnet-tools.json
 
 # User-specific files
 *.rsuser

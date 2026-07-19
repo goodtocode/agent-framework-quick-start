@@ -26,7 +26,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         private Microsoft.VisualStudio.TestTools.UnitTesting.TestContext _testContext;
         
         private static string[] featureTags = new string[] {
-                "deleteAuthorCommand"};
+                "deleteActorCommand"};
         
         private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Actor", "Delete Actor Command", "As a Actor owner\r\nWhen I select a Actor\r\nI can delete the Actor", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
@@ -124,9 +124,9 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Delete Actor")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Delete Actor")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Delete Actor Command")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("deleteAuthorCommand")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("deleteActorCommand")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success", "Success", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "true", "0", null, DisplayName="Delete Actor(success,Success,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,true,0)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "NotFound", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="Delete Actor(not found,NotFound,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,1)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found", "Conflict", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "1", null, DisplayName="Delete Actor(not found,Conflict,,038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9,false,1)")]
         public async global::System.Threading.Tasks.Task DeleteActor(string def, string response, string responseErrors, string id, string exists, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

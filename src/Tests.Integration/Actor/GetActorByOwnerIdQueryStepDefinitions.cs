@@ -16,10 +16,10 @@ public class GetActorByOwnerIdQueryStepDefinitions : TestBase
         base.def = def;
     }
 
-    [Given("I have a Actor External Id")]
+    [Given("I have a Actor OwnerId")]
     public void GivenIHaveAAuthorExternalId()
     {
-        userContext.OwnerId.ShouldNotBeEmpty();
+        rlsContext.OwnerId.ShouldNotBeEmpty();
     }
 
     [Given(@"the Actor exists ""([^""]*)""")]
@@ -33,31 +33,30 @@ public class GetActorByOwnerIdQueryStepDefinitions : TestBase
     {
         if (_exists)
         {
-            var actor = ActorEntity.Create(userContext.OwnerId, "John", "Doe", "jdoe@goodtocode.com", userContext.OwnerId, userContext.TenantId);
+            var actor = ActorEntity.Create(
+                firstName: "John",
+                lastName: "Doe",
+                email: "jdoe@goodtocode.com",
+                ownerId: rlsContext.OwnerId,
+                tenantId: rlsContext.TenantId
+            );
             context.Actors.Add(actor);
             await context.SaveChangesAsync(CancellationToken.None);
         }
 
         var request = new GetMyActorQuery()
         {
-            UserContext = userContext
         };
 
-        var validator = new GetMyActorQueryValidator();
-        validationResponse = validator.Validate(request);
-        if (validationResponse.IsValid)
-            try
-            {
-                var handler = new GetActorByOwnerIdQueryHandler(context);
-                _response = await handler.Handle(request, CancellationToken.None);
-                responseType = CommandResponseType.Successful;
-            }
-            catch (Exception e)
-            {
-                responseType = HandleAssignResponseType(e);
-            }
-        else
-            responseType = CommandResponseType.BadRequest;
+        try
+        {
+            _response = await Sender.Send(request, CancellationToken.None);
+            responseType = CommandResponseType.Successful;
+        }
+        catch (Exception e)
+        {
+            responseType = HandleAssignResponseType(e);
+        }
     }
 
     [Then(@"The response is ""([^""]*)""")]
@@ -75,7 +74,11 @@ public class GetActorByOwnerIdQueryStepDefinitions : TestBase
     [Then(@"If the response is successful the response has a Id")]
     public void ThenIfTheResponseIsSuccessfulTheResponseHasAKey()
     {
-        if (responseType != CommandResponseType.Successful) return;
+        if (responseType != CommandResponseType.Successful)
+        {
+            return;
+        }
+
         _response?.Id.ShouldNotBeEmpty();
     }
 }

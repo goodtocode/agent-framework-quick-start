@@ -1,0 +1,15 @@
+﻿global using Asp.Versioning;
+global using Asp.Versioning.ApiExplorer;
+global using Asp.Versioning.Builder;
+global using Goodtocode.AgentFramework.Core.Application.Common.Auth;
+global using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
+global using Goodtocode.AgentFramework.Core.Application.Common.Models;
+global using Goodtocode.AgentFramework.Presentation.Api.Common;
+global using Goodtocode.Mediator;
+global using Goodtocode.Validation;
+global using Microsoft.AspNetCore.Diagnostics;
+global using Microsoft.AspNetCore.Http.HttpResults;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Extensions.Options;
+global using Swashbuckle.AspNetCore.SwaggerGen;
+global using System.Reflection;

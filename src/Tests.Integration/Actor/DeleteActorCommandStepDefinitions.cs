@@ -1,11 +1,10 @@
 using Goodtocode.AgentFramework.Core.Application.Actor;
 using Goodtocode.AgentFramework.Core.Domain.Actor;
-using Microsoft.AspNetCore.Identity;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.Actor
 {
     [Binding]
-    [Scope(Tag = "deleteAuthorCommand")]
+    [Scope(Tag = "deleteActorCommand")]
     public class DeleteActorCommandStepDefinitions : TestBase
     {
         private bool _exists;
@@ -34,32 +33,32 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         {
             if (_exists)
             {
-                var actor = ActorEntity.Create(_id, "John", "Doe", "jdoe@goodtocode.com", userContext.OwnerId, userContext.TenantId);
+                var actor = ActorEntity.Create(
+                    firstName: "John",
+                    lastName: "Doe",
+                    email: "jdoe@goodtocode.com",
+                    ownerId: rlsContext.OwnerId,
+                    tenantId: rlsContext.TenantId
+                );
                 context.Actors.Add(actor);
                 await context.SaveChangesAsync(CancellationToken.None);
+                _id = actor.OwnerId;
             }
 
             var request = new DeleteActorByOwnerIdCommand()
             {
-                OwnerId = userContext.OwnerId
+                OwnerId = _id == Guid.Empty ? rlsContext.OwnerId : _id
             };
 
-            var validator = new DeleteActorByOwnerIdCommandValidator();
-            validationResponse = await validator.ValidateAsync(request);
-
-            if (validationResponse.IsValid)
-                try
-                {
-                    var handler = new DeleteActorByOwnerIdCommandHandler(context);
-                    await handler.Handle(request, CancellationToken.None);
-                    responseType = CommandResponseType.Successful;
-                }
-                catch (Exception e)
-                {
-                    HandleAssignResponseType(e);
-                }
-            else
-                responseType = CommandResponseType.BadRequest;
+            try
+            {
+                await Sender.Send(request, CancellationToken.None);
+                responseType = CommandResponseType.Successful;
+            }
+            catch (Exception e)
+            {
+                HandleAssignResponseType(e);
+            }
         }
 
         [Then(@"The response is ""([^""]*)""")]

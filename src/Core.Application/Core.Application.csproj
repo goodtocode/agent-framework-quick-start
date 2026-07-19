@@ -9,13 +9,25 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>		
 	</PropertyGroup>
+
 	<ItemGroup>
-		<PackageReference Include="Goodtocode.Mediator" Version="1.1.13" />
-		<PackageReference Include="Goodtocode.Validation" Version="1.1.29" />
-		<PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.0.0-preview.260128.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
+	  <Compile Remove="Abstractions\Contracts\**" />
+	  <Compile Remove="Clients\**" />
+	  <EmbeddedResource Remove="Abstractions\Contracts\**" />
+	  <EmbeddedResource Remove="Clients\**" />
+	  <None Remove="Abstractions\Contracts\**" />
+	  <None Remove="Clients\**" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Identity" Version="1.21.0" />
+		<PackageReference Include="Goodtocode.Mediator" Version="1.1.26" />
+		<PackageReference Include="Goodtocode.Validation" Version="1.1.38" />
+		<PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.13.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
+	</ItemGroup>
+	
 	<ItemGroup>
 	  <ProjectReference Include="..\Core.Domain\Core.Domain.csproj" />
-	</ItemGroup>
+	</ItemGroup>	
 </Project>

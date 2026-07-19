@@ -1,12 +1,12 @@
 ﻿@getAuthorByOwnerIdQuery
-Feature: Get Actor By External Id Query
+Feature: Get Actor By OwnerId Query
 As a actor owner
 When I select an existing Actor
 I can see the actor detail
 
-Scenario: Get Actor By External Id
+Scenario: Get Actor By OwnerId
 	Given I have a definition "<def>"
-	And I have a Actor External Id
+	And I have a Actor OwnerId
 	And the Actor exists "<exists>"
 	When I get the Actor
 	Then The response is "<response>"

@@ -1,36 +1,51 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Auth;
-using Goodtocode.Domain.Entities;
-
-namespace Goodtocode.AgentFramework.Core.Domain.Actor;
+﻿namespace Goodtocode.AgentFramework.Core.Domain.Actor;
 
 public class ActorEntity : SecuredEntity<ActorEntity>
 {
-    protected ActorEntity() : base(Guid.Empty, Guid.Empty, Guid.Empty) {    }
     public string? FirstName { get; private set; } = string.Empty;
     public string? LastName { get; private set; } = string.Empty;
     public string? Email { get; private set; } = string.Empty;
 
-    public static ActorEntity Create(Guid id, string? firstName, string? lastName, string? email, Guid ownerId, Guid tenantId)
-    {
-        return new ActorEntity(id, firstName, lastName, email, ownerId, tenantId);
-    }
+    protected ActorEntity() : base() { }
 
-    private ActorEntity(Guid id, string? firstName, string? lastName, string? email, Guid ownerId, Guid tenantId) : base(id, ownerId, tenantId)
+    private ActorEntity(
+        Guid id,
+        string canonicalKey,
+        Guid ownerId,
+        Guid tenantId,
+        Guid createdBy,
+        DateTime createdOn,
+        DateTimeOffset timestamp,
+        string? firstName,
+        string? lastName,
+        string? email)
+        : base(id: id, partitionKey: tenantId.ToString(), rowKey: canonicalKey,
+               ownerId: ownerId, tenantId: tenantId, createdBy: createdBy,
+               createdOn: createdOn, timestamp: timestamp)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
     }
 
-    public static ActorEntity Create(IUserContext userInfo)
+    public static ActorEntity Create(
+        Guid ownerId,
+        Guid tenantId,
+        string? firstName,
+        string? lastName,
+        string? email)
     {
         return new ActorEntity(
-            Guid.NewGuid(),
-            userInfo.FirstName,
-            userInfo.LastName,
-            userInfo.Email,
-            userInfo.OwnerId,
-            userInfo.TenantId
+            id: Guid.NewGuid(),
+            canonicalKey: Guid.NewGuid().ToString(),
+            ownerId: ownerId,
+            tenantId: tenantId,
+            createdBy: ownerId,
+            createdOn: DateTime.UtcNow,
+            timestamp: DateTimeOffset.UtcNow,
+            firstName: firstName,
+            lastName: lastName,
+            email: email
         );
     }
 

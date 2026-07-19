@@ -17,7 +17,11 @@ public class ActorDto
 
     public static ActorDto CreateFrom(ActorEntity? entity)
     {
-        if (entity is null) return null!;
+        if (entity is null)
+        {
+            return null!;
+        }
+
         return new ActorDto
         {
             Id = entity.Id,

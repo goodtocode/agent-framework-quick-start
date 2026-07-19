@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/Core.Application/Core.Application.csproj" />
+  <Project Path="src/Core.Domain/Core.Domain.csproj" />
+  <Project Path="src/Infrastructure.AgentFramework/Infrastructure.AgentFramework.csproj" />
+  <Project Path="src/Infrastructure.SqlServer/Infrastructure.SqlServer.csproj" />
+  <Project Path="src/Presentation.Api/Presentation.Api.csproj" />
+  <Project Path="src/Tests.Integration/Tests.Integration.csproj" />
+</Solution>
