@@ -1,5 +1,5 @@
-﻿using Goodtocode.AgentFramework.Presentation.Web.Components.Auth.Middleware;
-using Goodtocode.AgentFramework.Presentation.Web.Components.Auth.Services;
+﻿using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Middleware;
+using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;
 using Goodtocode.AgentFramework.Presentation.Web.Options;
 using Goodtocode.SecuredHttpClient.Middleware;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
