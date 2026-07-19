@@ -1,4 +1,5 @@
 ﻿using Goodtocode.AgentFramework.Core.Application;
+using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
@@ -66,6 +67,8 @@ public abstract class TestBase : IDisposable
         services.AddDbContext<AgentFrameworkContext>(options =>
             options.UseInMemoryDatabase($"AgentFrameworkContext-{Guid.NewGuid()}")
                 .UseLazyLoadingProxies());
+        services.AddScoped<IAgentFrameworkContext>(provider =>
+            provider.GetRequiredService<AgentFrameworkContext>());
 
         ConfigureServices(services);
 
