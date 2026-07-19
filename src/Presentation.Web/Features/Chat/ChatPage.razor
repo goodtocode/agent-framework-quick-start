@@ -3,11 +3,15 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Components
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Models
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Services
+@using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 
 @attribute [Authorize]
 
 @inject IChatService chatService
+@inject IUserSyncService UserSyncService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Chat Session</PageTitle>
 
@@ -65,6 +69,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            await UserSyncService.SyncUserAsync(authState.User);
+        }
+
         chatSessions = new ChatSessionsModel();
         chatSessions.AddRange(await chatService.GetChatSessionsAsync());
         StateHasChanged();

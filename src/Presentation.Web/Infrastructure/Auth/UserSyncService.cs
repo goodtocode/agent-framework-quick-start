@@ -20,41 +20,52 @@ public class UserSyncService(BackendApiClient apiClient, IClaimsReader userInfo)
         Failed
     }
 
-    private bool _isSyncing;
+    private readonly object _syncGate = new();
+    private Task _syncTask = Task.CompletedTask;
 
     public void UserChanged(ClaimsPrincipal? user)
     {
         SetSyncStatus(user, SyncStatus.Pending);
     }
 
-    public async Task SyncUserAsync(ClaimsPrincipal? user)
+    public Task SyncUserAsync(ClaimsPrincipal? user)
     {
-        if (_isSyncing) return;
-        _isSyncing = true;
+        ClaimsIdentity? identity = user?.Identity as ClaimsIdentity ?? throw new AuthenticationException("User identity is missing or invalid.");
+
+        if (!identity.IsAuthenticated)
+            return Task.CompletedTask;
+
+        var syncClaim = identity.FindFirst(UserSyncClaimName)?.Value;
+        if (syncClaim == SyncStatus.Synced.ToString())
+            return Task.CompletedTask;
+
+        lock (_syncGate)
+        {
+            if (!_syncTask.IsCompleted)
+                return _syncTask;
+
+            _syncTask = SyncUserInternalAsync(user);
+            return _syncTask;
+        }
+    }
+
+    private async Task SyncUserInternalAsync(ClaimsPrincipal? user)
+    {
         try
         {
-            ClaimsIdentity? identity = user?.Identity as ClaimsIdentity ?? throw new AuthenticationException("User identity is missing or invalid.");
-
-            var syncClaim = identity.FindFirst(UserSyncClaimName)?.Value ?? SyncStatus.Pending.ToString();
-            if (identity.IsAuthenticated && syncClaim == SyncStatus.Pending.ToString())
+            await HandleApiException(() => _apiClient.SaveMyActorAsync(new SaveMyActorCommand
             {
-                await HandleApiException(() => _apiClient.SaveMyActorAsync(new SaveMyActorCommand
-                {
-                    FirstName = _userContext.FirstName,
-                    LastName = _userContext.LastName,
-                    Email = _userContext.Email
-                }));
-            }
+                FirstName = _userContext.FirstName,
+                LastName = _userContext.LastName,
+                Email = _userContext.Email
+            }));
+
             SetSyncStatus(user, SyncStatus.Synced);
         }
         catch (Exception)
         {
             SetSyncStatus(user, SyncStatus.Failed);
             throw;
-        }
-        finally
-        {
-            _isSyncing = false;
         }
     }
 

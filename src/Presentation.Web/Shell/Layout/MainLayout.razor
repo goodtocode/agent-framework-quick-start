@@ -92,20 +92,20 @@
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
         try
         {
-            if (firstRender && !_synced)
-            {
-                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-                var user = authState.User;
+            if (_synced)
+                return;
 
-                if (user.Identity?.IsAuthenticated == true)
-                {
-                    await UserSyncService.SyncUserAsync(user);
-                    _synced = true;
-                }
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                await UserSyncService.SyncUserAsync(user);
+                _synced = true;
             }
         }
         catch (MicrosoftIdentityWebChallengeUserException)
