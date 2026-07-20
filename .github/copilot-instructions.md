@@ -31,6 +31,7 @@
 - **Microsoft Agent Framework:** Add plugins in `src/Infrastructure.AgentFramework/Plugins/`.
 - **External Integrations:** Use `src/Core.Application/Common/` and `src/Infrastructure.AgentFramework/` for connectors.
 - **RBAC & Security:** Enforced in API layer, see `ConfigureServicesAuth.cs`.
+- **Auth-Triggered User Provisioning:** Keep the flow UI-tied (not middleware/pipeline) because OBO token acquisition requires user context on the main UI thread/circuit.
 
 ## References
 - [README.md](../README.md): Project overview and getting started

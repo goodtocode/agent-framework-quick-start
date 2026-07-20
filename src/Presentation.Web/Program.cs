@@ -1,8 +1,8 @@
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Goodtocode.AgentFramework.Presentation.Web;
-using Goodtocode.AgentFramework.Presentation.Web.Components;
-using Goodtocode.AgentFramework.Presentation.Web.Components.Auth.Routing;
+using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Routing;
+using Goodtocode.AgentFramework.Presentation.Web.Shell;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OpenTelemetry.Metrics;

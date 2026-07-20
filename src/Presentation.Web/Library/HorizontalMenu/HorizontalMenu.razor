@@ -1,0 +1,48 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Library.HorizontalMenu.Models
+@inject NavigationManager Navigation
+
+<FluentStack Orientation="Orientation.Horizontal"
+             Wrap="true"
+             HorizontalGap="12"
+             VerticalGap="8"
+             HorizontalAlignment="@(Center ? HorizontalAlignment.Center : HorizontalAlignment.Left)">
+    @foreach (var item in Items)
+    {
+        <FluentButton Appearance="@(ResolveAppearance(item))"
+                      Disabled="item.Disabled"
+                      OnClick="@(() => Navigate(item.Href))">
+            @item.Label
+        </FluentButton>
+    }
+</FluentStack>
+
+@code {
+    [Parameter] public IReadOnlyList<HorizontalMenuItem> Items { get; set; } = [];
+    [Parameter] public bool Center { get; set; }
+    [Parameter] public bool UseSelectedState { get; set; }
+    [Parameter] public Appearance NonSelectedAppearance { get; set; } = Appearance.Accent;
+    [Parameter] public Appearance SelectedAppearance { get; set; } = Appearance.Accent;
+
+    private void Navigate(string href)
+    {
+        if (!string.IsNullOrWhiteSpace(href))
+        {
+            Navigation.NavigateTo(href);
+        }
+    }
+
+    private Appearance ResolveAppearance(HorizontalMenuItem item)
+    {
+        if (!UseSelectedState)
+        {
+            return NonSelectedAppearance;
+        }
+
+        var current = Navigation.ToBaseRelativePath(Navigation.Uri).Trim('/');
+        var target = item.Href.Trim('/');
+        var isSelected = current.Equals(target, StringComparison.OrdinalIgnoreCase)
+            || current.StartsWith($"{target}/", StringComparison.OrdinalIgnoreCase);
+
+        return isSelected ? SelectedAppearance : NonSelectedAppearance;
+    }
+}

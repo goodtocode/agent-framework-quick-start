@@ -1,0 +1,58 @@
+﻿@page "/"
+@using Goodtocode.AgentFramework.Presentation.Web.Library.Typography
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+
+<PageTitle>Goodtocode Quick-start for Microsoft Agent Framework</PageTitle>
+
+<FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" VerticalGap="24">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="width: 100%; max-width: 980px;">
+        <FluentSpacer />
+
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
+                <FluentLabel Typo="Typography.H1" Alignment="HorizontalAlignment.Center">
+                    Goodtocode Quick-start for Microsoft Agent Framework
+                </FluentLabel>
+
+                <FluentLabel Typo="Typography.Body" Alignment="HorizontalAlignment.Center">
+                    Build and test AI-assisted chat workflows quickly with a focused, minimal starter experience.
+                </FluentLabel>
+
+                <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
+                    <FluentBadge Appearance="Appearance.Neutral">Fast setup</FluentBadge>
+                    <FluentBadge Appearance="Appearance.Neutral">Secure sign-in</FluentBadge>
+                    <FluentBadge Appearance="Appearance.Neutral">Chat-first workflow</FluentBadge>
+                </FluentStack>
+
+                <FluentCard Style="width: 100%; max-width: 760px; margin-inline: auto;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+                        <FluentLabel Typo="Typography.H4">Recommended first steps</FluentLabel>
+                        <FluentLabel>1. Sign in to create your user context.</FluentLabel>
+                        <FluentLabel>2. Open Chat Session to start a new conversation.</FluentLabel>
+                        <FluentLabel>3. Ask a focused prompt and iterate from the response.</FluentLabel>
+                    </FluentStack>
+                </FluentCard>
+
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="OpenChatSession">
+                        Open Chat Session
+                    </FluentButton>
+                    <FluentLabel Typo="Typography.Body" Alignment="HorizontalAlignment.Center">
+                        Tip: Start with a concrete task (for example, “Generate a summary and next actions”).
+                    </FluentLabel>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+    </FluentStack>
+</FluentStack>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private void OpenChatSession()
+    {
+        Navigation.NavigateTo("/chat");
+    }
+}
