@@ -9,6 +9,25 @@ public class HttpClaimsReader(IHttpContextAccessor contextAccessor) : IClaimsRea
 {
     private readonly HttpContext? context = contextAccessor?.HttpContext;
 
+    private string ClaimValue(params string[] claimTypes)
+    {
+        foreach (var claimType in claimTypes)
+        {
+            var value = context?.User.FindFirst(claimType)?.Value;
+            if (!string.IsNullOrWhiteSpace(value))
+                return value;
+        }
+
+        return string.Empty;
+    }
+
+    private string FullName => ClaimValue(
+        "name",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
+
+    private string[] FullNameParts => FullName
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
     /// <summary>
     /// Gets the unique identifier of the user object from the objectidentifier claim.
     /// </summary>
@@ -31,17 +50,55 @@ public class HttpClaimsReader(IHttpContextAccessor contextAccessor) : IClaimsRea
     /// <summary>
     /// Gets the first name of the user from the givenname claim.
     /// </summary>
-    public string FirstName => context?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")?.Value ?? string.Empty;
+    public string FirstName
+    {
+        get
+        {
+            var firstName = ClaimValue(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname",
+                "given_name");
+            if (!string.IsNullOrWhiteSpace(firstName))
+                return firstName;
+
+            if (FullNameParts.Length > 0)
+                return FullNameParts[0];
+
+            var email = Email;
+            if (!string.IsNullOrWhiteSpace(email) && email.Contains('@'))
+                return email.Split('@')[0];
+
+            return string.Empty;
+        }
+    }
 
     /// <summary>
     /// Gets the last name of the user from the surname claim.
     /// </summary>
-    public string LastName => context?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname")?.Value ?? string.Empty;
+    public string LastName
+    {
+        get
+        {
+            var lastName = ClaimValue(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname",
+                "family_name");
+            if (!string.IsNullOrWhiteSpace(lastName))
+                return lastName;
+
+            if (FullNameParts.Length > 1)
+                return string.Join(" ", FullNameParts.Skip(1));
+
+            return FirstName;
+        }
+    }
 
     /// <summary>
     /// Gets the email address from the User Principal Name (UPN) claim.
     /// </summary>
-    public string Email => context?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn")?.Value ?? string.Empty;
+    public string Email => ClaimValue(
+        "email",
+        "preferred_username",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn",
+        "upn");
 
     /// <summary>
     /// Gets the collection of OAuth scopes granted for the current request.

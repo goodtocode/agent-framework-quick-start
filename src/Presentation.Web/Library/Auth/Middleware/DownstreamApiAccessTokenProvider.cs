@@ -16,7 +16,7 @@ public class DownstreamApiAccessTokenProvider(IHttpContextAccessor httpContextAc
             return string.Empty;
 
         var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync([
-            $"api://{_configuration["BackendApi:ClientId"] ?? Guid.Empty.ToString()}/.default"
+            $"api://{_configuration["BackendApi:ClientId"] ?? Guid.Empty.ToString()}/access_as_user"
         ], user: context?.User);
 
         return accessToken ?? string.Empty;

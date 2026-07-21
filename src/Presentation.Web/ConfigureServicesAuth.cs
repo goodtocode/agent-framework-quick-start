@@ -22,14 +22,19 @@ public static class ConfigureServicesAuth
                 {
                     configuration.GetSection("EntraExternalId").Bind(options);
                     options.SignInScheme = OpenIdConnectDefaults.AuthenticationScheme;
+
+                    var backendApiClientId = configuration["BackendApi:ClientId"];
+                    if (!string.IsNullOrWhiteSpace(backendApiClientId))
+                    {
+                        options.Scope.Add($"api://{backendApiClientId}/access_as_user");
+                    }
                 })
             .EnableTokenAcquisitionToCallDownstreamApi()
             .AddInMemoryTokenCaches()
             .AddDownstreamApi("BackendApi", configOptions =>
             {
                 configOptions.BaseUrl = configuration["BackendApi:BaseUrl"];
-                configOptions.Scopes = [$"api://{configuration["BackendApi:ClientId"] ?? Guid.Empty.ToString()}/.default",
-                "User.Read"];
+                configOptions.Scopes = [$"api://{configuration["BackendApi:ClientId"] ?? Guid.Empty.ToString()}/access_as_user"];
             });
 
         services.Configure<MicrosoftIdentityOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
