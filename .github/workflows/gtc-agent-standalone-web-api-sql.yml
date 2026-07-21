@@ -252,7 +252,7 @@ jobs:
           path: ${{ env.MIGRATION_ARTIFACT_PATH }}
 
       - name: Deploy Web API to Azure App Service
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_APIAPP_NAME }}
           package: ${{ env.API_ARTIFACT_OUTPUT }}
@@ -277,7 +277,7 @@ jobs:
         shell: pwsh
 
       - name: Deploy ${{ env.AZURE_WEBAPP_NAME }}
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ${{ env.WEB_ARTIFACT_OUTPUT }}
