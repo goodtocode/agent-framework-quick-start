@@ -19,88 +19,97 @@ Agent Framework is an SDK that integrates Large Language Models (LLMs) like Open
 
 [Getting Started with Microsoft Agent Framework](https://learn.microsoft.com/en-us/agent-framework/get-started/quick-start-guide?pivots=programming-language-csharp)
 
+---
+
 # Quick-Start Steps
-To get started, follow the steps below:
-1. Clone this repository
-	```
-	git clone https://github.com/goodtocode/agent-framework-quick-start.git
-	```
-2. Install Prerequisites
-	```
-	winget install Microsoft.DotNet.SDK.10 --silent
-	```
-	```
-	dotnet tool install --global dotnet-ef
-	```
-3. **Configure Entra External ID (EEID) Authentication**
+Use one of the two copy/paste options below.
 
-	**IMPORTANT:** This product depends on Entra External ID. This means you must have an EEID tenant or create one at https://portal.azure.com. An empty tenant will work. Please remember to create a break-glass user as a backup in cse you get locked out. 
-	
-	Configure EEID authentication using one of the following methods:
-	1. If you do not have app registrations, run `New-EntraAppRegistrations.ps1` to create both Web and API app registrations and set all user-secrets (admin consent required).
-	```
-	pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "../../src/Presentation.Blazor" -ApiProjectPath "../../src/Presentation.WebApi"
-	```
+## Quick-Start: Full Setup (new or first-time environment)
+```powershell
+# Clone repository
+git clone https://github.com/goodtocode/agent-framework-quick-start.git
 
-	2. **OR** Run `Set-WebAppUserSecrets.ps1` and `Set-ApiAppUserSecrets.ps1` to set user-secrets from your account.
-	```
-	pwsh -File ./.azure/scripts/entra/Set-ApiAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -ApiAppRegistrationName "myproduct-api-dev-001" -ApiProjectPath "../../src/Presentation.WebApi"
-	```
-	```
-	pwsh -File ./.azure/scripts/entra/Set-WebAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -WebProjectPath "../../src/Presentation.Blazor"
-	```
+# Enter repository root
+cd agent-framework-quick-start
 
-	3. **OR** Manually set the required values using `dotnet user-secrets set` (or appsettings.local.json, not recommended for secrets).
-	```
-	cd src/Presentation.WebApi
-	dotnet user-secrets init
-	dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
-	dotnet user-secrets set "EntraExternalId:TenantId" "<your-tenant-id>"
-	dotnet user-secrets set "EntraExternalId:ClientId" "<api-app-client-id>"
-	dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
-	```
+# Install .NET SDK 10
+winget install Microsoft.DotNet.SDK.10 --silent
 
-	```
-	cd src/Presentation.WebApi
-	dotnet user-secrets init
-	dotnet user-secrets set "BackEndApi:ClientId" "<api-app-client-id>"
-	dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
-	dotnet user-secrets set "EntraExternalId:TenantId" "<your-tenant-id>"
-	dotnet user-secrets set "EntraExternalId:ClientId" "<web-app-client-id>"
-	dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
-	dotnet user-secrets set "EntraExternalId:ClientSecret" "<web-app-client-secret>"
+# Install EF CLI
+dotnet tool install --global dotnet-ef
 
-	cd ../../
-	```
+# Create Entra app registrations and write API/Web user-secrets
+pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api"
 
-	See the **Authentication** section below for details and examples.
+# Set OpenAI key in API project
+cd src/Presentation.Api
+dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
 
-4. Add your Open AI or Azure Open AI key to configuration (via *dotnet user-secrets set* command)
-	```
-	cd src/Presentation.WebApi
-	dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
-	```
-	```
-	cd ../Tests.Integration
-	dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
-	```
-5. Create your SQL Server database & schema (via *dotnet ef* command)
-	```
-	cd ../../
-	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.WebApi\Presentation.WebApi.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
-	```
-6. Run Tests (Tests.Integration)
-	```
-	cd src/Tests.Integration
-	dotnet test
-	```
-7. Run Blazor Web Chat Client (Presentation.Blazor) and Web API (Presentation.WebApi)
-	```
-	cd ../
-	dotnet run --project Presentation.WebApi/Presentation.WebApi.csproj
-	dotnet run --project Presentation.Blazor/Presentation.Blazor.csproj
-	```
-	**Note:** By default, Presentation.WebApi runs on https://localhost:6075 and Presentation.Blazor runs on https://localhost:7175 unless configured otherwise.
+# Set OpenAI key in integration test project
+cd ../Tests.Integration
+dotnet user-secrets init
+dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
+
+# Return to repository root
+cd ../..
+
+# Create or update SQL schema
+dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+
+# Run integration tests
+cd src/Tests.Integration
+dotnet test
+
+# Return to src and run API
+cd ../
+dotnet run --project Presentation.Api/Presentation.Api.csproj
+
+# Run Web app in a second terminal
+dotnet run --project Presentation.Web/Presentation.Web.csproj
+```
+
+## Quick-Start: Re-Setup for Existing Entra (no Entra setup scripts)
+```powershell
+# Enter repository root
+cd <path-to-repo-root>
+
+# Set API Entra secrets
+cd src/Presentation.Api
+dotnet user-secrets init
+dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
+dotnet user-secrets set "EntraExternalId:TenantId" "TENANT_ID"
+dotnet user-secrets set "EntraExternalId:ClientId" "API_CLIENT_ID"
+dotnet user-secrets set "EntraExternalId:ClientSecret" "API_CLIENT_SECRET"
+dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
+dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
+dotnet user-secrets set "OpenAI:ApiKey" "OPEN_AI_SECRET"
+
+# Set Web Entra secrets
+cd ../Presentation.Web
+dotnet user-secrets init
+dotnet user-secrets set "BackendApi:ClientId" "API_CLIENT_ID"
+dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
+dotnet user-secrets set "EntraExternalId:TenantId" "TENANT_ID"
+dotnet user-secrets set "EntraExternalId:ClientId" "WEB_CLIENT_ID"
+dotnet user-secrets set "EntraExternalId:ClientSecret" "WEB_CLIENT_SECRET"
+dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
+dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
+
+# Set integration test OpenAI secret
+cd ../Tests.Integration
+dotnet user-secrets init
+dotnet user-secrets set "OpenAI:ApiKey" "OPEN_AI_SECRET"
+
+# Return to repository root
+cd ../..
+
+# Create or update SQL schema
+dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+```
+
+For detailed alternatives and troubleshooting, see the Authentication section below.
+
+---
 
 # Install Prerequisites
 You will need the following tools:
@@ -137,7 +146,7 @@ This project uses Entra External ID (EEID) for authentication. You only need to 
 If you do not have app registrations, run the script below to create both Web and API app registrations and set all user-secrets (admin consent required):
 
 ```
-pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "../../src/Presentation.Blazor" -ApiProjectPath "../../src/Presentation.WebApi"
+pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api"
 ```
 
 You will be prompted to grant admin consent in the Azure Portal twice (once for each app registration: Web and API). Look for a console message like this for each app:
@@ -155,10 +164,10 @@ The script will output a summary table with all relevant IDs (TenantId, Instance
 If you already have app registrations, run the following scripts to set user-secrets from your account:
 
 ```
-pwsh -File ./.azure/scripts/entra/Set-ApiAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -ApiAppRegistrationName "myproduct-api-dev-001" -ApiProjectPath "../../src/Presentation.WebApi"
+pwsh -File ./.azure/scripts/entra/Set-ApiAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -ApiAppRegistrationName "myproduct-api-dev-001" -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -ApiProjectPath "./src/Presentation.Api"
 ```
 ```
-pwsh -File ./.azure/scripts/entra/Set-WebAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -WebProjectPath "../../src/Presentation.Blazor"
+pwsh -File ./.azure/scripts/entra/Set-WebAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiClientId "<api-app-client-id>" -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -WebProjectPath "./src/Presentation.Web"
 ```
 
 **3. OR: Configure everything manually:**
@@ -166,7 +175,7 @@ pwsh -File ./.azure/scripts/entra/Set-WebAppUserSecrets.ps1 -TenantId "<your-ten
 Set the required values using `dotnet user-secrets set` (or appsettings.local.json, not recommended for secrets):
 
 ```
-cd src/Presentation.WebApi
+cd src/Presentation.Api
 dotnet user-secrets init
 dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
 dotnet user-secrets set "EntraExternalId:TenantId" "<your-tenant-id>"
@@ -175,9 +184,9 @@ dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
 ```
 
 ```
-cd src/Presentation.WebApi
+cd src/Presentation.Web
 dotnet user-secrets init
-dotnet user-secrets set "BackEndApi:ClientId" "<api-app-client-id>"
+dotnet user-secrets set "BackendApi:ClientId" "<api-app-client-id>"
 dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
 dotnet user-secrets set "EntraExternalId:TenantId" "<your-tenant-id>"
 dotnet user-secrets set "EntraExternalId:ClientId" "<web-app-client-id>"
@@ -203,21 +212,17 @@ cd ../../
 # Configure API Key and Connection String
 Follow these steps to get your development environment set up:
 
-## ASPNETCORE_ENVIRONMENT set to "Local" in launchsettings.json
-1. This project uses the following ASPNETCORE_ENVIRONMENT to set configuration profile
-- Debugging uses Properties/launchSettings.json
-- launchSettings.json is set to Local, which relies on appsettings.Local.json
-2. As a standard practice, set ASPNETCORE_ENVIRONMENT entry in your Enviornment Variables and restart Visual Studio
-	```
-	Set-Item -Path Env:ASPNETCORE_ENVIRONMENT -Value "Development"
-	Get-Childitem env:
-	```	
+## ASPNETCORE_ENVIRONMENT (informational)
+This solution already sets `ASPNETCORE_ENVIRONMENT` to `Local` in each project's `Properties/launchSettings.json` for local debugging.
+
+Set `ASPNETCORE_ENVIRONMENT` manually only when running outside launch profiles (for example custom host processes, CI/CD pipelines, containers, or alternate tooling).
+
   
 ## Setup Azure Open AI or Open AI configuration
-**Important:** Do this for both Presentation.WebApi and Tests.Integration
+**Important:** Do this for both Presentation.Api and Tests.Integration
 ### Azure Open AI
 ```
-cd src/Presentation.WebApi
+cd src/Presentation.Api
 dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
@@ -234,9 +239,9 @@ AzureOpenAI__ApiKey
 ```
 
 ### Open AI
-Set API Key in both Presentation.WebApi and Tests.Integration projects
+Set API Key in both Presentation.Api and Tests.Integration projects
 ```
-cd src/Presentation.WebApi
+cd src/Presentation.Api
 dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
 cd ../Tests.Integration
 dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
@@ -260,24 +265,24 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" "YOUR_SQL_CONNECTI
 3. Deploy new entities and configurations to database
    
 	```	
-	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.WebApi\Presentation.WebApi.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
 	```
 4. When an entity changes, is created or deleted, create a new migration. Suggest doing this each new version.
 	```
-	dotnet ef migrations add v1.1.1 --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.WebApi\Presentation.WebApi.csproj --context AgentFrameworkContext
-	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.WebApi\Presentation.WebApi.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+	dotnet ef migrations add v1.1.1 --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext
+	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
 	```
 
 # Running the Application
 ## Launch the backend
-Right-click Presentation.WebApi and select Set as Default Project
+Right-click Presentation.Api and select Set as Default Project
 ```
-dotnet run --project src/Presentation.WebApi/Presentation.WebApi.csproj
+dotnet run --project src/Presentation.Api/Presentation.Api.csproj
 ```
 
-## Open http://localhost:7175/swagger/index.html 
+## Open https://localhost:6185/swagger/index.html 
 Open Microsoft Edge or modern browser
-Navigate to: http://localhost:7175/swagger/index.html in your browser to the Swagger API Interface
+Navigate to: https://localhost:6185/swagger/index.html in your browser to the Swagger API Interface
 
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
@@ -311,8 +316,8 @@ pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 \
 	-TenantId "<your-tenant-id>" \
 	-WebAppRegistrationName "<web-app-registration-name>" \
 	-ApiAppRegistrationName "<api-app-registration-name>" \
-	-WebProjectPath "./src/Presentation.Blazor" \
-	-ApiProjectPath "./src/Presentation.WebApi"
+	-WebProjectPath "./src/Presentation.Web" \
+	-ApiProjectPath "./src/Presentation.Api"
 ```
 
 This script will output the required IDs and URIs for your environment.
@@ -365,9 +370,9 @@ pwsh -File ./.github/scripts/repo/New-Github-Azure-Federation.ps1 \
 	-Environment "<environment-name>"
 ```
 
----
-
 This setup ensures your GitHub Actions workflows can securely deploy to Azure using federated credentials and the required secrets.
+
+---
 
 # Contact
 * [GitHub Repo](https://www.github.com/goodtocode/agent-framework-quick-start)

@@ -3,8 +3,8 @@
 EF/NSwag update script
 Example usage:
 	1. Open PowerShell in solution root
-	2. Run: ./src/Reset-EfNswag.ps1
-	   or: ./src/Reset-EfNswag.ps1 -Products $customProducts
+	2. Run: ./Reset-EfNswag.ps1
+	   or: ./Reset-EfNswag.ps1 -Products $customProducts
 	For each product
 	3. Script will delete EF migration
 	4. Script will recreate new migration with current model for that 1 product
