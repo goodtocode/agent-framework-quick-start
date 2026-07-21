@@ -1,0 +1,27 @@
+# GoodToCode Agent Framework Quick-start
+
+> Official .NET and Blazor quick-start template for Microsoft Agent Framework.
+
+## Primary Pages
+- Home: /
+- Chat: /chat
+
+## Public API Endpoints
+- /api/chat
+- /api/actor
+
+## Metadata & Structured Data
+- Open Graph and Twitter card metadata are provided for public pages.
+- JSON-LD types include: Template, Chat, Actor, BreadcrumbList, Organization.
+
+## Media Rules
+- Use direct, public image URLs.
+- Supported formats: png, jpg, webp.
+- Avoid tokenized or session-bound image URLs for public content.
+
+## Crawling Guidance
+- Index public pages and read-only public API resources.
+- Do not crawl authentication routes.
+
+## Manifest
+- /ai-manifest.json
