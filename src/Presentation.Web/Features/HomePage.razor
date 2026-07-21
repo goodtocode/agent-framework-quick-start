@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Goodtocode.AgentFramework.Presentation.Web.Library.Analytics
 @using Goodtocode.AgentFramework.Presentation.Web.Library.Typography
 @using Microsoft.AspNetCore.Authorization
 
@@ -96,8 +97,22 @@
                 </FluentStack>
             </FluentStack>
         </header>
+
+        <footer>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" HorizontalAlignment="HorizontalAlignment.Center" Style="padding-top: 1rem;">
+                <nav aria-label="Legal links">
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12" Wrap="true" HorizontalAlignment="HorizontalAlignment.Center">
+                        <FluentAnchor Href="/privacy">Privacy Policy</FluentAnchor>
+                        <FluentAnchor Href="/terms">Terms of Use</FluentAnchor>
+                        <FluentAnchor Href="/analytics-notice">Analytics Notice</FluentAnchor>
+                    </FluentStack>
+                </nav>
+            </FluentStack>
+        </footer>
     </article>
 </main>
+
+<AnalyticsConsentBanner />
 
 @code {
     [Inject] private NavigationManager Navigation { get; set; } = default!;

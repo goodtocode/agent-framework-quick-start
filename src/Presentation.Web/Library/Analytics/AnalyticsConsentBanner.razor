@@ -1,0 +1,59 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Storage
+
+@inject ILocalStorageService LocalStorageService
+@inject NavigationManager Navigation
+
+@if (_isPreferenceLoaded && _showBanner)
+{
+    <aside aria-label="Analytics consent notice" style="position: fixed; bottom: 1rem; right: 1rem; left: 1rem; z-index: 1000;">
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+                <FluentLabel Typo="Typography.H4">Privacy and analytics notice</FluentLabel>
+                <FluentLabel>
+                    We use Microsoft Clarity to understand site usage and improve quality. We only enable analytics after your consent.
+                </FluentLabel>
+                <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="AcceptAsync">Accept analytics</FluentButton>
+                    <FluentButton Appearance="Appearance.Outline" OnClick="DeclineAsync">Decline analytics</FluentButton>
+                    <FluentAnchor Href="/analytics-notice">Learn more</FluentAnchor>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+    </aside>
+}
+
+@code {
+    private const string AnalyticsConsentStorageKey = "gtc.analytics.consent";
+
+    private bool _isPreferenceLoaded;
+    private bool _showBanner;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var value = await LocalStorageService.GetItemAsync(AnalyticsConsentStorageKey);
+        _showBanner = string.IsNullOrWhiteSpace(value);
+        _isPreferenceLoaded = true;
+
+        StateHasChanged();
+    }
+
+    private async Task AcceptAsync()
+    {
+        await LocalStorageService.SetItemAsync(AnalyticsConsentStorageKey, "accepted");
+        _showBanner = false;
+        StateHasChanged();
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+    }
+
+    private async Task DeclineAsync()
+    {
+        await LocalStorageService.SetItemAsync(AnalyticsConsentStorageKey, "declined");
+        _showBanner = false;
+        StateHasChanged();
+    }
+}

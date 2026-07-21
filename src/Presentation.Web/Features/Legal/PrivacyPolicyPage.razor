@@ -1,0 +1,49 @@
+@page "/privacy"
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+
+<PageTitle>Privacy Policy | GoodToCode</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="Privacy policy for the GoodToCode Agent Framework Quick-start website." />
+    <link rel="canonical" href="/privacy" />
+    <meta property="og:title" content="Privacy Policy | GoodToCode" />
+    <meta property="og:description" content="How GoodToCode handles website data and analytics for this template." />
+    <meta property="og:url" content="/privacy" />
+    <meta name="robots" content="index,follow" />
+</HeadContent>
+
+<main>
+    <article>
+        <header>
+            <FluentLabel Typo="Typography.H1">Privacy Policy</FluentLabel>
+            <FluentLabel>Last updated: @DateTime.UtcNow.ToString("yyyy-MM-dd")</FluentLabel>
+        </header>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">What we collect</FluentLabel>
+            <p>We may collect usage, device, and interaction data needed to operate, secure, and improve this website experience.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">How we use data</FluentLabel>
+            <p>Data is used for site operation, performance monitoring, security, and product improvement.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Third-party analytics</FluentLabel>
+            <p>When consent is granted, Microsoft Clarity may process interaction telemetry to help improve usability.</p>
+            <p>See the <a href="/analytics-notice">Analytics Notice</a> for details.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Your choices</FluentLabel>
+            <p>You can accept or decline analytics tracking in the consent notice. You can also clear browser storage to reset your choice.</p>
+        </section>
+
+        <footer>
+            <p>This policy is a template baseline and should be reviewed by legal counsel before production use.</p>
+        </footer>
+    </article>
+</main>

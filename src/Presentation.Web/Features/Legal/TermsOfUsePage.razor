@@ -1,0 +1,48 @@
+@page "/terms"
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+
+<PageTitle>Terms of Use | GoodToCode</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="Terms of use for the GoodToCode Agent Framework Quick-start website." />
+    <link rel="canonical" href="/terms" />
+    <meta property="og:title" content="Terms of Use | GoodToCode" />
+    <meta property="og:description" content="Website terms and acceptable use conditions for this template." />
+    <meta property="og:url" content="/terms" />
+    <meta name="robots" content="index,follow" />
+</HeadContent>
+
+<main>
+    <article>
+        <header>
+            <FluentLabel Typo="Typography.H1">Terms of Use</FluentLabel>
+            <FluentLabel>Last updated: @DateTime.UtcNow.ToString("yyyy-MM-dd")</FluentLabel>
+        </header>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Use of website</FluentLabel>
+            <p>You agree to use this website lawfully and not attempt to disrupt service availability, integrity, or security.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Content and ownership</FluentLabel>
+            <p>All template content, branding, and code samples remain subject to applicable ownership and licensing terms.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">No warranty</FluentLabel>
+            <p>This template is provided as-is without warranties of availability, fitness, or uninterrupted operation.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Limitation of liability</FluentLabel>
+            <p>To the maximum extent allowed by law, the website operator is not liable for indirect or consequential damages from site use.</p>
+        </section>
+
+        <footer>
+            <p>These terms are baseline guidance and should be reviewed by legal counsel before production use.</p>
+        </footer>
+    </article>
+</main>

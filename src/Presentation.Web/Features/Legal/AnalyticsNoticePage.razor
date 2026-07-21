@@ -1,0 +1,65 @@
+@page "/analytics-notice"
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<PageTitle>Analytics Notice | GoodToCode</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="Analytics notice for Microsoft Clarity usage in the GoodToCode template." />
+    <link rel="canonical" href="/analytics-notice" />
+    <meta property="og:title" content="Analytics Notice | GoodToCode" />
+    <meta property="og:description" content="Details about Microsoft Clarity analytics usage and consent choices." />
+    <meta property="og:url" content="/analytics-notice" />
+    <meta name="robots" content="index,follow" />
+</HeadContent>
+
+<main>
+    <article>
+        <header>
+            <FluentLabel Typo="Typography.H1">Analytics Notice</FluentLabel>
+            <FluentLabel>Last updated: @DateTime.UtcNow.ToString("yyyy-MM-dd")</FluentLabel>
+        </header>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Provider</FluentLabel>
+            <p>This site uses Microsoft Clarity for analytics and usability insights.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Data categories</FluentLabel>
+            <p>Interaction and usage telemetry may include page views, clicks, scroll behavior, and device/browser context.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Purpose</FluentLabel>
+            <p>Analytics helps monitor performance and improve user experience and content quality.</p>
+        </section>
+
+        <section>
+            <FluentLabel Typo="Typography.H3">Consent controls</FluentLabel>
+            <p>Clarity is only loaded after explicit consent.</p>
+            <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8">
+                <FluentButton Appearance="Appearance.Outline" OnClick="ResetConsentAsync">Reset analytics preference</FluentButton>
+                <FluentAnchor Href="/privacy">Privacy Policy</FluentAnchor>
+            </FluentStack>
+        </section>
+
+        <footer>
+            <p>This notice is baseline guidance and should be reviewed by legal counsel before production use.</p>
+        </footer>
+    </article>
+</main>
+
+@code {
+    private const string AnalyticsConsentStorageKey = "gtc.analytics.consent";
+
+    private async Task ResetConsentAsync()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", AnalyticsConsentStorageKey);
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}
