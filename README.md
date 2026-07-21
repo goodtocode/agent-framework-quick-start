@@ -41,14 +41,21 @@ dotnet tool install --global dotnet-ef
 # Create Entra app registrations and write API/Web user-secrets
 pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api"
 
-# Set OpenAI key in API project
+# Set API provider to Azure OpenAI
 cd src/Presentation.Api
-dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
+dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
 
-# Set OpenAI key in integration test project
+# Set Azure OpenAI settings in API project
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
+dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
+
+# Set Azure OpenAI settings in integration test project
 cd ../Tests.Integration
 dotnet user-secrets init
-dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
+dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 
 # Return to repository root
 cd ../..
@@ -82,7 +89,10 @@ dotnet user-secrets set "EntraExternalId:ClientId" "API_CLIENT_ID"
 dotnet user-secrets set "EntraExternalId:ClientSecret" "API_CLIENT_SECRET"
 dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
 dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
-dotnet user-secrets set "OpenAI:ApiKey" "OPEN_AI_SECRET"
+dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
+dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 
 # Set Web Entra secrets
 cd ../Presentation.Web
@@ -95,10 +105,12 @@ dotnet user-secrets set "EntraExternalId:ClientSecret" "WEB_CLIENT_SECRET"
 dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
 dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
 
-# Set integration test OpenAI secret
+# Set integration test Azure OpenAI settings
 cd ../Tests.Integration
 dotnet user-secrets init
-dotnet user-secrets set "OpenAI:ApiKey" "OPEN_AI_SECRET"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
+dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 
 # Return to repository root
 cd ../..
@@ -218,15 +230,17 @@ This solution already sets `ASPNETCORE_ENVIRONMENT` to `Local` in each project's
 Set `ASPNETCORE_ENVIRONMENT` manually only when running outside launch profiles (for example custom host processes, CI/CD pipelines, containers, or alternate tooling).
 
   
-## Setup Azure Open AI or Open AI configuration
-**Important:** Do this for both Presentation.Api and Tests.Integration
-### Azure Open AI
+## Setup AI provider configuration (Azure OpenAI default)
+**Important:** Set the provider in Presentation.Api and configure Azure OpenAI values.
+### Azure OpenAI (default)
 ```
 cd src/Presentation.Api
+dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
 dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 cd ../Tests.Integration
+dotnet user-secrets init
 dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
@@ -238,10 +252,11 @@ AzureOpenAI__Endpoint
 AzureOpenAI__ApiKey
 ```
 
-### Open AI
-Set API Key in both Presentation.Api and Tests.Integration projects
+### OpenAI (optional fallback)
+Set provider and API key only if you want OpenAI instead of Azure OpenAI.
 ```
 cd src/Presentation.Api
+dotnet user-secrets set "AgentProvider:Kind" "OpenAI"
 dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
 cd ../Tests.Integration
 dotnet user-secrets set "OpenAI:ApiKey" "YOUR_API_KEY"
