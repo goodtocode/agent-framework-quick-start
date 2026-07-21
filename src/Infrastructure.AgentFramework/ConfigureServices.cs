@@ -45,6 +45,13 @@ public static class ConfigureServices
                 "AzureOpenAI options are required when AgentProvider:Kind is AzureOpenAI.")
             .ValidateOnStart();
 
+        services.AddOptions<OllamaOptions>()
+            .Bind(configuration.GetSection(OllamaOptions.SectionName))
+            .Validate<IOptions<AgentProviderOptions>>(
+                (options, provider) => !IsSelectedProvider(provider.Value, "Ollama") || HasRequiredOllama(options),
+                "Ollama options are required when AgentProvider:Kind is Ollama.")
+            .ValidateOnStart();
+
         services.AddOptions<AzureAIFoundryOptions>()
             .Bind(configuration.GetSection(AzureAIFoundryOptions.SectionName))
             .Validate<IOptions<AgentProviderOptions>>(
@@ -87,7 +94,19 @@ public static class ConfigureServices
                     {
                         Endpoint = new Uri(options.Endpoint)
                     });
-                return client.GetChatClient(options.ChatDeploymentName);
+                return client.GetChatClient(options.ChatCompletionModelId);
+            }
+
+            if (providerOptions.Kind.Equals("Ollama", StringComparison.OrdinalIgnoreCase))
+            {
+                var options = provider.GetRequiredService<IOptions<OllamaOptions>>().Value;
+                var client = new OpenAIClient(
+                    new System.ClientModel.ApiKeyCredential(string.IsNullOrWhiteSpace(options.ApiKey) ? "ollama" : options.ApiKey),
+                    new OpenAIClientOptions
+                    {
+                        Endpoint = new Uri(options.Endpoint)
+                    });
+                return client.GetChatClient(options.ChatCompletionModelId);
             }
 
             if (providerOptions.Kind.Equals("AzureAIFoundry", StringComparison.OrdinalIgnoreCase))
@@ -200,8 +219,12 @@ public static class ConfigureServices
            && HasUri(options.Endpoint);
 
     private static bool HasRequiredAzureOpenAI(AzureOpenAIOptions options)
-        => HasValue(options.ChatDeploymentName)
+        => HasValue(options.ChatCompletionModelId)
            && HasValue(options.ApiKey)
+           && HasUri(options.Endpoint);
+
+    private static bool HasRequiredOllama(OllamaOptions options)
+        => HasValue(options.ChatCompletionModelId)
            && HasUri(options.Endpoint);
 
     private static bool HasRequiredAzureAIFoundry(AzureAIFoundryOptions options)

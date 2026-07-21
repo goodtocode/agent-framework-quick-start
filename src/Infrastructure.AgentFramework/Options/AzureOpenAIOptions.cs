@@ -10,7 +10,7 @@ public sealed class AzureOpenAIOptions
     public const string SectionName = "AzureOpenAI";
 
     [Required]
-    public string ChatDeploymentName { get; set; } = string.Empty;
+    public string ChatCompletionModelId { get; set; } = string.Empty;
 
     [Required]
     public string Endpoint { get; set; } = string.Empty;
