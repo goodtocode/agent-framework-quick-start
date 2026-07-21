@@ -35,6 +35,9 @@ cd agent-framework-quick-start
 # Install .NET SDK 10
 winget install Microsoft.DotNet.SDK.10 --silent
 
+# Trust local ASP.NET Core HTTPS development certificate (first-time machine setup)
+dotnet dev-certs https --trust
+
 # Install EF CLI
 dotnet tool install --global dotnet-ef
 
@@ -135,6 +138,15 @@ winget install --id Microsoft.VisualStudio.Community --override "--quiet --add M
 ```
 winget install Microsoft.DotNet.SDK.10 --silent
 ```
+
+## ASP.NET Core HTTPS development certificate
+Trust the local development certificate once per machine/user profile to avoid browser trust prompts when launching local HTTPS endpoints.
+
+```
+dotnet dev-certs https --trust
+```
+
+This command is safe to run multiple times. If a trusted development certificate already exists, it does not damage or replace your environment unexpectedly.
 
 ## dotnet ef cli
 Install
