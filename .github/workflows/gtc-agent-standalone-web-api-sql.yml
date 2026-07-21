@@ -150,7 +150,7 @@ jobs:
         shell: pwsh
 
       - name: Upload migration script
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.MIGRATION_ARTIFACT_NAME }}
           path: ${{ env.MIGRATION_ARTIFACT_PATH }}
@@ -166,7 +166,7 @@ jobs:
         shell: pwsh
 
       - name: Upload Web API artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.API_ARTIFACT_NAME }}
           path: ${{ env.API_ARTIFACT_OUTPUT }}/**
@@ -178,7 +178,7 @@ jobs:
         shell: pwsh
 
       - name: Upload Blazor artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.WEB_ARTIFACT_NAME }}
           path: ${{ env.WEB_ARTIFACT_OUTPUT }}/**
