@@ -1,0 +1,67 @@
+name: Bug Report
+description: Report a defect with reproducible detail
+title: "bug: <short-bug-title>"
+labels:
+  - bug
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Briefly describe the defect
+      placeholder: What is broken?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happens?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps To Reproduce
+      description: List exact steps and inputs
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: User/business impact and severity
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs / Screenshots / Output
+      description: Paste relevant evidence
+    validations:
+      required: false
+
+  - type: input
+    id: area
+    attributes:
+      label: Suspected Area
+      description: Which layer/project is likely impacted?
+      placeholder: Domain, Application, Infrastructure, Presentation.Web, Presentation.Api
+    validations:
+      required: false
