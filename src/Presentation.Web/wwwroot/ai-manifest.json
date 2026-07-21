@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "name": "GoodToCode Agent Framework Quick-start",
+  "organization": "GoodToCode",
+  "defaultLocale": "en-US",
+  "site": {
+    "home": "/",
+    "chat": "/chat"
+  },
+  "publicApiEndpoints": [
+    "/api/chat",
+    "/api/actor"
+  ],
+  "structuredData": {
+    "types": [
+      "Template",
+      "Chat",
+      "Actor",
+      "BreadcrumbList",
+      "Organization"
+    ]
+  },
+  "images": {
+    "publicOnly": true,
+    "tokenizedUrlsAllowed": false,
+    "preferredFormats": [
+      "png",
+      "jpg",
+      "webp"
+    ],
+    "examples": [
+      "/img/logo.png"
+    ]
+  },
+  "crawl": {
+    "allow": [
+      "/",
+      "/chat",
+      "/api/chat",
+      "/api/actor"
+    ],
+    "disallow": [
+      "/authentication"
+    ]
+  }
+}

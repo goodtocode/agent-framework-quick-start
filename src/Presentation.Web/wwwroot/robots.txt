@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /authentication
+
+# AI and machine-readable discovery
+Allow: /ai-manifest.json
+Allow: /llms.txt
+
+Sitemap: /sitemap.xml

@@ -1,9 +1,30 @@
-﻿@code {
+﻿@inject IJSRuntime JS
+
+@code {
+    private const string AnalyticsConsentStorageKey = "gtc.analytics.consent";
+
+    private bool _isConsentGranted;
+    private bool _isConsentLoaded;
+
     [Parameter]
     public string ProjectId { get; set; } = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var consent = await JS.InvokeAsync<string?>("localStorage.getItem", AnalyticsConsentStorageKey);
+        _isConsentGranted = string.Equals(consent, "accepted", StringComparison.OrdinalIgnoreCase);
+        _isConsentLoaded = true;
+
+        StateHasChanged();
+    }
 }
 
-@if (!string.IsNullOrWhiteSpace(ProjectId))
+@if (_isConsentLoaded && _isConsentGranted && !string.IsNullOrWhiteSpace(ProjectId))
 {
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
