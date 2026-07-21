@@ -1,0 +1,16 @@
+# Replace placeholder owners with real GitHub users or teams.
+
+# Default ownership
+* @OWNER
+
+# AI and governance knowledge framework
+/.github/ @OWNER
+/docs/governance/ @OWNER
+/docs/product/ @OWNER
+
+# Architecture-critical code
+/src/Core.Domain/ @OWNER
+/src/Core.Application/ @OWNER
+/src/Infrastructure.AgentFramework/ @OWNER
+/src/Presentation.Api/ @OWNER
+/src/Presentation.Web/ @OWNER
