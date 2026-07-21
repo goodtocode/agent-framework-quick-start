@@ -30,6 +30,6 @@
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.3" />
 		<PackageReference Include="Microsoft.Identity.Web" Version="4.12.2" />
 		<PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.12.2" />
-		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0" />		
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />		
 	</ItemGroup>
 </Project>
