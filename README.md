@@ -92,7 +92,6 @@ dotnet user-secrets init
 dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
 dotnet user-secrets set "EntraExternalId:TenantId" "TENANT_ID"
 dotnet user-secrets set "EntraExternalId:ClientId" "API_CLIENT_ID"
-dotnet user-secrets set "EntraExternalId:ClientSecret" "API_CLIENT_SECRET"
 dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
 dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
 dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
@@ -107,8 +106,9 @@ dotnet user-secrets set "BackendApi:ClientId" "API_CLIENT_ID"
 dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
 dotnet user-secrets set "EntraExternalId:TenantId" "TENANT_ID"
 dotnet user-secrets set "EntraExternalId:ClientId" "WEB_CLIENT_ID"
-dotnet user-secrets set "EntraExternalId:ClientSecret" "WEB_CLIENT_SECRET"
+dotnet user-secrets set "EntraExternalId:PasswordResetUrl" "https://your-tenant-name.ciamlogin.com/TENANT_ID/oauth2/v2.0/authorize?p=B2C_1_passwordreset"
 dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
+dotnet user-secrets set "EntraExternalId:ClientSecret" "WEB_CLIENT_SECRET"
 dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
 
 # Set integration test Azure OpenAI settings
@@ -168,6 +168,10 @@ Visual Studio installs SQL Express. If you want full-featured SQL Server, instal
 
 This project uses Entra External ID (EEID) for authentication. You only need to complete ONE of the following methods (they are alternatives, not cumulative). **The preferred approach is to use the script to create both app registrations, as this will configure all required claims, roles, and scopes custom to this quick-start.**
 
+For this solution:
+- `Presentation.Api` is a resource API and validates bearer tokens. It does **not** require `EntraExternalId:ClientSecret`.
+- `Presentation.Web` uses interactive sign-in and requires `EntraExternalId:PasswordResetUrl` in addition to instance/tenant/client settings.
+
 **1. Create both app registrations and configure automatically (recommended for most users):**
 
 If you do not have app registrations, run the script below to create both Web and API app registrations and set all user-secrets (admin consent required):
@@ -213,7 +217,7 @@ If you already have app registrations, run the following scripts to set user-sec
 pwsh -File ./.azure/scripts/entra/Set-ApiAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -ApiAppRegistrationName "myproduct-api-dev-001" -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -ApiProjectPath "./src/Presentation.Api"
 ```
 ```
-pwsh -File ./.azure/scripts/entra/Set-WebAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiClientId "<api-app-client-id>" -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -WebProjectPath "./src/Presentation.Web"
+pwsh -File ./.azure/scripts/entra/Set-WebAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiClientId "<api-app-client-id>" -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -PasswordResetPolicyName "B2C_1_passwordreset" -WebClientSecret "<web-app-client-secret>" -WebProjectPath "./src/Presentation.Web"
 ```
 
 **3. OR: Configure everything manually:**
@@ -236,6 +240,7 @@ dotnet user-secrets set "BackendApi:ClientId" "<api-app-client-id>"
 dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
 dotnet user-secrets set "EntraExternalId:TenantId" "<your-tenant-id>"
 dotnet user-secrets set "EntraExternalId:ClientId" "<web-app-client-id>"
+dotnet user-secrets set "EntraExternalId:PasswordResetUrl" "https://your-tenant-name.ciamlogin.com/<your-tenant-id>/oauth2/v2.0/authorize?p=B2C_1_passwordreset"
 dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
 dotnet user-secrets set "EntraExternalId:ClientSecret" "<web-app-client-secret>"
 
@@ -246,7 +251,8 @@ cd ../../
 	- Entra Instance URL
 	- Tenant ID
 	- Client IDs for Web and API
-	- Client secrets (if applicable)
+	- Web Password Reset URL (`EntraExternalId:PasswordResetUrl`)
+	- Web client secret (for interactive web auth)
 	- Redirect URIs
 	- API scopes
 

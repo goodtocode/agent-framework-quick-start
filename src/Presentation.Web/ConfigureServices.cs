@@ -51,9 +51,13 @@ public static class ConfigureServices
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        var backendApiOptions = configuration
+            .GetSection(BackendApiOptions.SectionName)
+            .Get<BackendApiOptions>() ?? throw new InvalidOperationException($"Missing '{BackendApiOptions.SectionName}' configuration section.");
+
         services.AddAccessTokenHttpClient(options =>
         {
-            options.BaseAddress = new Uri(configuration["BackendApi:BaseUrl"] ?? throw new InvalidOperationException("Base URL for BackEndApi is not configured."));
+            options.BaseAddress = backendApiOptions.BaseUrl;
             options.ClientName = "BackendApiClient";
             options.MaxRetry = 3;
         });

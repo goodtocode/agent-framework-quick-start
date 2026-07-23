@@ -11,4 +11,7 @@ public sealed class BackendApiOptions
 
     [Required]
     public Uri BaseUrl { get; set; } = default!;
+
+    [Required]
+    public string ClientId { get; set; } = string.Empty;
 }
