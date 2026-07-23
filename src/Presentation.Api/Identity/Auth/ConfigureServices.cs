@@ -22,16 +22,29 @@ public static class ConfigureServices
     /// <returns>The configured service collection.</returns>
     public static IServiceCollection AddAuthenticationWithRoles(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddOptions<EntraExternalIdApiOptions>()
+            .Bind(configuration.GetSection(EntraExternalIdApiOptions.SectionName))
+            .ValidateDataAnnotations()
+            .Validate(options => Uri.TryCreate(options.Instance, UriKind.Absolute, out _),
+                "Configuration value 'EntraExternalId:Instance' must be an absolute URL.")
+            .ValidateOnStart();
+
+        var entraExternalIdOptions = configuration
+            .GetSection(EntraExternalIdApiOptions.SectionName)
+            .Get<EntraExternalIdApiOptions>() ?? throw new InvalidOperationException($"Missing '{EntraExternalIdApiOptions.SectionName}' configuration section.");
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(
                     jwtOptions =>
                     {
-                        configuration.GetSection("EntraExternalId").Bind(jwtOptions);
+                        configuration.GetSection(EntraExternalIdApiOptions.SectionName).Bind(jwtOptions);
                         //jwtOptions.TokenValidationParameters.RoleClaimType = TokenRoleClaimTypes.Roles;
                     },
                     identityOptions =>
                     {
-                        configuration.GetSection("EntraExternalId").Bind(identityOptions);
+                        identityOptions.Instance = entraExternalIdOptions.Instance;
+                        identityOptions.TenantId = entraExternalIdOptions.TenantId;
+                        identityOptions.ClientId = entraExternalIdOptions.ClientId;
                     });
 
         services.AddScoped<IClaimsReader, HttpClaimsReader>();

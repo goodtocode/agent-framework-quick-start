@@ -1,117 +1,58 @@
 ﻿@page "/"
 @using Goodtocode.AgentFramework.Presentation.Web.Library.Analytics
-@using Goodtocode.AgentFramework.Presentation.Web.Library.Typography
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [AllowAnonymous]
 
 <PageTitle>Goodtocode Quick-start for Microsoft Agent Framework</PageTitle>
 
-<HeadContent>
-    <meta name="description" content="Start fast with the GoodToCode template for Microsoft Agent Framework using .NET and Blazor." />
-    <link rel="canonical" href="/" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Goodtocode Quick-start for Microsoft Agent Framework" />
-    <meta property="og:description" content="Official GoodToCode template to build and test AI-assisted chat workflows." />
-    <meta property="og:url" content="/" />
-    <meta property="og:image" content="/img/logo.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Goodtocode Quick-start for Microsoft Agent Framework" />
-    <meta name="twitter:description" content="Official GoodToCode template to build and test AI-assisted chat workflows." />
-    <meta name="twitter:image" content="/img/logo.png" />
-    <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org",
-          "@@type": "Template",
-          "name": "GoodToCode Quick-start for Microsoft Agent Framework",
-          "description": "A .NET and Blazor starter template for AI-assisted chat workflows.",
-          "provider": {
-            "@@type": "Organization",
-            "name": "GoodToCode"
-          },
-          "mainEntityOfPage": "/"
-        }
-    </script>
-    <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org",
-          "@@type": "BreadcrumbList",
-          "itemListElement": [
-            {
-              "@@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": "/"
-            }
-          ]
-        }
-    </script>
-</HeadContent>
+<FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" VerticalGap="24">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="width: 100%; max-width: 980px;">
+        <FluentSpacer />
 
-<main>
-    <article>
-        <header>
-            <FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" VerticalGap="24">
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="width: 100%; max-width: 980px;">
-                    <FluentSpacer />
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
+                <FluentLabel Typo="Typography.H1" Alignment="HorizontalAlignment.Center">
+                    Goodtocode Quick-start for Microsoft Agent Framework
+                </FluentLabel>
 
-                    <FluentCard>
-                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
-                            <FluentLabel Typo="Typography.H1" Alignment="HorizontalAlignment.Center">
-                                Goodtocode Quick-start for Microsoft Agent Framework
-                            </FluentLabel>
+                <FluentLabel Typo="Typography.Body" Alignment="HorizontalAlignment.Center">
+                    Build and test AI-assisted chat workflows quickly with a focused, minimal starter experience.
+                </FluentLabel>
 
-                            <FluentLabel Typo="Typography.Body" Alignment="HorizontalAlignment.Center">
-                                Build and test AI-assisted chat workflows quickly with a focused, minimal starter experience.
-                            </FluentLabel>
+                <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
+                    <FluentBadge Appearance="Appearance.Neutral">Fast setup</FluentBadge>
+                    <FluentBadge Appearance="Appearance.Neutral">Secure sign-in</FluentBadge>
+                    <FluentBadge Appearance="Appearance.Neutral">Chat-first workflow</FluentBadge>
+                </FluentStack>
 
-                            <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
-                                <FluentBadge Appearance="Appearance.Neutral">Fast setup</FluentBadge>
-                                <FluentBadge Appearance="Appearance.Neutral">Secure sign-in</FluentBadge>
-                                <FluentBadge Appearance="Appearance.Neutral">Chat-first workflow</FluentBadge>
-                            </FluentStack>
-
-                            <section>
-                                <FluentCard Style="width: 100%; max-width: 760px; margin-inline: auto;">
-                                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
-                                        <FluentLabel Typo="Typography.H4">Recommended first steps</FluentLabel>
-                                        <FluentLabel>1. Sign in to create your user context.</FluentLabel>
-                                        <FluentLabel>2. Open Chat Session to start a new conversation.</FluentLabel>
-                                        <FluentLabel>3. Ask a focused prompt and iterate from the response.</FluentLabel>
-                                    </FluentStack>
-                                </FluentCard>
-                            </section>
-
-                            <footer>
-                                <FluentStack Orientation="Orientation.Vertical" VerticalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
-                                    <FluentButton Appearance="Appearance.Accent" OnClick="OpenChatSession">
-                                        Open Chat Session
-                                    </FluentButton>
-                                    <FluentLabel Typo="Typography.Body" Alignment="HorizontalAlignment.Center">
-                                        Tip: Start with a concrete task (for example, “Generate a summary and next actions”).
-                                    </FluentLabel>
-                                </FluentStack>
-                            </footer>
-                        </FluentStack>
-                    </FluentCard>
+                <FluentCard Style="width: 100%; max-width: 760px; margin-inline: auto;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+                        <FluentLabel Typo="Typography.H4">Recommended first steps</FluentLabel>
+                        <FluentLabel>1. Sign in to create your user context.</FluentLabel>
+                        <FluentLabel>2. Open Chat Session to start a new conversation.</FluentLabel>
+                        <FluentLabel>3. Ask a focused prompt and iterate from the response.</FluentLabel>
+                    </FluentStack>
+                </FluentCard>
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="OpenChatSession">
+                        Open Chat Session
+                    </FluentButton>
+                    <FluentLabel Typo="Typography.Body" Alignment="HorizontalAlignment.Center">
+                        Tip: Start with a concrete task (for example, “Generate a summary and next actions”).
+                    </FluentLabel>
                 </FluentStack>
             </FluentStack>
-        </header>
-
-        <footer>
-            <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" HorizontalAlignment="HorizontalAlignment.Center" Style="padding-top: 1rem;">
-                <nav aria-label="Legal links">
-                    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12" Wrap="true" HorizontalAlignment="HorizontalAlignment.Center">
-                        <FluentAnchor Href="/privacy">Privacy Policy</FluentAnchor>
-                        <FluentAnchor Href="/terms">Terms of Use</FluentAnchor>
-                        <FluentAnchor Href="/analytics-notice">Analytics Notice</FluentAnchor>
-                    </FluentStack>
-                </nav>
-            </FluentStack>
-        </footer>
-    </article>
-</main>
-
+        </FluentCard>
+    </FluentStack>
+</FluentStack>
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="8" HorizontalAlignment="HorizontalAlignment.Center" Style="padding-top: 1rem;">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12" Wrap="true" HorizontalAlignment="HorizontalAlignment.Center">
+        <FluentAnchor Href="/privacy">Privacy Policy</FluentAnchor>
+        <FluentAnchor Href="/terms">Terms of Use</FluentAnchor>
+        <FluentAnchor Href="/analytics-notice">Analytics Notice</FluentAnchor>
+    </FluentStack>
+</FluentStack>
 <AnalyticsConsentBanner />
 
 @code {

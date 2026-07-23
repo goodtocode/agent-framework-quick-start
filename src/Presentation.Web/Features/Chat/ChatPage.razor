@@ -15,113 +15,47 @@
 
 <PageTitle>Chat Session</PageTitle>
 
-<HeadContent>
-    <meta name="description" content="Create and manage chat sessions with the GoodToCode Microsoft Agent Framework quick-start." />
-    <link rel="canonical" href="/chat" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Chat Session | GoodToCode" />
-    <meta property="og:description" content="Run AI-assisted chat sessions in the GoodToCode quick-start template." />
-    <meta property="og:url" content="/chat" />
-    <meta property="og:image" content="/img/logo.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Chat Session | GoodToCode" />
-    <meta name="twitter:description" content="Run AI-assisted chat sessions in the GoodToCode quick-start template." />
-    <meta name="twitter:image" content="/img/logo.png" />
-    <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org",
-          "@@type": "Chat",
-          "name": "GoodToCode Chat Session",
-          "url": "/chat",
-          "provider": {
-            "@@type": "Organization",
-            "name": "GoodToCode"
-          }
-        }
-    </script>
-    <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org",
-          "@@type": "Actor",
-          "name": "GoodToCode Agent",
-          "description": "AI assistant actor used in chat workflows for the quick-start template."
-        }
-    </script>
-    <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org",
-          "@@type": "BreadcrumbList",
-          "itemListElement": [
+<FluentGrid Spacing="0" OnBreakpointEnter="OnBreakpointEnterHandler" Justify="JustifyContent.FlexStart">
+    <FluentGridItem xs="12" sm="6" md="3">
+        <FluentStack Orientation="sessionListOrientation" VerticalGap="sessionListVerticalGap" HorizontalGap="sessionListHorizontalGap"
+                     Style="padding-inline-start:8px; padding-top:8px;" Wrap="wrapSessions">
+            <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="flex:0 0 auto; white-space:nowrap; min-width:max-content;" />
+            <FluentSpacer />
+            @if (sessionListOrientation == Orientation.Vertical)
             {
-              "@@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": "/"
-            },
-            {
-              "@@type": "ListItem",
-              "position": 2,
-              "name": "Chat",
-              "item": "/chat"
+                <ChatSessionList @ref="chatSessionListRef"
+                                 Sessions="chatSessions"
+                                 OnSessionSelected="HandleSessionSelected" />
             }
-          ]
-        }
-    </script>
-</HeadContent>
+            else
+            {
+                <ChatSessionStrip @ref="ChatSessionStripRef"
+                                  Sessions="chatSessions"
+                                  OnSessionSelected="HandleSessionSelected" />
+            }
+        </FluentStack>
+    </FluentGridItem>
+    <FluentGridItem xs="12" sm="12" md="9" Style="@chatContentStyle">
+        <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Stretch">
+            <H1Label>What can I help you with?</H1Label>
+            <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
+            <FluentSpacer />
+            @if (sessionListOrientation == Orientation.Vertical)
+            {
+                <NewChatMessageCard Sessions="chatSessions"
+                                    OnSessionCreated="HandleSessionCreated"
+                                    OnMessageSubmitted="HandleMessageSubmitted" />
+            }
+            else
+            {
+                <NewChatMessageInput Sessions="chatSessions"
+                                     OnSessionCreated="HandleSessionCreated"
+                                     OnMessageSubmitted="HandleMessageSubmitted" />
 
-<main>
-    <article>
-        <FluentGrid Spacing="0" OnBreakpointEnter="OnBreakpointEnterHandler" Justify="JustifyContent.FlexStart">
-            <FluentGridItem xs="12" sm="6" md="3">
-                <nav aria-label="Chat session navigation">
-                    <FluentStack Orientation="sessionListOrientation" VerticalGap="sessionListVerticalGap" HorizontalGap="sessionListHorizontalGap"
-                                 Style="padding-inline-start:8px; padding-top:8px;" Wrap="wrapSessions">
-                        <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="flex:0 0 auto; white-space:nowrap; min-width:max-content;" />
-                        <FluentSpacer />
-                        @if (sessionListOrientation == Orientation.Vertical)
-                        {
-                            <ChatSessionList @ref="chatSessionListRef"
-                                             Sessions="chatSessions"
-                                             OnSessionSelected="HandleSessionSelected" />
-                        }
-                        else
-                        {
-                            <ChatSessionStrip @ref="ChatSessionStripRef"
-                                              Sessions="chatSessions"
-                                              OnSessionSelected="HandleSessionSelected" />
-                        }
-                    </FluentStack>
-                </nav>
-            </FluentGridItem>
-            <FluentGridItem xs="12" sm="12" md="9" Style="@chatContentStyle">
-                <section>
-                    <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Stretch">
-                        <header>
-                            <H1Label>What can I help you with?</H1Label>
-                        </header>
-                        <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
-                        <FluentSpacer />
-                        <footer>
-                            @if (sessionListOrientation == Orientation.Vertical)
-                            {
-                                <NewChatMessageCard Sessions="chatSessions"
-                                                    OnSessionCreated="HandleSessionCreated"
-                                                    OnMessageSubmitted="HandleMessageSubmitted" />
-                            }
-                            else
-                            {
-                                <NewChatMessageInput Sessions="chatSessions"
-                                                     OnSessionCreated="HandleSessionCreated"
-                                                     OnMessageSubmitted="HandleMessageSubmitted" />
-
-                            }
-                        </footer>
-                    </FluentStack>
-                </section>
-            </FluentGridItem>
-        </FluentGrid>
-    </article>
-</main>
+            }
+        </FluentStack>
+    </FluentGridItem>
+</FluentGrid>
 
 @code {
     private ChatSessionsModel chatSessions = new ChatSessionsModel();

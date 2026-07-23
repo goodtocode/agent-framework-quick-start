@@ -9,16 +9,7 @@
                          Placeholder="Type your message here..."
                          AriaLabel="Type your message here..."
                          Disabled="@isSubmitting" />
-        <FluentButton Style="width:20%;" Type="ButtonType.Submit" Disabled="@isSubmitting" Appearance="Appearance.Accent">
-            @if (!isSubmitting)
-            {
-                @("Send")
-            }
-            else
-            {
-                <FluentProgressRing Visible="isSubmitting" />
-            }
-        </FluentButton>
+        <SubmittingButton Style="width:20%;" IsSubmitting="@isSubmitting" Label="Send" />
     </FluentStack>
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -49,37 +40,44 @@
 
     private async Task SubmitMessage()
     {
-        if (editContext is not null && editContext.Validate())
+        if (isSubmitting)
         {
-            isSubmitting = true;
+            return;
+        }
+
+        if (editContext is null || !editContext.Validate())
+        {
+            return;
+        }
+
+        isSubmitting = true;
+        StateHasChanged();
+        try
+        {
+            var newMessageModel = new ChatMessageModel
+            {
+                Id = Guid.NewGuid(),
+                Role = "User",
+                Content = messageModel.NewMessage,
+                Timestamp = DateTimeOffset.Now
+            };
+            if (Sessions.ActiveSession == null)
+            {
+                var chatSession = await chatService.CreateSessionAsync(messageModel.NewMessage);
+                await OnSessionCreated.InvokeAsync(chatSession);
+            }
+            else
+            {
+                newMessageModel.ChatSessionId = Sessions.ActiveSession.Id;
+                await chatService.SendMessageAsync(Sessions.ActiveSession!.Id, messageModel.NewMessage);
+                await OnMessageSubmitted.InvokeAsync();
+            }
+            ClearForm();
+        }
+        finally
+        {
+            isSubmitting = false;
             StateHasChanged();
-            try
-            {
-                var newMessageModel = new ChatMessageModel
-                {
-                    Id = Guid.NewGuid(),
-                    Role = "User",
-                    Content = messageModel.NewMessage,
-                    Timestamp = DateTimeOffset.Now
-                };
-                if (Sessions.ActiveSession == null)
-                {
-                    var chatSession = await chatService.CreateSessionAsync(messageModel.NewMessage);
-                    await OnSessionCreated.InvokeAsync(chatSession);
-                }
-                else
-                {
-                    newMessageModel.ChatSessionId = Sessions.ActiveSession.Id;
-                    await chatService.SendMessageAsync(Sessions.ActiveSession!.Id, messageModel.NewMessage);
-                    await OnMessageSubmitted.InvokeAsync();
-                }
-                ClearForm();
-            }
-            finally
-            {
-                isSubmitting = false;
-                StateHasChanged();
-            }
         }
     }
 

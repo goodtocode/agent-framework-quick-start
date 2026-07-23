@@ -17,19 +17,44 @@ public static class ConfigureServicesAuth
 
     public static void AddAuthenticationForDownstream(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddOptions<EntraExternalIdWebOptions>()
+            .Bind(configuration.GetSection(EntraExternalIdWebOptions.SectionName))
+            .ValidateDataAnnotations()
+            .Validate(options =>
+                    Uri.TryCreate(options.Instance, UriKind.Absolute, out _),
+                "Configuration value 'EntraExternalId:Instance' must be an absolute URL.")
+            .Validate(options =>
+                    string.IsNullOrWhiteSpace(options.PasswordResetUrl)
+                    || Uri.TryCreate(options.PasswordResetUrl, UriKind.Absolute, out _),
+                "Configuration value 'EntraExternalId:PasswordResetUrl' must be an absolute URL when provided.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.ClientSecret),
+                "Configuration value 'EntraExternalId:ClientSecret' is required for downstream token acquisition.")
+            .ValidateOnStart();
+
+        var entraExternalIdOptions = configuration
+            .GetSection(EntraExternalIdWebOptions.SectionName)
+            .Get<EntraExternalIdWebOptions>() ?? throw new InvalidOperationException($"Missing '{EntraExternalIdWebOptions.SectionName}' configuration section.");
+
+        var backendApiOptions = configuration
+            .GetSection(BackendApiOptions.SectionName)
+            .Get<BackendApiOptions>() ?? throw new InvalidOperationException($"Missing '{BackendApiOptions.SectionName}' configuration section.");
+
         services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(options =>
                 {
-                    configuration.GetSection("EntraExternalId").Bind(options);
+                    options.Instance = entraExternalIdOptions.Instance;
+                    options.TenantId = entraExternalIdOptions.TenantId;
+                    options.ClientId = entraExternalIdOptions.ClientId;
+                    options.ClientSecret = entraExternalIdOptions.ClientSecret;
                     options.SignInScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.Scope.Add($"api://{backendApiOptions.ClientId}/access_as_user");
                 })
             .EnableTokenAcquisitionToCallDownstreamApi()
             .AddInMemoryTokenCaches()
             .AddDownstreamApi("BackendApi", configOptions =>
             {
-                configOptions.BaseUrl = configuration["BackendApi:BaseUrl"];
-                configOptions.Scopes = [$"api://{configuration["BackendApi:ClientId"] ?? Guid.Empty.ToString()}/.default",
-                "User.Read"];
+                configOptions.BaseUrl = backendApiOptions.BaseUrl.ToString();
+                configOptions.Scopes = [$"api://{backendApiOptions.ClientId}/access_as_user"];
             });
 
         services.Configure<MicrosoftIdentityOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>

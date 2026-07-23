@@ -93,7 +93,7 @@
       "templateDirectory": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../Presentation.Web/Clients/BackendApiClient.g.cs",
+      "output": "../Presentation.Web/Infrastructure/Clients/BackendApiClient.g.cs",
       "newLineBehavior": "Auto"
     }
   }

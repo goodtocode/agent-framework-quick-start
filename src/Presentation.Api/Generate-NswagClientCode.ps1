@@ -13,7 +13,7 @@ param (
     [string]$SwaggerJsonPath = 'swagger',
     [string]$ApiAssembly = 'Goodtocode.AgentFramework.Presentation.Api.dll',
     [string]$ApiVersion = 'v1',
-    [string]$ClientPathFile = '../Goodtocode.AgentFramework.Web/Clients/BackendApiClient.g.cs',
+    [string]$ClientPathFile = '../Goodtocode.AgentFramework.Web/Infrastructure/Clients/BackendApiClient.g.cs',
     [string]$ClientNamespace = 'Goodtocode.AgentFramework.Web',
     [string]$Configuration = 'Debug',
     [string]$TargetFramework = 'net10.0',
