@@ -31,6 +31,12 @@ public sealed class EntraExternalIdWebOptions
     public string ClientId { get; set; } = string.Empty;
 
     /// <summary>
+    /// Confidential client secret used to redeem authorization codes and acquire downstream tokens.
+    /// </summary>
+    [Required(ErrorMessage = "Missing required configuration value 'EntraExternalId:ClientSecret'.")]
+    public string ClientSecret { get; set; } = string.Empty;
+
+    /// <summary>
     /// Indicates whether authority metadata should be validated.
     /// </summary>
     public bool ValidateAuthority { get; set; } = true;

@@ -27,6 +27,8 @@ public static class ConfigureServicesAuth
                     string.IsNullOrWhiteSpace(options.PasswordResetUrl)
                     || Uri.TryCreate(options.PasswordResetUrl, UriKind.Absolute, out _),
                 "Configuration value 'EntraExternalId:PasswordResetUrl' must be an absolute URL when provided.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.ClientSecret),
+                "Configuration value 'EntraExternalId:ClientSecret' is required for downstream token acquisition.")
             .ValidateOnStart();
 
         var entraExternalIdOptions = configuration
@@ -43,6 +45,7 @@ public static class ConfigureServicesAuth
                     options.Instance = entraExternalIdOptions.Instance;
                     options.TenantId = entraExternalIdOptions.TenantId;
                     options.ClientId = entraExternalIdOptions.ClientId;
+                    options.ClientSecret = entraExternalIdOptions.ClientSecret;
                     options.SignInScheme = OpenIdConnectDefaults.AuthenticationScheme;
                     options.Scope.Add($"api://{backendApiOptions.ClientId}/access_as_user");
                 })
