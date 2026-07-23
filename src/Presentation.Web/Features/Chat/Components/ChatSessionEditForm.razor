@@ -7,7 +7,7 @@
                          Label=""
                          Required="true"
                          Autofocus="true" />
-        <FluentButton Type="ButtonType.Submit" IconStart="new Icons.Regular.Size24.Save()" OnClick="() => OnSave.InvokeAsync(editModel.Title!)"></FluentButton>
+        <SubmittingButton IsSubmitting="@isSubmitting" Label="Save" />
         <FluentButton Type="ButtonType.Button" IconStart="new Icons.Regular.Size24.Dismiss()" OnClick="() => OnCancel.InvokeAsync(null)"></FluentButton>
     </FluentStack>
     <ValidationSummary/>
@@ -20,6 +20,7 @@
 
     private EditSessionModel editModel = new();
     private EditContext? editContext;
+    private bool isSubmitting;
 
     protected override void OnParametersSet()
     {
@@ -29,9 +30,21 @@
 
     private async Task HandleValidSubmit()
     {
+        if (isSubmitting)
+            return;
+
         if (editContext is null || !editContext.Validate())
             return;
-        await OnSave.InvokeAsync(editModel.Title!);
+
+        isSubmitting = true;
+        try
+        {
+            await OnSave.InvokeAsync(editModel.Title!);
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
     }
 
     public class EditSessionModel

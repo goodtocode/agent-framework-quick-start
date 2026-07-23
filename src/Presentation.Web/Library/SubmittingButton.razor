@@ -1,0 +1,27 @@
+<FluentButton Type="@Type"
+              Appearance="@Appearance"
+              Disabled="@(Disabled || IsSubmitting)"
+              Style="@Style">
+    @if (IsSubmitting)
+    {
+        <FluentProgressRing Visible="true" />
+    }
+    else if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+    else
+    {
+        @Label
+    }
+</FluentButton>
+
+@code {
+    [Parameter] public ButtonType Type { get; set; } = ButtonType.Submit;
+    [Parameter] public Appearance Appearance { get; set; } = Appearance.Accent;
+    [Parameter] public bool IsSubmitting { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string Style { get; set; } = string.Empty;
+    [Parameter] public string Label { get; set; } = "Submit";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
