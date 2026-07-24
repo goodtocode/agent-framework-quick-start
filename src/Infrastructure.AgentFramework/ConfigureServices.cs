@@ -72,10 +72,16 @@ public static class ConfigureServices
         services.AddSingleton(provider =>
         {
             var providerOptions = provider.GetRequiredService<IOptions<AgentProviderOptions>>().Value;
+            var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("AgentProviderConfiguration");
 
             if (providerOptions.Kind.Equals("GitHubCopilotSDK", StringComparison.OrdinalIgnoreCase))
             {
                 var options = provider.GetRequiredService<IOptions<GitHubCopilotSdkOptions>>().Value;
+                logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. ChatCompletionModelId: {ChatCompletionModelId}",
+                    providerOptions.Kind,
+                    options.Endpoint,
+                    options.ChatCompletionModelId);
+
                 var client = new OpenAIClient(
                     new System.ClientModel.ApiKeyCredential(options.ApiKey),
                     new OpenAIClientOptions
@@ -88,11 +94,18 @@ public static class ConfigureServices
             if (providerOptions.Kind.Equals("AzureOpenAI", StringComparison.OrdinalIgnoreCase))
             {
                 var options = provider.GetRequiredService<IOptions<AzureOpenAIOptions>>().Value;
+                var normalizedEndpoint = NormalizeAzureOpenAIEndpoint(options.Endpoint);
+                logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. NormalizedEndpoint: {NormalizedEndpoint}. ChatCompletionModelId: {ChatCompletionModelId}",
+                    providerOptions.Kind,
+                    options.Endpoint,
+                    normalizedEndpoint,
+                    options.ChatCompletionModelId);
+
                 var client = new OpenAIClient(
                     new System.ClientModel.ApiKeyCredential(options.ApiKey),
                     new OpenAIClientOptions
                     {
-                        Endpoint = new Uri(options.Endpoint)
+                        Endpoint = new Uri(normalizedEndpoint)
                     });
                 return client.GetChatClient(options.ChatCompletionModelId);
             }
@@ -100,6 +113,11 @@ public static class ConfigureServices
             if (providerOptions.Kind.Equals("Ollama", StringComparison.OrdinalIgnoreCase))
             {
                 var options = provider.GetRequiredService<IOptions<OllamaOptions>>().Value;
+                logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. ChatCompletionModelId: {ChatCompletionModelId}",
+                    providerOptions.Kind,
+                    options.Endpoint,
+                    options.ChatCompletionModelId);
+
                 var client = new OpenAIClient(
                     new System.ClientModel.ApiKeyCredential(string.IsNullOrWhiteSpace(options.ApiKey) ? "ollama" : options.ApiKey),
                     new OpenAIClientOptions
@@ -112,6 +130,11 @@ public static class ConfigureServices
             if (providerOptions.Kind.Equals("AzureAIFoundry", StringComparison.OrdinalIgnoreCase))
             {
                 var options = provider.GetRequiredService<IOptions<AzureAIFoundryOptions>>().Value;
+                logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. ChatCompletionModelId: {ChatCompletionModelId}",
+                    providerOptions.Kind,
+                    options.Endpoint,
+                    options.ChatCompletionModelId);
+
                 var client = new OpenAIClient(
                     new System.ClientModel.ApiKeyCredential(options.ApiKey),
                     new OpenAIClientOptions
@@ -122,6 +145,10 @@ public static class ConfigureServices
             }
 
             var openAIOptions = provider.GetRequiredService<IOptions<OpenAIOptions>>().Value;
+            logger.LogInformation("Agent provider resolved to {Provider}. ChatCompletionModelId: {ChatCompletionModelId}",
+                providerOptions.Kind,
+                openAIOptions.ChatCompletionModelId);
+
             return new ChatClient(openAIOptions.ChatCompletionModelId, openAIOptions.ApiKey);
         });
 
@@ -222,6 +249,30 @@ public static class ConfigureServices
         => HasValue(options.ChatCompletionModelId)
            && HasValue(options.ApiKey)
            && HasUri(options.Endpoint);
+
+    private static string NormalizeAzureOpenAIEndpoint(string endpoint)
+    {
+        var trimmed = endpoint.Trim();
+
+        if (!Uri.TryCreate(trimmed, UriKind.Absolute, out var uri))
+        {
+            return trimmed;
+        }
+
+        var path = uri.AbsolutePath.TrimEnd('/');
+        if (path.Equals("/openai/v1", StringComparison.OrdinalIgnoreCase)
+            || path.Equals("/openai", StringComparison.OrdinalIgnoreCase))
+        {
+            return trimmed;
+        }
+
+        if (path.Length == 0 || path.Equals("/", StringComparison.Ordinal))
+        {
+            return $"{trimmed.TrimEnd('/')}/openai/v1/";
+        }
+
+        return trimmed;
+    }
 
     private static bool HasRequiredOllama(OllamaOptions options)
         => HasValue(options.ChatCompletionModelId)
