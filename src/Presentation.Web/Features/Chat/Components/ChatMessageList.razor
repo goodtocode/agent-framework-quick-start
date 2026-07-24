@@ -1,10 +1,9 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Models
-@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 
 @inject IJSRuntime JSRuntime
 
-<FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Top" VerticalGap="8">
+<FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Top" VerticalGap="8" Style="@($"width:{Width}; max-width:100%; margin-inline:auto;")">
     @foreach (var message in Messages ?? Enumerable.Empty<ChatMessageModel>())
     {
         var isUser = IsUserMessage(message);
@@ -21,6 +20,9 @@
 @code {
     [Parameter]
     public IEnumerable<ChatMessageModel> Messages { get; set; } = new List<ChatMessageModel>();
+
+    [Parameter]
+    public string Width { get; set; } = "100%";
 
     private bool IsUserMessage(ChatMessageModel message) =>
         message?.Role?.ToLowerInvariant() == "user";
