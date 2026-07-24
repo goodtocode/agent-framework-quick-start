@@ -36,6 +36,7 @@
 ## UI Design Guidelines
 - **ChatPage Layout:** Implement distinct desktop and mobile layouts with a strict row/column structure on mobile.
 - **Input Visibility:** Ensure persistent visible input under a capped message list height.
+- **Component Usage:** Use only components in `.razor` files (no raw HTML elements), except in `App.razor` where raw HTML is allowed.
 
 ## References
 - [README.md](../README.md): Project overview and getting started

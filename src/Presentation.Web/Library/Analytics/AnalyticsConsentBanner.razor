@@ -5,7 +5,7 @@
 
 @if (_isPreferenceLoaded && _showBanner)
 {
-    <aside aria-label="Analytics consent notice" style="position: fixed; bottom: 1rem; right: 1rem; left: 1rem; z-index: 1000;">
+    <FluentStack aria-label="Analytics consent notice" style="position: fixed; bottom: 1rem; right: 1rem; left: 1rem; z-index: 1000; max-width:98%;">
         <FluentCard>
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
                 <FluentLabel Typo="Typography.H4">Privacy and analytics notice</FluentLabel>
@@ -19,7 +19,7 @@
                 </FluentStack>
             </FluentStack>
         </FluentCard>
-    </aside>
+    </FluentStack>
 }
 
 @code {
