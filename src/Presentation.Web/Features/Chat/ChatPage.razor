@@ -34,13 +34,12 @@
         </FluentGridItem>
 
         <FluentGridItem xs="12">
-            <FluentStack Style="max-height:65vh; overflow-y:auto; min-height:0;" Orientation="Orientation.Vertical">
+      <FluentStack Style="max-height:65vh; overflow-y:auto; min-height:0; padding-bottom:10px;" Orientation="Orientation.Vertical">
                 <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
             </FluentStack>
         </FluentGridItem>
 
         <FluentGridItem xs="12">
-            <FluentSpacer />
             <NewChatMessageInput Width="100%"
                                  Sessions="chatSessions"
                                  OnSessionCreated="HandleSessionCreated"
