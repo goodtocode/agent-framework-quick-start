@@ -2,10 +2,6 @@
 - What changed?
 - Why was this change needed?
 
-## Linked Work
-- Feature doc: `docs/product/features/<feature-name>.md`
-- Issue: #<id>
-
 ## Architecture Boundary Check
 - [ ] Domain layer boundaries respected
 - [ ] Application layer boundaries respected
