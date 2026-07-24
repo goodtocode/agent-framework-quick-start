@@ -5,31 +5,33 @@
 @inject IChatService chatService
 
 @if (Sessions?.Any() == true)
-{    
-    <FluentHorizontalScroll>
-        @foreach (var session in Sessions)
-        {
-            <FluentCard @onclick="() => SelectSession(session)" Style="@(selectedSession?.Id == session.Id ? "border: 2px solid #0078D4; min-width:220px;" : "border: none; min-width:220px;")">
-                @if (editingSessionId == session.Id)
-                {
-                    <ChatSessionEditForm Title="@session.Title"
-                                         OnSave="(title) => EditSessionTitleAsync(session, title)"
-                                         OnCancel="CancelEditing" />
-                }
-                else
-                {
-                    <FluentStack Orientation="Orientation.Horizontal" Style="width:100%; align-items:center; justify-content:space-between; min-width:0;">
-                        <FluentLabel Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width:0; flex:1 1 auto;">
-                            @session.Title
-                        </FluentLabel>
-                        <FluentIcon Value="(new Icons.Regular.Size24.MoreVertical())"
-                                    Style="@((selectedSession?.Id == session.Id) ? "visibility:visible; flex:0 0 auto; cursor:pointer;" : "visibility:hidden; flex:0 0 auto;")"
-                                    OnClick="() => StartEditing(session)" />
-                    </FluentStack>
-                }
-            </FluentCard>
-        }
-    </FluentHorizontalScroll>
+{
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="8" Wrap="false" Style="width:100%;">
+        <FluentHorizontalScroll Style="width:80%;">
+            @foreach (var session in SessionItems)
+            {
+                <FluentCard @onclick="() => SelectSession(session)" Style="@(selectedSession?.Id == session.Id ? "border: 2px solid #0078D4; min-width:160px; width:46%; max-width:220px;" : "border: none; min-width:160px; width:46%; max-width:220px;")">
+                    @if (editingSessionId == session.Id)
+                    {
+                        <ChatSessionEditForm Title="@session.Title"
+                                             OnSave="(title) => EditSessionTitleAsync(session, title)"
+                                             OnCancel="CancelEditing" />
+                    }
+                    else
+                    {
+                        <FluentStack Orientation="Orientation.Horizontal" Style="width:100%; align-items:center; justify-content:space-between; min-width:0;">
+                            <FluentLabel Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width:0; flex:1 1 auto;">
+                                @session.Title
+                            </FluentLabel>
+                            <FluentIcon Value="(new Icons.Regular.Size24.MoreVertical())"
+                                        Style="@((selectedSession?.Id == session.Id) ? "visibility:visible; flex:0 0 auto; cursor:pointer;" : "visibility:hidden; flex:0 0 auto;")"
+                                        OnClick="() => StartEditing(session)" />
+                        </FluentStack>
+                    }
+                </FluentCard>
+            }
+        </FluentHorizontalScroll>
+    </FluentStack>
 }
 else
 {
@@ -45,6 +47,8 @@ else
     private EditSessionModel editModel = new();
     private EditContext? editContext;
     private ChatSessionModel? selectedSession;
+
+    private IReadOnlyList<ChatSessionModel> SessionItems => Sessions?.ToList() ?? [];
 
     private async Task SelectSession(ChatSessionModel session)
     {
