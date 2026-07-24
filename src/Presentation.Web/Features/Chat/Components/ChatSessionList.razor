@@ -26,11 +26,12 @@
             }
             else if (isSelected)
             {
-                <FluentStack Orientation="Orientation.Horizontal">
-                    <FluentLabel>
+                <FluentStack Orientation="Orientation.Horizontal" Style="width:100%; min-width:0; align-items:center;">
+                    <FluentLabel Style="flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                         @sessionItem.Text
                     </FluentLabel>
                     <FluentIcon Value="(new Icons.Regular.Size24.MoreVertical())"
+                                Style="flex:0 0 auto; cursor:pointer;"
                                 OnClick="() => StartEditing(session)" />
                 </FluentStack>
             }
