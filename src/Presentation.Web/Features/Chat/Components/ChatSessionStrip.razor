@@ -9,7 +9,7 @@
     <FluentHorizontalScroll>
         @foreach (var session in Sessions)
         {
-            <FluentCard @onclick="() => SelectSession(session)" Style="@(selectedSession?.Id == session.Id ? "border: 2px solid #0078D4;" : "border: none;")">
+            <FluentCard @onclick="() => SelectSession(session)" Style="@(selectedSession?.Id == session.Id ? "border: 2px solid #0078D4; min-width:220px;" : "border: none; min-width:220px;")">
                 @if (editingSessionId == session.Id)
                 {
                     <ChatSessionEditForm Title="@session.Title"
@@ -18,15 +18,13 @@
                 }
                 else
                 {
-                    <FluentStack Orientation="Orientation.Horizontal">
-                        <FluentLabel Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                    <FluentStack Orientation="Orientation.Horizontal" Style="width:100%; align-items:center; justify-content:space-between; min-width:0;">
+                        <FluentLabel Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width:0; flex:1 1 auto;">
                             @session.Title
                         </FluentLabel>
-                        @if (selectedSession?.Id == session.Id)
-                        {
-                            <FluentIcon Value="(new Icons.Regular.Size24.MoreVertical())"
-                                        OnClick="() => StartEditing(session)" />
-                        }
+                        <FluentIcon Value="(new Icons.Regular.Size24.MoreVertical())"
+                                    Style="@((selectedSession?.Id == session.Id) ? "visibility:visible; flex:0 0 auto; cursor:pointer;" : "visibility:hidden; flex:0 0 auto;")"
+                                    OnClick="() => StartEditing(session)" />
                     </FluentStack>
                 }
             </FluentCard>

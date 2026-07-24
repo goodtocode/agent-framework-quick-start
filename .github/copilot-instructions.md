@@ -33,6 +33,10 @@
 - **RBAC & Security:** Enforced in API layer, see `ConfigureServicesAuth.cs`.
 - **Auth-Triggered User Provisioning:** Keep the flow UI-tied (not middleware/pipeline) because OBO token acquisition requires user context on the main UI thread/circuit.
 
+## UI Design Guidelines
+- **ChatPage Layout:** Implement distinct desktop and mobile layouts with a strict row/column structure on mobile.
+- **Input Visibility:** Ensure persistent visible input under a capped message list height.
+
 ## References
 - [README.md](../README.md): Project overview and getting started
 

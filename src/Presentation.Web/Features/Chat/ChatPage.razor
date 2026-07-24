@@ -15,57 +15,80 @@
 
 <PageTitle>Chat Session</PageTitle>
 
-<FluentGrid Spacing="0" OnBreakpointEnter="OnBreakpointEnterHandler" Justify="JustifyContent.FlexStart">
-    <FluentGridItem xs="12" sm="6" md="3">
-        <FluentStack Orientation="sessionListOrientation" VerticalGap="sessionListVerticalGap" HorizontalGap="sessionListHorizontalGap"
-                     Style="padding-inline-start:8px; padding-top:8px;" Wrap="wrapSessions">
-            <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="flex:0 0 auto; white-space:nowrap; min-width:max-content;" />
-            <FluentSpacer />
-            @if (sessionListOrientation == Orientation.Vertical)
-            {
-                <ChatSessionList @ref="chatSessionListRef"
-                                 Sessions="chatSessions"
-                                 OnSessionSelected="HandleSessionSelected" />
-            }
-            else
-            {
-                <ChatSessionStrip @ref="ChatSessionStripRef"
-                                  Sessions="chatSessions"
-                                  OnSessionSelected="HandleSessionSelected" />
-            }
-        </FluentStack>
-    </FluentGridItem>
-    <FluentGridItem xs="12" sm="12" md="9" Style="@chatContentStyle">
-        <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Stretch">
-            <H1Label>What can I help you with?</H1Label>
-            <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
-            <FluentSpacer />
-            @if (sessionListOrientation == Orientation.Vertical)
-            {
-                <NewChatMessageCard Sessions="chatSessions"
-                                    OnSessionCreated="HandleSessionCreated"
-                                    OnMessageSubmitted="HandleMessageSubmitted" />
-            }
-            else
-            {
-                <NewChatMessageInput Sessions="chatSessions"
-                                     OnSessionCreated="HandleSessionCreated"
-                                     OnMessageSubmitted="HandleMessageSubmitted" />
+<FluentGrid Spacing="0" Justify="JustifyContent.FlexStart" Style="width:100%; padding-top:8px;" OnBreakpointEnter="OnBreakpointEnterHandler">
+    @if (isMobileLayout)
+    {
+        <FluentGridItem xs="4">
+            <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="width:100%;" />
+        </FluentGridItem>
+        <FluentGridItem xs="8">
+            <ChatSessionStrip @ref="chatSessionStripRef"
+                              Sessions="chatSessions"
+                              OnSessionSelected="HandleSessionSelected" />
+        </FluentGridItem>
 
-            }
-        </FluentStack>
-    </FluentGridItem>
+        <FluentGridItem xs="12">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.Center">
+                <H1Label>What can I help you with?</H1Label>
+            </FluentStack>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            <FluentStack Style="max-height:70vh; overflow-y:auto; min-height:0;" Orientation="Orientation.Vertical">
+                <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
+            </FluentStack>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            <NewChatMessageInput Width="100%"
+                                 Sessions="chatSessions"
+                                 OnSessionCreated="HandleSessionCreated"
+                                 OnMessageSubmitted="HandleMessageSubmitted" />
+        </FluentGridItem>
+    }
+    else
+    {
+        <FluentGridItem xs="2" md="2">
+            <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="width:100%;" />
+        </FluentGridItem>
+        <FluentGridItem xs="1" md="1"></FluentGridItem>
+        <FluentGridItem xs="8" md="8">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.Center">
+                <H1Label>What can I help you with?</H1Label>
+            </FluentStack>
+        </FluentGridItem>
+        <FluentGridItem xs="1" md="1"></FluentGridItem>
+
+        <FluentGridItem xs="2" md="2">
+            <ChatSessionList @ref="chatSessionListRef"
+                             Sessions="chatSessions"
+                             OnSessionSelected="HandleSessionSelected" />
+        </FluentGridItem>
+        <FluentGridItem xs="1" md="1"></FluentGridItem>
+        <FluentGridItem xs="8" md="8">
+            <FluentStack Style="max-height:70vh; overflow-y:auto; min-height:0;" Orientation="Orientation.Vertical">
+                <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
+            </FluentStack>
+        </FluentGridItem>
+        <FluentGridItem xs="1" md="1"></FluentGridItem>
+
+        <FluentGridItem xs="0" md="2"></FluentGridItem>
+        <FluentGridItem xs="0" md="1"></FluentGridItem>
+        <FluentGridItem xs="12" md="8">
+            <NewChatMessageCard Width="100%"
+                                Sessions="chatSessions"
+                                OnSessionCreated="HandleSessionCreated"
+                                OnMessageSubmitted="HandleMessageSubmitted" />
+        </FluentGridItem>
+        <FluentGridItem xs="0" md="1"></FluentGridItem>
+    }
 </FluentGrid>
 
 @code {
     private ChatSessionsModel chatSessions = new ChatSessionsModel();
     private ChatSessionList? chatSessionListRef;
-    private ChatSessionStrip? ChatSessionStripRef;
-    private Orientation sessionListOrientation = Orientation.Vertical;
-    private int sessionListVerticalGap;
-    private int sessionListHorizontalGap;
-    private bool wrapSessions = false;
-    private string chatContentStyle = "max-width:50vw;";
+    private ChatSessionStrip? chatSessionStripRef;
+    private bool isMobileLayout;
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,7 +106,7 @@
     private void HandleNewSessionPressed()
     {
         chatSessionListRef?.ClearSelection();
-        ChatSessionStripRef?.ClearSelection();
+        chatSessionStripRef?.ClearSelection();
         chatSessions.ClearActive();
         StateHasChanged();
     }
@@ -110,21 +133,8 @@
 
     private void OnBreakpointEnterHandler(GridItemSize size)
     {
-        wrapSessions = size == GridItemSize.Xs ? true : false;
-        if (size == GridItemSize.Xs || size == GridItemSize.Sm)
-        {
-            sessionListOrientation = Orientation.Horizontal;
-            sessionListVerticalGap = 0;
-            sessionListHorizontalGap = 8;
-            chatContentStyle = "";
-        }
-        else
-        {
-            sessionListOrientation = Orientation.Vertical;
-            sessionListVerticalGap = 8;
-            sessionListHorizontalGap = 0;
-            chatContentStyle = "max-width:50vw;";
-        }
+        isMobileLayout = size == GridItemSize.Xs || size == GridItemSize.Sm;
         StateHasChanged();
     }
+
 }
