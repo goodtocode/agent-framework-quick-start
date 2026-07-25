@@ -113,9 +113,9 @@ public static class ConfigureServices
         {
             var info = new OpenApiInfo
             {
-                Title = $"GoodToCode AgentFramework ({Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")})",
+                Title = $"GoodToCode Application API ({Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")})",
                 Version = description.ApiVersion.ToString(),
-                Description = $"An API to interact with the AgentFramework",
+                Description = "An API to interact with this application",
                 Contact = new OpenApiContact
                 {
                     Email = "developers@goodtocode.com",

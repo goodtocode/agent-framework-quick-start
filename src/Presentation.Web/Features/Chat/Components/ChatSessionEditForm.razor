@@ -7,7 +7,9 @@
                          Label=""
                          Required="true"
                          Autofocus="true" />
-        <SubmittingButton IsSubmitting="@isSubmitting" Label="Save" />
+        <SubmittingButton IsSubmitting="@isSubmitting" Appearance="Appearance.Lightweight">
+            <FluentIcon Value="(new Icons.Regular.Size24.Save())" />
+        </SubmittingButton>
         <FluentButton Type="ButtonType.Button" IconStart="new Icons.Regular.Size24.Dismiss()" OnClick="() => OnCancel.InvokeAsync(null)"></FluentButton>
     </FluentStack>
     <ValidationSummary/>

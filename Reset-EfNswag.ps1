@@ -18,10 +18,12 @@ param (
 	[array]$Products = @(
 		@{ Name = "AgentFramework"; Root = ".\src"; Database = "AgentFramework"; ApiProject = "Presentation.Api" }
 	),
-	[string] $dropTablesPath = ".\data\Admin\Drop Tables.sql"
+	[switch]$DropDatabase,
+	[switch]$DropTables,
+	[string]$dropTablesPath = ".\data\Admin\Drop Tables.sql"
 )
 
-function Ensure-SqlCmd {
+function Install-SqlCmd {
 	$sqlcmd = Get-Command sqlcmd -ErrorAction SilentlyContinue
 	if (-not $sqlcmd) {
 		Write-Host "sqlcmd not found. Installing via winget..." -ForegroundColor Yellow
@@ -42,9 +44,8 @@ function Ensure-SqlCmd {
 	}
 }
 
-Ensure-SqlCmd
+Install-SqlCmd
 
-# STEP 1: Drop all tables using the provided SQL script, but only if the database exists
 function Test-DatabaseExists {
 	param (
 		[string]$DatabaseName
@@ -54,29 +55,21 @@ function Test-DatabaseExists {
 	return ($result -eq '1')
 }
 
-if (Test-Path $dropTablesPath) {
-	if ($Products -and $Products.Count -gt 0) {
-		$dbName = $Products[0].Database
-	}
-	if (Test-DatabaseExists -DatabaseName $dbName) {
-		Write-Host "[STEP 1] Dropping all tables via $dropTablesPath on database '$dbName'..." -ForegroundColor Magenta
-		$dropResult = sqlcmd -S "(localdb)\MSSQLLocalDB" -d $dbName -b -i $dropTablesPath 2>&1
-		if ($LASTEXITCODE -ne 0) {
-			Write-Host "[ERROR] Drop tables script failed: $dropResult" -ForegroundColor Red
-			throw "[FAIL-FAST] Database drop failed. Stopping script."
-		}
-		Write-Host "[SUCCESS] All tables dropped." -ForegroundColor Green
-	} else {
-		Write-Host "[WARN] Database does not exist. Skipping drop tables step." -ForegroundColor Yellow
-	}
-} else {
-	Write-Host "[WARN] Drop script not found at $dropTablesPath — skipping database reset. Ensure the database is clean before continuing." -ForegroundColor Yellow
+if ($DropDatabase -and $DropTables) {
+	throw "Choose either -DropDatabase or -DropTables, not both."
+}
+
+# Preserve existing behavior for this script: drop tables unless explicitly overridden.
+$useDropTables = $DropTables
+$useDropDatabase = $DropDatabase
+if (-not $DropDatabase -and -not $DropTables) {
+	$useDropTables = $true
 }
 
 Push-Location
 try {
 	function Write-Diag($msg) { Write-Host "[DIAG] $msg" -ForegroundColor Yellow }
-	function Run-Verbose($cmd) {
+	function Invoke-DiagnosticCommand($cmd) {
 		Write-Host "[DIAG] Running: " + $cmd -ForegroundColor Yellow
 		try {
 			Invoke-Expression $cmd
@@ -94,17 +87,17 @@ try {
 	try {
 		if (!(Test-Path -Path $toolsManifest)) {
 			Write-Host "[STEP] Creating dotnet tool manifest in src/..." -ForegroundColor Magenta
-			Run-Verbose "dotnet new tool-manifest --force"
+			Invoke-DiagnosticCommand "dotnet new tool-manifest --force"
 		}
 		$toolList = & dotnet tool list --local | Out-String
 		if ($toolList -notmatch 'dotnet-ef') {
 			Write-Host "[STEP] Installing dotnet-ef as a local tool in src/..." -ForegroundColor Magenta
-			Run-Verbose "dotnet tool install dotnet-ef --local"
+			Invoke-DiagnosticCommand "dotnet tool install dotnet-ef --local"
 		} else {
 			Write-Host "[STEP] dotnet-ef already installed as a local tool." -ForegroundColor Green
 		}
 		Write-Host "[STEP] Restoring local dotnet tools (dotnet-ef required) in src/..." -ForegroundColor Magenta
-		Run-Verbose "dotnet tool restore"
+		Invoke-DiagnosticCommand "dotnet tool restore"
 	} finally {
 		Pop-Location
 	}
@@ -128,12 +121,12 @@ try {
 		Write-Host "[STEP] WebApi project - " + $webApiProj -ForegroundColor Cyan
 
 		# Restore and build before migrations
-		Run-Verbose "dotnet clean $infraProj"
-		Run-Verbose "dotnet restore $infraProj"
-		Run-Verbose "dotnet build $infraProj --no-restore"
-		Run-Verbose "dotnet clean $webApiProj"
-		Run-Verbose "dotnet restore $webApiProj"
-		Run-Verbose "dotnet build $webApiProj --no-restore"
+		Invoke-DiagnosticCommand "dotnet clean $infraProj"
+		Invoke-DiagnosticCommand "dotnet restore $infraProj"
+		Invoke-DiagnosticCommand "dotnet build $infraProj --no-restore"
+		Invoke-DiagnosticCommand "dotnet clean $webApiProj"
+		Invoke-DiagnosticCommand "dotnet restore $webApiProj"
+		Invoke-DiagnosticCommand "dotnet build $webApiProj --no-restore"
 
 		Write-Host "Removing migration files"
 		Remove-Item $infraPath -ErrorAction SilentlyContinue
@@ -142,10 +135,34 @@ try {
 		# resolves against [Environment]::CurrentDirectory, not $PWD, causing wrong paths after Push-Location).
 		$infraProjAbs = Join-Path $PSScriptRoot ($infraProj -replace '^\.[\\/]', '')
 		$webApiProjAbs = Join-Path $PSScriptRoot ($webApiProj -replace '^\.[\\/]', '')
+
+		if ($useDropTables) {
+			if (Test-Path $dropTablesPath) {
+				if (Test-DatabaseExists -DatabaseName $database) {
+					Write-Host "[STEP] Dropping all tables for $name via $dropTablesPath..." -ForegroundColor Magenta
+					$dropResult = sqlcmd -S "(localdb)\MSSQLLocalDB" -d $database -b -i $dropTablesPath 2>&1
+					if ($LASTEXITCODE -ne 0) {
+						Write-Host "[ERROR] Drop tables script failed for ${name}: $dropResult" -ForegroundColor Red
+						throw "[FAIL-FAST] Table drop failed for $name. Stopping script."
+					}
+					Write-Host "[SUCCESS] All tables dropped for $name." -ForegroundColor Green
+				}
+				else {
+					Write-Host "[WARN] Database '$database' does not exist. Skipping drop tables step for $name." -ForegroundColor Yellow
+				}
+			}
+			else {
+				throw "Drop script not found at $dropTablesPath"
+			}
+		}
 		Push-Location $srcPath
 		try {
-			Run-Verbose "dotnet ef migrations add InitialCreate-$context --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --verbose"
-			Run-Verbose "dotnet ef database update --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --connection '$connection' --verbose"
+			if ($useDropDatabase) {
+				Write-Host "[STEP] Dropping database for $name..." -ForegroundColor Magenta
+				Invoke-DiagnosticCommand "dotnet ef database drop --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --connection '$connection' --force --verbose"
+			}
+			Invoke-DiagnosticCommand "dotnet ef migrations add InitialCreate-$context --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --verbose"
+			Invoke-DiagnosticCommand "dotnet ef database update --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --connection '$connection' --verbose"
 		} finally {
 			Pop-Location
 		}
@@ -154,7 +171,7 @@ try {
 		if (Test-Path $nswagScript) {
 			Push-Location "$root\$apiProject"
 			try {
-				Run-Verbose ".\Generate-NswagClientCode.ps1 -SkipBuildRestore"
+				Invoke-DiagnosticCommand ".\Generate-NswagClientCode.ps1 -SkipBuildRestore"
 			} finally {
 				Pop-Location
 			}

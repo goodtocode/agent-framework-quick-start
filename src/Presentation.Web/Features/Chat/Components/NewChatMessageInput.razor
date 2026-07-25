@@ -4,7 +4,7 @@
 @inject IChatService chatService
 
 <EditForm FormName="ChatMessageInputSubmit" Model="messageModel" OnValidSubmit="SubmitMessage">
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Wrap="true">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Wrap="true" Style="max-width:90%;">
         <FluentTextField Style="width:70%;" @bind-Value="messageModel.NewMessage"
                          Placeholder="Type your message here..."
                          AriaLabel="Type your message here..."
