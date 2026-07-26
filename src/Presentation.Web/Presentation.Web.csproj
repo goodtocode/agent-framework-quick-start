@@ -10,14 +10,7 @@
 		<UserSecretsId>c2325466-9b0d-494a-984a-11ad18457d3f</UserSecretsId>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Compile Remove="Metadata\**" />
-	  <Content Remove="Metadata\**" />
-	  <EmbeddedResource Remove="Metadata\**" />
-	  <None Remove="Metadata\**" />
-	</ItemGroup>
-
-	<ItemGroup>
+  <ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.5.0" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.8.2" />
