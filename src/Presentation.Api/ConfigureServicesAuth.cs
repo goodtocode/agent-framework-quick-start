@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Goodtocode.AgentFramework.Presentation.Api.Common.Auth;
+using Goodtocode.AgentFramework.Presentation.Api.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 
-namespace Goodtocode.AgentFramework.Presentation.Api.Identity.Auth;
+namespace Goodtocode.AgentFramework.Presentation.Api;
 
 /// <summary>
 /// Presentation Layer WebApi Authentication Configuration
 /// </summary>
-public static class ConfigureServices
+public static class ConfigureServicesAuth
 {
     private struct TokenRoleClaimTypes
     {
