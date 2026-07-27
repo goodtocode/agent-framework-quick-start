@@ -1,7 +1,7 @@
 using Goodtocode.SecuredHttpClient.Middleware;
 using Microsoft.Identity.Web;
 using Microsoft.Extensions.Options;
-using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Options;
+using Goodtocode.AgentFramework.Presentation.Web.Options;
 
 namespace Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Middleware;
 
