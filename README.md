@@ -463,5 +463,6 @@ This setup ensures your GitHub Actions workflows can securely deploy to Azure us
 | Version | Date        | Release Notes                                                    |
 |---------|-------------|------------------------------------------------------------------|
 | 1.0.0   | 2026-Feb-02 | Initial Release                                                  |
+| 1.1.0   | 2026-Jul-27 | AI-ize md/yml, AgentProvider                                     |
 
 This project is licensed with the [MIT license](https://mit-license.org/).
