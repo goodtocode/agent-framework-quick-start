@@ -52,14 +52,14 @@ cd src/Presentation.Api
 dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
 
 # Set Azure OpenAI settings in API project
-dotnet user-secrets set "AzureOpenAI:ChatCompletionModelId" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 
 # Set Azure OpenAI settings in integration test project
 cd ../Tests.Integration
 dotnet user-secrets init
-dotnet user-secrets set "AzureOpenAI:ChatCompletionModelId" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 
@@ -95,7 +95,7 @@ dotnet user-secrets set "EntraExternalId:ClientId" "API_CLIENT_ID"
 dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
 dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
 dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
-dotnet user-secrets set "AzureOpenAI:ChatCompletionModelId" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 
@@ -114,7 +114,7 @@ dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CO
 # Set integration test Azure OpenAI settings
 cd ../Tests.Integration
 dotnet user-secrets init
-dotnet user-secrets set "AzureOpenAI:ChatCompletionModelId" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 
@@ -276,18 +276,18 @@ Set `ASPNETCORE_ENVIRONMENT` manually only when running outside launch profiles 
 ```
 cd src/Presentation.Api
 dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
-dotnet user-secrets set "AzureOpenAI:ChatCompletionModelId" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 cd ../Tests.Integration
 dotnet user-secrets init
-dotnet user-secrets set "AzureOpenAI:ChatCompletionModelId" "gpt-4"
+dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
 dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
 ```
 Alternately you can set in Environment variables
 ```
-AzureOpenAI__ChatCompletionModelId
+AzureOpenAI__ChatDeploymentName
 AzureOpenAI__Endpoint
 AzureOpenAI__ApiKey
 ```
