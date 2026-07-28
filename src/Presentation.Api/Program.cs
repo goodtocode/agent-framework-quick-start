@@ -4,8 +4,8 @@ using Goodtocode.AgentFramework.Core.Application;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer;
 using Goodtocode.AgentFramework.Presentation.Api;
+using Goodtocode.AgentFramework.Presentation.Api.Common.Exceptions;
 using Goodtocode.AgentFramework.Presentation.Api.Endpoints;
-using Goodtocode.AgentFramework.Presentation.Api.Identity.Auth;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 

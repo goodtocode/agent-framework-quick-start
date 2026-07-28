@@ -103,7 +103,7 @@ variables:
     value: Release
   - name: agentProviderKind
     value: AzureOpenAI
-  - name: azureOpenAiChatCompletionModelId
+  - name: azureOpenAiChatDeploymentName
     value: openai-fast
   - name: entraExternalIdValidateAuthority
     value: true
@@ -314,7 +314,7 @@ stages:
               AgentProvider__Kind: $(agentProviderKind)
               AzureOpenAI__ApiKey: $(azureOpenAiKey)
               AzureOpenAI__Endpoint: $(azureOpenAiEndpoint)
-              AzureOpenAI__ChatCompletionModelId: $(azureOpenAiChatCompletionModelId)
+              AzureOpenAI__ChatDeploymentName: $(azureOpenAiChatDeploymentName)
 
           - task: DotNetCoreCLI@2
             displayName: Pack Web API artifact
@@ -436,7 +436,7 @@ stages:
                 az webapp config appsettings set -g $(azureRgName) -n $(azureApiAppName) --settings AgentProvider:Kind=$(agentProviderKind)
                 az webapp config appsettings set -g $(azureRgName) -n $(azureApiAppName) --settings AzureOpenAI:ApiKey=$(azureOpenAiKey)
                 az webapp config appsettings set -g $(azureRgName) -n $(azureApiAppName) --settings AzureOpenAI:Endpoint=$(azureOpenAiEndpoint)
-                az webapp config appsettings set -g $(azureRgName) -n $(azureApiAppName) --settings AzureOpenAI:ChatCompletionModelId=$(azureOpenAiChatCompletionModelId)
+                az webapp config appsettings set -g $(azureRgName) -n $(azureApiAppName) --settings AzureOpenAI:ChatDeploymentName=$(azureOpenAiChatDeploymentName)
 
           - task: AzureCLI@2
             displayName: $(azureApiAppName) connection strings

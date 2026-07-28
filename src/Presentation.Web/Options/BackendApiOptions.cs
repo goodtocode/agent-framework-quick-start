@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Options;
+namespace Goodtocode.AgentFramework.Presentation.Web.Options;
 
 /// <summary>
 /// Presentation.Api settings
