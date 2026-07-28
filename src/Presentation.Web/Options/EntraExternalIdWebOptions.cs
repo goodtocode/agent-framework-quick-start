@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Options;
+namespace Goodtocode.AgentFramework.Presentation.Web.Options;
 
 /// <summary>
 /// Configuration values for Web app Entra External ID sign-in and downstream API access.

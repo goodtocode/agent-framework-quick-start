@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;
 using Goodtocode.AgentFramework.Presentation.Web.Library.Auth;
-using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Options;
+using Goodtocode.AgentFramework.Presentation.Web.Options;
 
 namespace Goodtocode.AgentFramework.Presentation.Web;
 

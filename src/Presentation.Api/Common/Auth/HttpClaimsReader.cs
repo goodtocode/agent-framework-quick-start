@@ -1,5 +1,4 @@
-﻿
-namespace Goodtocode.AgentFramework.Presentation.Api.Identity.Auth;
+﻿namespace Goodtocode.AgentFramework.Presentation.Api.Common.Auth;
 
 /// <summary>
 /// Infrastructure implementation that reads user claims from the current HTTP request context.

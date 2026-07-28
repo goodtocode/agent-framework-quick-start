@@ -8,5 +8,5 @@ public sealed class AgentProviderOptions
 
     [Required]
     [RegularExpression("^(OpenAI|GitHubCopilotSDK|AzureOpenAI|AzureAIFoundry|Ollama)$")]
-    public string Kind { get; set; } = "OpenAI";
+    public string Kind { get; set; } = "Ollama";
 }

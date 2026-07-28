@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Api.Common;
+namespace Goodtocode.AgentFramework.Presentation.Api.Common.Exceptions;
 
 /// <summary>
 /// Provides service registration helpers for API exception handling.
