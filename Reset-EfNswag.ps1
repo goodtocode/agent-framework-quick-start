@@ -6,10 +6,16 @@ Example usage:
 	2. Run: ./Reset-EfNswag.ps1
 	   or: ./Reset-EfNswag.ps1 -Products $customProducts
 	For each product
-	3. Script will delete EF migration
-	4. Script will recreate new migration with current model for that 1 product
-	5. Script will update database with new migration for that 1 product
-	6. Script will run NSwag client code generation script for that 1 product	
+		3. Script will delete EF migrations (default)
+		4. Script will recreate InitialCreate migration (default)
+		5. Script will update database with migrations (default)
+		6. Script will run NSwag client code generation script for that 1 product
+
+	Recommended usage:
+		- Default full reset+migrate flow: ./Reset-EfNswag.ps1
+		- Push migrations only (keep existing migration files): ./Reset-EfNswag.ps1 -SkipResetMigrations
+		- Clear tables once per database before push (default behavior): ./Reset-EfNswag.ps1 -DropTables
+		- Drop database once per database before push: ./Reset-EfNswag.ps1 -DropDatabase
 =====================================================================
 #>
 
@@ -18,6 +24,7 @@ param (
 	[array]$Products = @(
 		@{ Name = "AgentFramework"; Root = ".\src"; Database = "AgentFramework"; ApiProject = "Presentation.Api" }
 	),
+	[switch]$SkipResetMigrations,
 	[switch]$DropDatabase,
 	[switch]$DropTables,
 	[string]$dropTablesPath = ".\data\Admin\Drop Tables.sql"
@@ -62,6 +69,7 @@ if ($DropDatabase -and $DropTables) {
 # Preserve existing behavior for this script: drop tables unless explicitly overridden.
 $useDropTables = $DropTables
 $useDropDatabase = $DropDatabase
+$useResetMigrations = -not $SkipResetMigrations
 if (-not $DropDatabase -and -not $DropTables) {
 	$useDropTables = $true
 }
@@ -73,12 +81,19 @@ try {
 		Write-Host "[DIAG] Running: " + $cmd -ForegroundColor Yellow
 		try {
 			Invoke-Expression $cmd
+			if ($LASTEXITCODE -ne 0) {
+				throw "Command exited with code $LASTEXITCODE"
+			}
 		}
 		catch {
 			Write-Error "[ERROR] Command failed: $cmd"
 			Write-Error $_
+			throw
 		}
 	}
+
+	$databasesDroppedByTable = @{}
+	$databasesDroppedByDrop = @{}
 
 	# Ensure dotnet-ef tool is available (idempotent)
 	$srcPath = Join-Path $PSScriptRoot 'src'
@@ -128,28 +143,34 @@ try {
 		Invoke-DiagnosticCommand "dotnet restore $webApiProj"
 		Invoke-DiagnosticCommand "dotnet build $webApiProj --no-restore"
 
-		Write-Host "Removing migration files"
-		Remove-Item $infraPath -ErrorAction SilentlyContinue
-		Write-Host "Creating new InitialCreate migration without dropping database..." -ForegroundColor Cyan
+		if ($useResetMigrations) {
+			Write-Host "[STEP] Removing migration files for $name..." -ForegroundColor Magenta
+			Remove-Item $infraPath -ErrorAction SilentlyContinue
+			Write-Host "[STEP] Creating new InitialCreate migration for $context..." -ForegroundColor Cyan
+		}
+		else {
+			Write-Host "[STEP] SkipResetMigrations enabled. Using existing migrations for $name." -ForegroundColor DarkCyan
+		}
 		# Build absolute paths from $PSScriptRoot (immune to CWD changes; avoids [IO.Path]::GetFullPath which
 		# resolves against [Environment]::CurrentDirectory, not $PWD, causing wrong paths after Push-Location).
 		$infraProjAbs = Join-Path $PSScriptRoot ($infraProj -replace '^\.[\\/]', '')
 		$webApiProjAbs = Join-Path $PSScriptRoot ($webApiProj -replace '^\.[\\/]', '')
 
-		if ($useDropTables) {
+		if ($useDropTables -and -not $databasesDroppedByTable.ContainsKey($database)) {
 			if (Test-Path $dropTablesPath) {
 				if (Test-DatabaseExists -DatabaseName $database) {
-					Write-Host "[STEP] Dropping all tables for $name via $dropTablesPath..." -ForegroundColor Magenta
+					Write-Host "[STEP] Dropping all tables for shared database '$database' via $dropTablesPath..." -ForegroundColor Magenta
 					$dropResult = sqlcmd -S "(localdb)\MSSQLLocalDB" -d $database -b -i $dropTablesPath 2>&1
 					if ($LASTEXITCODE -ne 0) {
-						Write-Host "[ERROR] Drop tables script failed for ${name}: $dropResult" -ForegroundColor Red
-						throw "[FAIL-FAST] Table drop failed for $name. Stopping script."
+						Write-Host "[ERROR] Drop tables script failed for database '${database}': $dropResult" -ForegroundColor Red
+						throw "[FAIL-FAST] Table drop failed for database '$database'. Stopping script."
 					}
-					Write-Host "[SUCCESS] All tables dropped for $name." -ForegroundColor Green
+					Write-Host "[SUCCESS] All tables dropped for shared database '$database'." -ForegroundColor Green
 				}
 				else {
-					Write-Host "[WARN] Database '$database' does not exist. Skipping drop tables step for $name." -ForegroundColor Yellow
+					Write-Host "[WARN] Database '$database' does not exist. Skipping drop tables step." -ForegroundColor Yellow
 				}
+				$databasesDroppedByTable[$database] = $true
 			}
 			else {
 				throw "Drop script not found at $dropTablesPath"
@@ -157,11 +178,14 @@ try {
 		}
 		Push-Location $srcPath
 		try {
-			if ($useDropDatabase) {
-				Write-Host "[STEP] Dropping database for $name..." -ForegroundColor Magenta
+			if ($useDropDatabase -and -not $databasesDroppedByDrop.ContainsKey($database)) {
+				Write-Host "[STEP] Dropping shared database '$database' before applying contexts..." -ForegroundColor Magenta
 				Invoke-DiagnosticCommand "dotnet ef database drop --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --connection '$connection' --force --verbose"
+				$databasesDroppedByDrop[$database] = $true
 			}
-			Invoke-DiagnosticCommand "dotnet ef migrations add InitialCreate-$context --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --verbose"
+			if ($useResetMigrations) {
+				Invoke-DiagnosticCommand "dotnet ef migrations add InitialCreate-$context --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --verbose"
+			}
 			Invoke-DiagnosticCommand "dotnet ef database update --project `"$infraProjAbs`" --startup-project `"$webApiProjAbs`" --context $context --connection '$connection' --verbose"
 		} finally {
 			Pop-Location
@@ -180,8 +204,6 @@ try {
 			Write-Host "NSwag script not found for " + $name + " - " + $nswagScript -ForegroundColor Red
 		}
 
-		Pop-Location
-		Push-Location
 	}
 }
 finally {
