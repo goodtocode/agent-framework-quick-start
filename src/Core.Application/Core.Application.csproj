@@ -23,7 +23,7 @@
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 		<PackageReference Include="Goodtocode.Mediator" Version="1.1.26" />
 		<PackageReference Include="Goodtocode.Validation" Version="1.1.38" />
-		<PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.15.0" />
+		<PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.16.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.10" />
 	</ItemGroup>
