@@ -11,8 +11,8 @@
 		<UserSecretsId>bf5b92ab-f3fe-4af6-b299-583240397247</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Asp.Versioning.Mvc" Version="10.0.0" />
-		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.0.0" />
+		<PackageReference Include="Asp.Versioning.Mvc" Version="10.0.1" />
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.0.1" />
 		<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.6.0" />
