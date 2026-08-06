@@ -1,0 +1,33 @@
+.chat-markdown-content {
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.chat-markdown-content p {
+    margin: 0 0 0.5rem 0;
+}
+
+.chat-markdown-content p:last-child {
+    margin-bottom: 0;
+}
+
+.chat-markdown-content pre {
+    overflow-x: auto;
+    padding: 0.75rem;
+    border-radius: 6px;
+    background: var(--neutral-layer-2);
+}
+
+.chat-markdown-content code {
+    font-family: Consolas, "Courier New", monospace;
+}
+
+.chat-markdown-content ul,
+.chat-markdown-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
+}
+
+.chat-markdown-content a {
+    color: var(--accent-foreground-rest);
+}
