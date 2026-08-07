@@ -41,4 +41,7 @@
 		<ProjectReference Include="..\Infrastructure.AgentFramework\Infrastructure.AgentFramework.csproj" />
 		<ProjectReference Include="..\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Common\Idempotency\" />
+	</ItemGroup>
 </Project>
