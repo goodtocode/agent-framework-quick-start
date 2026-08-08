@@ -2,6 +2,7 @@
 using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Auth;
 using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Storage;
 using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Services;
+using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Formatting;
 using Microsoft.Extensions.Options;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;
@@ -33,6 +34,7 @@ public static class ConfigureServices
         services.AddScoped<IDialogService, DialogService>();
         services.AddScoped<ILocalStorageService, LocalStorageService>();
         services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<IChatMessageFormatter, MarkdownChatMessageFormatter>();
     }
 
     public static IServiceCollection AddUserClaimsSyncService(this IServiceCollection services)

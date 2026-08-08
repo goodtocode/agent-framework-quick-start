@@ -37,6 +37,7 @@
 - **ChatPage Layout:** Implement distinct desktop and mobile layouts with a strict row/column structure on mobile.
 - **Input Visibility:** Ensure persistent visible input under a capped message list height.
 - **Component Usage:** Use only components in `.razor` files (no raw HTML elements), except in `App.razor` where raw HTML is allowed.
+- **Markdown Rendering:** Implement formatting features with as-native-.NET approaches and minimal external dependencies for markdown-to-HTML chat rendering in Presentation.Web.
 
 ## References
 - [README.md](../README.md): Project overview and getting started

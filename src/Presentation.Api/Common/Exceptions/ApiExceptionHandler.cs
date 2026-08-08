@@ -1,3 +1,5 @@
+using System.ClientModel;
+
 namespace Goodtocode.AgentFramework.Presentation.Api.Common.Exceptions;
 
 /// <summary>
@@ -26,6 +28,8 @@ public sealed class ApiExceptionHandler : IExceptionHandler
             UnauthorizedAccessException => (IResult)BuildUnauthorizedResult(),
             CustomForbiddenAccessException => (IResult)BuildForbiddenResult(),
             CustomConflictException conflictException => (IResult)BuildConflictResult(conflictException.Message),
+            ClientResultException { Status: 429 } rateLimitException =>
+                (IResult)BuildTooManyRequestsResult(rateLimitException.Message),
             _ => (IResult)BuildUnknownResult()
         };
 
@@ -90,6 +94,19 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         };
 
         return TypedResults.Json(details, statusCode: StatusCodes.Status409Conflict);
+    }
+
+    private static JsonHttpResult<ProblemDetails> BuildTooManyRequestsResult(string detail)
+    {
+        var details = new ProblemDetails
+        {
+            Status = StatusCodes.Status429TooManyRequests,
+            Title = "Too Many Requests",
+            Detail = detail,
+            Type = "https://tools.ietf.org/html/rfc6585#section-4"
+        };
+
+        return TypedResults.Json(details, statusCode: StatusCodes.Status429TooManyRequests);
     }
 
     private static JsonHttpResult<ProblemDetails> BuildUnknownResult()
