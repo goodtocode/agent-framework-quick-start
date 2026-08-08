@@ -6,12 +6,15 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
 
 @attribute [Authorize]
+@implements IAsyncDisposable
 
 @inject IChatService chatService
 @inject IUserSyncService UserSyncService
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Chat Session</PageTitle>
 
@@ -36,7 +39,7 @@
     </FluentGridItem>
 
     <FluentGridItem xs="12">
-      <FluentStack Style="max-height:65vh; overflow-y:auto; min-height:0; padding-bottom:10px;" Orientation="Orientation.Vertical">
+      <FluentStack id="@ChatMessagesContainerId" Style="max-height:65vh; overflow-y:auto; min-height:0; padding-bottom:10px;" Orientation="Orientation.Vertical">
         <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
       </FluentStack>
     </FluentGridItem>
@@ -68,7 +71,7 @@
     </FluentGridItem>
     <FluentGridItem xs="1" md="1"></FluentGridItem>
     <FluentGridItem xs="8" md="8">
-      <FluentStack Style="max-height:65vh; overflow-y:auto; min-height:0; padding-bottom:10px;" Orientation="Orientation.Vertical">
+      <FluentStack id="@ChatMessagesContainerId" Style="max-height:65vh; overflow-y:auto; min-height:0; padding-bottom:10px;" Orientation="Orientation.Vertical">
         <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
       </FluentStack>
     </FluentGridItem>
@@ -87,10 +90,14 @@
 </FluentGrid>
 
 @code {
+  private const string ChatMessagesContainerId = "chat-messages-container";
+
   private ChatSessionsModel chatSessions = new ChatSessionsModel();
   private ChatSessionList? chatSessionListRef;
   private ChatSessionStrip? chatSessionStripRef;
   private bool isMobileLayout;
+  private bool shouldScrollToBottom;
+  private IJSObjectReference? chatPageJsModule;
 
   protected override async Task OnInitializedAsync()
   {
@@ -117,6 +124,7 @@
   {
     chatSessions.Add(chatSession);
     chatSessions.SetActive(chatSession);
+    shouldScrollToBottom = true;
     StateHasChanged();
   }
 
@@ -124,19 +132,44 @@
   {
     chatSessions.ClearActive();
     chatSessions.SetActive(chatSession);
+    shouldScrollToBottom = true;
     StateHasChanged();
   }
 
   private async Task HandleMessageSubmitted()
   {
     chatSessions.RefreshItem(await chatService.GetChatSessionAsync(chatSessions?.ActiveSession?.Id ?? Guid.Empty));
+    shouldScrollToBottom = true;
     StateHasChanged();
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      chatPageJsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Features/Chat/ChatPage.razor.js");
+      shouldScrollToBottom = true;
+    }
+
+    if (shouldScrollToBottom && chatPageJsModule is not null)
+    {
+      shouldScrollToBottom = false;
+      await chatPageJsModule.InvokeVoidAsync("scrollToBottomById", ChatMessagesContainerId);
+    }
   }
 
   private void OnBreakpointEnterHandler(GridItemSize size)
   {
     isMobileLayout = size == GridItemSize.Xs || size == GridItemSize.Sm;
     StateHasChanged();
+  }
+
+  public async ValueTask DisposeAsync()
+  {
+    if (chatPageJsModule is not null)
+    {
+      await chatPageJsModule.DisposeAsync();
+    }
   }
 
 }
