@@ -38,6 +38,7 @@ public static class MyChatMessageEndpoints
             .Produces<ChatMessageDto>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
 
         group.MapPatch("{id:guid}", Patch)
@@ -50,9 +51,10 @@ public static class MyChatMessageEndpoints
         return endpoints;
     }
 
-    private static async Task<ChatMessageDto> Get(ISender sender, Guid id)
+    private static async Task<IResult> Get(ISender sender, Guid id)
     {
-        return await sender.Send(new GetMyChatMessageQuery { Id = id });
+        var message = await sender.Send(new GetMyChatMessageQuery { Id = id });
+        return ApiResponseMapper.SingleOrNotFound(message);
     }
 
     private static async Task<IResult> GetPaginated(ISender sender, [AsParameters] GetMyChatMessagesPaginatedQuery query)
@@ -64,18 +66,23 @@ public static class MyChatMessageEndpoints
     private static async Task<IResult> Post(HttpContext httpContext, ISender sender, CreateMyChatMessageCommand command)
     {
         var response = await sender.Send(command);
+        if (response.IsNotFound || response.Value is null)
+        {
+            return TypedResults.NotFound();
+        }
+
         var version = httpContext.Request.RouteValues["version"]?.ToString() ?? "1.0";
 
         return TypedResults.CreatedAtRoute(
-            response,
+            response.Value,
             "GetMyChatMessage",
-            new { version, id = response.Id });
+            new { version, id = response.Value.Id });
     }
 
     private static async Task<IResult> Patch(ISender sender, Guid id, PatchMyChatSessionCommand command)
     {
         command.Id = id;
-        await sender.Send(command);
-        return TypedResults.NoContent();
+        var result = await sender.Send(command);
+        return ApiResponseMapper.FromCommand(result);
     }
 }

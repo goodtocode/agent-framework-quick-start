@@ -32,6 +32,7 @@
 - **External Integrations:** Use `src/Core.Application/Common/` and `src/Infrastructure.AgentFramework/` for connectors.
 - **RBAC & Security:** Enforced in API layer, see `ConfigureServicesAuth.cs`.
 - **Auth-Triggered User Provisioning:** Keep the flow UI-tied (not middleware/pipeline) because OBO token acquisition requires user context on the main UI thread/circuit.
+- **Not-Found Integration Scenarios:** When adding not-found integration scenarios for commands, use non-empty IDs for missing entities so tests validate not-found behavior instead of bad-request validation for empty IDs.
 
 ## UI Design Guidelines
 - **ChatPage Layout:** Implement distinct desktop and mobile layouts with a strict row/column structure on mobile.

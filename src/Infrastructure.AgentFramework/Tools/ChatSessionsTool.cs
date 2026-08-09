@@ -44,7 +44,7 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool,
     }
 
     [Description("Changes the title on this chat session.")]
-    public async Task<string> UpdateChatSessionTitleAsync(Guid sessionId, string newTitle, CancellationToken cancellationToken = default)
+    public async Task<string?> UpdateChatSessionTitleAsync(Guid sessionId, string newTitle, CancellationToken cancellationToken = default)
     {
         _currentFunctionName = "change_title";
         _currentParameters = new()
@@ -61,7 +61,7 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool,
 
         if (chatSession == null)
         {
-            return $"Session {sessionId} not found.";
+            return null;
         }
 
         chatSession.Update(newTitle);

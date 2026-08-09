@@ -49,18 +49,6 @@ public static class ChatGuard
             ]);
     }
 
-    public static void GuardAgainstNotFound(ChatSessionEntity? chatSession)
-    {
-        if (chatSession == null)
-            throw new CustomNotFoundException("Chat Session not found.");
-    }
-
-    public static void GuardAgainstNotFound(ChatMessageEntity? chatMessage)
-    {
-        if (chatMessage == null)
-            throw new CustomNotFoundException("Chat Message Not Found");
-    }
-
     public static void GuardAgainstUnauthorized(ChatMessageEntity chatMessage, IUserContext userInfo)
     {
         if (chatMessage.ChatSession?.OwnerId != userInfo.OwnerId)

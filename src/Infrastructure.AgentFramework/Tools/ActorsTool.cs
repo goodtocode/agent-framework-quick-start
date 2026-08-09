@@ -26,7 +26,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
     private Dictionary<string, object> _currentParameters = [];
 
     [Description("Returns structured actor info by ID including name, status, and explanation.")]
-    public async Task<IActorResponse> GetActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
+    public async Task<IActorResponse?> GetActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
     {
         _currentFunctionName = "get_actor_by_id";
         _currentParameters = new()
@@ -40,13 +40,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
 
         if (actor == null)
         {
-            return new ActorResponse
-            {
-                ActorId = actorId,
-                Name = null,
-                Status = "NotFound",
-                Message = "No actor found with the specified ID."
-            };
+            return null;
         }
 
         return new ActorResponse
@@ -95,27 +89,14 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
             )
             .ToListAsync(cancellationToken);
 
-        if (actors.Count == 0)
+        return [.. actors.Select(a => new ActorResponse
         {
-            return [ new ActorResponse
-            {
-                ActorId = Guid.Empty,
-                Name = name,
-                Status = "NotFound",
-                Message = "No actor found with the specified name."
-            } ];
-        }
-        else
-        {
-            return [.. actors.Select(a => new ActorResponse
-            {
-                ActorId = a.Id,
-                Name = $"{a.FirstName} {a.LastName}",
-                Status = string.IsNullOrWhiteSpace($"{a.FirstName} {a.LastName}") ? "Partial" : "Found",
-                Message = string.IsNullOrWhiteSpace($"{a.FirstName} {a.LastName}")
-                    ? "Actor exists but name is not yet linked to Entra External ID."
-                    : "Actor found."
-            })];
-        }
+            ActorId = a.Id,
+            Name = $"{a.FirstName} {a.LastName}",
+            Status = string.IsNullOrWhiteSpace($"{a.FirstName} {a.LastName}") ? "Partial" : "Found",
+            Message = string.IsNullOrWhiteSpace($"{a.FirstName} {a.LastName}")
+                ? "Actor exists but name is not yet linked to Entra External ID."
+                : "Actor found."
+        })];
     }
 }

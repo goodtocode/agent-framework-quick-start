@@ -18,11 +18,45 @@ public abstract class ApiService
         }
     }
 
+    protected static async Task HandleApiExceptionIgnoreNotFound(Func<Task> apiCall)
+    {
+        try
+        {
+            await apiCall().ConfigureAwait(false);
+        }
+        catch (ApiException ex) when (ex.StatusCode == 404)
+        {
+            return;
+        }
+        catch (ApiException ex) when (ex.StatusCode == 400)
+        {
+            var errors = ParseValidationErrors(ex.Response);
+            throw new ValidationException("Validation failed", null, errors);
+        }
+    }
+
     protected static async Task<T> HandleApiException<T>(Func<Task<T>> apiCall)
     {
         try
         {
             return await apiCall().ConfigureAwait(false);
+        }
+        catch (ApiException ex) when (ex.StatusCode == 400)
+        {
+            var errors = ParseValidationErrors(ex.Response);
+            throw new ValidationException("Validation failed", null, errors);
+        }
+    }
+
+    protected static async Task<T?> HandleApiExceptionOrDefault<T>(Func<Task<T>> apiCall) where T : class
+    {
+        try
+        {
+            return await apiCall().ConfigureAwait(false);
+        }
+        catch (ApiException ex) when (ex.StatusCode == 404)
+        {
+            return null;
         }
         catch (ApiException ex) when (ex.StatusCode == 400)
         {

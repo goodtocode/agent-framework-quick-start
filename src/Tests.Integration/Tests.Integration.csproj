@@ -34,4 +34,8 @@
 		<ProjectReference Include="..\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="PresentationApi\" />
+	</ItemGroup>
+
 </Project>

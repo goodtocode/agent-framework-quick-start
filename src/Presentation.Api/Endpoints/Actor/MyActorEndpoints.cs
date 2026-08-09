@@ -38,9 +38,10 @@ public static class MyActorEndpoints
         return endpoints;
     }
 
-    private static async Task<ActorDto> GetMyActorProfile(ISender sender, Guid ownerId)
+    private static async Task<IResult> GetMyActorProfile(ISender sender, Guid ownerId)
     {
-        return await sender.Send(new GetMyActorQuery { OwnerId = ownerId });
+        var actor = await sender.Send(new GetMyActorQuery { OwnerId = ownerId });
+        return ApiResponseMapper.SingleOrNotFound(actor);
     }
 
     private static async Task<IResult> SaveMyActor(HttpContext httpContext, ISender sender, SaveMyActorCommand command)

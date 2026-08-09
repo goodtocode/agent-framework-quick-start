@@ -7,7 +7,7 @@ namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Services;
 public interface IChatService
 {
     Task<List<ChatSessionModel>> GetChatSessionsAsync();
-    Task<ChatSessionModel> GetChatSessionAsync(Guid chatSessionId);
+    Task<ChatSessionModel?> GetChatSessionAsync(Guid chatSessionId);
     Task<ChatSessionModel> CreateSessionAsync(string firstMessage);
     Task RenameSessionAsync(Guid chatSessionId, string newTitle);
     Task<ChatMessageModel> SendMessageAsync(Guid chatSessionId, string newMessage);
@@ -30,12 +30,12 @@ public class ChatService(BackendApiClient client, IClaimsReader userInfo) : ApiS
         return ChatSessionModel.Create(response.Items);
     }
 
-    public async Task<ChatSessionModel> GetChatSessionAsync(Guid chatSessionId)
+    public async Task<ChatSessionModel?> GetChatSessionAsync(Guid chatSessionId)
     {
-        var response = await HandleApiException(() => _apiClient.GetMyChatSessionAsync(
+        var response = await HandleApiExceptionOrDefault(() => _apiClient.GetMyChatSessionAsync(
             chatSessionId));
 
-        return ChatSessionModel.Create(response);
+        return response is null ? null : ChatSessionModel.Create(response);
     }
 
     public async Task<ChatSessionModel> CreateSessionAsync(string firstMessage)
@@ -51,7 +51,7 @@ public class ChatService(BackendApiClient client, IClaimsReader userInfo) : ApiS
 
     public async Task RenameSessionAsync(Guid chatSessionId, string newTitle)
     {
-        await HandleApiException(() => _apiClient.PatchMyChatSessionAsync(chatSessionId, new PatchMyChatSessionCommand { Id = chatSessionId, Title = newTitle }));
+        await HandleApiExceptionIgnoreNotFound(() => _apiClient.PatchMyChatSessionAsync(chatSessionId, new PatchMyChatSessionCommand { Id = chatSessionId, Title = newTitle }));
     }
 
     public async Task<ChatMessageModel> SendMessageAsync(Guid chatSessionId, string newMessage)

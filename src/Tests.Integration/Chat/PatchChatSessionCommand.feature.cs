@@ -129,7 +129,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
             "9fed9,true,New Title,0)")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty id", "BadRequest", "Id", "00000000-0000-0000-0000-000000000000", "false", "Changed Title", "1", null, DisplayName="Patch Chat Session(bad request: empty id,BadRequest,Id,00000000-0000-0000-0000-00" +
             "0000000000,false,Changed Title,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found : patch title", "Conflict", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "Title", "2", null, DisplayName="Patch Chat Session(not found : patch title,Conflict,,038d8e7f-f18f-4a8e-8b3c-3b6a" +
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found : patch title", "NotFound", "", "038d8e7f-f18f-4a8e-8b3c-3b6a6889fed9", "false", "Title", "2", null, DisplayName="Patch Chat Session(not found : patch title,NotFound,,038d8e7f-f18f-4a8e-8b3c-3b6a" +
             "6889fed9,false,Title,2)")]
         public async global::System.Threading.Tasks.Task PatchChatSession(string def, string response, string responseErrors, string id, string chatSessionExists, string title, string @__pickleIndex, string[] exampleTags)
         {

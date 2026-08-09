@@ -2,6 +2,7 @@
 global using Goodtocode.AgentFramework.Core.Application.Common.Auth;
 global using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 global using Goodtocode.AgentFramework.Core.Application.Common.Mappings;
+global using Goodtocode.AgentFramework.Core.Application.Common.Models;
 global using Goodtocode.AgentFramework.Core.Application.Common.Pagination;
 global using Goodtocode.AgentFramework.Core.Application.Common.Validators;
 global using Goodtocode.Mediator;

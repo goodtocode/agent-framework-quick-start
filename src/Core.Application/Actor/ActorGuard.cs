@@ -1,6 +1,3 @@
-using Goodtocode.AgentFramework.Core.Domain.Actor;
-using Goodtocode.AgentFramework.Core.Domain.Chat;
-
 namespace Goodtocode.AgentFramework.Core.Application.Actor;
 
 public static class ActorGuard
@@ -11,22 +8,6 @@ public static class ActorGuard
             throw new CustomValidationException([
                 new("UserContext", "A valid UserContext with OwnerId and TenantId is required to link an actor.")
             ]);
-    }
-
-    public static void GuardAgainstNotFound(ActorEntity? actor)
-    {
-        if (actor == null)
-        {
-            throw new CustomNotFoundException("Actor Not Found");
-        }
-    }
-
-    public static void GuardAgainstNotFound(ChatSessionEntity? entity)
-    {
-        if (entity is null)
-        {
-            throw new CustomNotFoundException("Chat Session Not Found");
-        }
     }
 
     public static void GuardAgainstInvalidUserContext(IUserContext? userContext)

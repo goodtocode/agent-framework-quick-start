@@ -138,7 +138,12 @@
 
   private async Task HandleMessageSubmitted()
   {
-    chatSessions.RefreshItem(await chatService.GetChatSessionAsync(chatSessions?.ActiveSession?.Id ?? Guid.Empty));
+    var session = await chatService.GetChatSessionAsync(chatSessions?.ActiveSession?.Id ?? Guid.Empty);
+    if (session is not null)
+    {
+      chatSessions.RefreshItem(session);
+    }
+
     shouldScrollToBottom = true;
     StateHasChanged();
   }
