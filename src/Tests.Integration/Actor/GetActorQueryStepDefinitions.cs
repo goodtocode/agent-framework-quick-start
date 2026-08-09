@@ -59,7 +59,9 @@ public class GetActorQueryStepDefinitions : TestBase
         try
         {
             _response = await Sender.Send(request, CancellationToken.None);
-            responseType = CommandResponseType.Successful;
+            responseType = _response is null
+                ? CommandResponseType.NotFound
+                : CommandResponseType.Successful;
         }
         catch (Exception e)
         {

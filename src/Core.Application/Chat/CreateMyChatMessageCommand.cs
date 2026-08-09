@@ -4,30 +4,34 @@ using Microsoft.Extensions.AI;
 
 namespace Goodtocode.AgentFramework.Core.Application.Chat;
 
-public class CreateMyChatMessageCommand : UserScopedRequest, IRequest<ChatMessageDto>
+public class CreateMyChatMessageCommand : UserScopedRequest, IRequest<CommandResult<ChatMessageDto>>
 {
     public Guid ChatSessionId { get; set; }
     public string? Message { get; set; }
 
 }
 
-public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkContext context) : IRequestHandler<CreateMyChatMessageCommand, ChatMessageDto>
+public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkContext context) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
 {
     private readonly AIAgent _agent = agent;
     private readonly IAgentFrameworkContext _context = context;
 
-    public async Task<ChatMessageDto> Handle(CreateMyChatMessageCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult<ChatMessageDto>> Handle(CreateMyChatMessageCommand request, CancellationToken cancellationToken)
     {
         ChatGuard.GuardAgainstEmptyMessage(request?.Message);
         ChatGuard.GuardAgainstEmptyUser(request?.UserContext);
 
         var chatSession = await _context.ChatSessions
             .FirstOrDefaultAsync(x => x.Id == request!.ChatSessionId && x.OwnerId == request.UserContext.OwnerId && x.TenantId == request.UserContext.TenantId, cancellationToken);
-        ChatGuard.GuardAgainstNotFound(chatSession);
-        ChatGuard.GuardAgainstUnauthorized(chatSession!, request!.UserContext!);
+        if (chatSession is null)
+        {
+            return CommandResult<ChatMessageDto>.NotFound();
+        }
+
+        ChatGuard.GuardAgainstUnauthorized(chatSession, request!.UserContext!);
 
         var chatHistory = new List<ChatMessage>();
-        foreach (ChatMessageEntity message in chatSession!.Messages)
+        foreach (ChatMessageEntity message in chatSession.Messages)
         {
             chatHistory.Add(new ChatMessage(
                 role: message.Role == ChatMessageRole.user ? ChatRole.User : ChatRole.Assistant,
@@ -64,6 +68,6 @@ public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkConte
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return ChatMessageDto.CreateFrom(chatMessage);
+        return CommandResult<ChatMessageDto>.Success(ChatMessageDto.CreateFrom(chatMessage));
     }
 }

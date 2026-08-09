@@ -51,8 +51,10 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
 
             try
             {
-                await Sender.Send(request, CancellationToken.None);
-                responseType = CommandResponseType.Successful;
+                var result = await Sender.Send(request, CancellationToken.None);
+                responseType = result.IsNotFound
+                    ? CommandResponseType.NotFound
+                    : CommandResponseType.Successful;
             }
             catch (Exception e)
             {

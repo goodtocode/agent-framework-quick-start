@@ -1,21 +1,26 @@
 ﻿namespace Goodtocode.AgentFramework.Core.Application.Actor;
 
-public class DeleteActorByOwnerIdCommand : UserScopedRequest, IRequest
+public class DeleteActorByOwnerIdCommand : UserScopedRequest, IRequest<CommandResult>
 {
     public Guid OwnerId { get; set; }
 
 }
 
-public class DeleteActorByOwnerIdCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeleteActorByOwnerIdCommand>
+public class DeleteActorByOwnerIdCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeleteActorByOwnerIdCommand, CommandResult>
 {
     private readonly IAgentFrameworkContext _context = context;
 
-    public async Task Handle(DeleteActorByOwnerIdCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(DeleteActorByOwnerIdCommand request, CancellationToken cancellationToken)
     {
         var actor = await _context.Actors.Where(x => x.OwnerId == request.OwnerId).FirstOrDefaultAsync(cancellationToken);
-        ActorGuard.GuardAgainstNotFound(actor);
+        if (actor is null)
+        {
+            return CommandResult.NotFound();
+        }
 
-        _context.Actors.Remove(actor!);
+        _context.Actors.Remove(actor);
         await _context.SaveChangesAsync(cancellationToken);
+
+        return CommandResult.Success();
     }
 }

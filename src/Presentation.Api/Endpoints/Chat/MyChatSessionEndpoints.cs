@@ -24,7 +24,6 @@ public static class MyChatSessionEndpoints
             .WithName("GetMyChatSessions")
             .Produces<ICollection<ChatSessionDto>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
 
         group.MapGet("Paginated", GetPaginated)
@@ -50,9 +49,10 @@ public static class MyChatSessionEndpoints
         return endpoints;
     }
 
-    private static async Task<ICollection<ChatSessionDto>> GetAll(ISender sender)
+    private static async Task<IResult> GetAll(ISender sender)
     {
-        return await sender.Send(new GetMyChatSessionsQuery());
+        var sessions = await sender.Send(new GetMyChatSessionsQuery());
+        return ApiResponseMapper.ListOrOk(sessions);
     }
 
     private static async Task<IResult> GetPaginated(
@@ -74,9 +74,10 @@ public static class MyChatSessionEndpoints
         return TypedResults.Ok(result);
     }
 
-    private static async Task<ChatSessionDto> Get(ISender sender, Guid id)
+    private static async Task<IResult> Get(ISender sender, Guid id)
     {
-        return await sender.Send(new GetMyChatSessionQuery { Id = id });
+        var session = await sender.Send(new GetMyChatSessionQuery { Id = id });
+        return ApiResponseMapper.SingleOrNotFound(session);
     }
 
     private static async Task<IResult> Post(HttpContext httpContext, ISender sender, CreateMyChatSessionCommand command)

@@ -119,7 +119,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Chat/CreateChatMessageCommand.feature.ndjson", 7);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Chat/CreateChatMessageCommand.feature.ndjson", 8);
         }
         
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Create Chat Message")]
@@ -140,6 +140,8 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
             "e,3)")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request: empty message", "BadRequest", "Message", "00000000-0000-0000-0000-000000000000", "false", "", "4", null, DisplayName="Create Chat Message(bad request: empty message,BadRequest,Message,00000000-0000-0" +
             "000-0000-000000000000,false,,4)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("not found session", "NotFound", "", "00000000-0000-0000-0000-000000000000", "false", "Hello there", "5", null, DisplayName="Create Chat Message(not found session,NotFound,,00000000-0000-0000-0000-000000000" +
+            "000,false,Hello there,5)")]
         public async global::System.Threading.Tasks.Task CreateChatMessage(string def, string response, string responseErrors, string id, string chatMessageExists, string message, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

@@ -61,6 +61,10 @@ public class CreateChatMessageCommandStepDefinitions : TestBase
             await context.SaveChangesAsync(CancellationToken.None);
             _chatSessionId = chatSession.Id;
         }
+        else
+        {
+            _chatSessionId = Guid.NewGuid();
+        }
 
         var request = new CreateMyChatMessageCommand()
         {
@@ -71,7 +75,13 @@ public class CreateChatMessageCommandStepDefinitions : TestBase
         try
         {
             var created = await Sender.Send(request, CancellationToken.None);
-            _id = created.Id;
+            if (created.IsNotFound || created.Value is null)
+            {
+                responseType = CommandResponseType.NotFound;
+                return;
+            }
+
+            _id = created.Value.Id;
             responseType = CommandResponseType.Successful;
         }
         catch (Exception e)
