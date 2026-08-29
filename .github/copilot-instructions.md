@@ -1,51 +1,44 @@
 # Copilot Instructions for Microsoft Agent Framework Quick-start
 
 ## Project Overview
-- **Goodtocode Quick-start for Microsoft Agent Framework** is a C# solution for AI-powered monitoring, classification, and mitigation of digital assets.
-- Built on a clean architecture: ASP.NET Core Web API backend, Blazor WebAssembly frontend, SQL Server storage, and Microsoft Semantic Kernel for AI/LLM integration.
+- **Goodtocode Quick-start for Microsoft Agent Framework** is an open-source C# template for authenticated, governed, tool-enabled chat applications.
+- Built on Clean Architecture: ASP.NET Core Web API backend, Blazor WebAssembly frontend, SQL Server storage, and Microsoft Agent Framework backed by Microsoft.Extensions.AI.
 - Infrastructure is managed via Azure Bicep and deployed using GitHub Actions.
 
-## Key Architectural Patterns
+## Solution Layout
 - **Frontend:** `src/Presentation.Web/` (Blazor WebAssembly)
 - **Backend:** `src/Presentation.Api/` (ASP.NET Core Web API)
 - **Core Logic:** `src/Core.Application/`, `src/Core.Domain/`
-- **AI Integration:** `src/Infrastructure.AgentFramework/` (Semantic Kernel plugins, prompt orchestration)
+- **AI Integration:** `src/Infrastructure.AgentFramework/` (agent providers, scoped tools, and external integrations)
 - **Persistence:** `src/Infrastructure.SqlServer/` (SQL Server, migrations)
 - **IaC:** `.azure` (Bicep), Azure Bicep in deployment scripts
 
 ## Developer Workflows
-- **Build:** Use `dotnet build Goodtocode.Quick-start.AgentFramework.Web.slnx` in `/` to build the solution.
-- **Test:** Integration gherkin specs in `src/Tests.Integration/`.
+- **Build:** Run `dotnet build Goodtocode.AgentFramework.Web.slnx` from the repository root.
+- **Test:** Run `dotnet test src/Tests.Integration/Tests.Integration.csproj`; integration behavior uses Reqnroll Gherkin specifications.
 - **Run:** Launch via Visual Studio or `dotnet run` from solution root.
 - **CI/CD:** Managed by GitHub Actions (`.github/workflows/`).
 - **IaC Deploy:** See `gtc-agent-standalone-iac.yml` for infrastructure deployment.
 
-## Naming & Conventions
-- **C# code:** PascalCase for types/methods/properties, _camelCase for private fields, camelCase for locals.
-- **Database:** PascalCase plural for tables, PascalCase for columns, `Id` for PK, `RelatedEntityId` for FK.
-- **API:** Kebab-case, plural nouns for endpoints (e.g., `/api/chat-sessions`).
-- **Files/Folders:** C# files match main class, folders use PascalCase, config/docs use lowercase-hyphens.
-- See `docs/naming-conventions.md` for details.
+## Non-Negotiable Architecture
+- Preserve dependency direction: Presentation -> Application -> Domain; Infrastructure depends on Application and Domain as required; Domain has no project dependencies.
+- Use typed command/query requests through `Goodtocode.Mediator`; controllers and agent tools do not contain business behavior or direct persistence access.
+- `My` requests filter by `OwnerId` and `TenantId`; `Our` requests filter by `TenantId`. Do not introduce authorization bypasses or test-auth backdoors.
+- Persisted data uses EF Core and SQL Server. Create migrations when schema changes, but do not apply migrations at application startup.
 
-## Integration & Extensibility
-- **Microsoft Agent Framework:** Add plugins in `src/Infrastructure.AgentFramework/Plugins/`.
-- **External Integrations:** Use `src/Core.Application/Common/` and `src/Infrastructure.AgentFramework/` for connectors.
-- **RBAC & Security:** Enforced in API layer, see `ConfigureServicesAuth.cs`.
-- **Auth-Triggered User Provisioning:** Keep the flow UI-tied (not middleware/pipeline) because OBO token acquisition requires user context on the main UI thread/circuit.
-- **Not-Found Integration Scenarios:** When adding not-found integration scenarios for commands, use non-empty IDs for missing entities so tests validate not-found behavior instead of bad-request validation for empty IDs.
+## Agent, Tool, and Governance Baseline
+- Place Agent Framework providers and tools in `src/Infrastructure.AgentFramework/Tools/` and register dependencies through composition roots.
+- Tools use `ScopedAgentTool` and `IToolApplicationExecutor` to dispatch typed application requests. Tools must not access `DbContext`, repositories, SQL, or `ISender` directly.
+- Every model inference must enforce governance before invoking the agent and must apply the governed system instruction at the runtime boundary.
+- Use explicit `Description` attributes to state a tool's intent, scope, prerequisites, and side effects. Consequential writes require explicit user confirmation.
 
-## UI Design Guidelines
-- **ChatPage Layout:** Implement distinct desktop and mobile layouts with a strict row/column structure on mobile.
-- **Input Visibility:** Ensure persistent visible input under a capped message list height.
-- **Component Usage:** Use only components in `.razor` files (no raw HTML elements), except in `App.razor` where raw HTML is allowed.
-- **Markdown Rendering:** Implement formatting features with as-native-.NET approaches and minimal external dependencies for markdown-to-HTML chat rendering in Presentation.Web.
+## Chat UX Baseline
+- Keep the ordered persisted user/assistant bubble sequence as the source of truth for the conversation.
+- Suggested prompts and tool follow-up actions must submit through the normal message-input path; never insert synthetic message bubbles.
+- Keep assistant markdown rendering isolated from user plain-text rendering. Use Fluent UI components and avoid JavaScript interop except where an existing component requires it.
 
-## References
-- [README.md](../README.md): Project overview and getting started
-
-## Examples
-- To add a new agent plugin: create in `src/Infrastructure.AgentFramework/Plugins/`, register in `ConfigureServices.cs`.
-- To add a new API endpoint: implement in `src/Presentation.Api/`, follow API naming conventions.
-
----
-For further details, always check the referenced docs and existing code patterns in the relevant folders.
+## Scoped and Detailed Guidance
+- Apply the matching file-scoped rule in `.github/instructions/` when editing Application, Domain, Infrastructure, Presentation.Web, or Presentation.Api.
+- Use `docs/governance/` for detailed architecture, coding, tool, governance, runtime-observability, and administrative UX guidance.
+- Use `docs/product/` for product intent, ontology, user flows, feature definitions, and completion criteria.
+- Follow existing patterns in the local folder before adding a new abstraction or dependency.

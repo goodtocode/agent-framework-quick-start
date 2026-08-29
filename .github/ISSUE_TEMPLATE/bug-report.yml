@@ -1,39 +1,23 @@
 name: Bug Report
-description: Report a defect with reproducible detail
+description: Report a reproducible problem
 title: "bug: <short-bug-title>"
 labels:
   - bug
 body:
-  - type: input
-    id: summary
+  - type: textarea
+    id: problem
     attributes:
-      label: Summary
-      description: Briefly describe the defect
+      label: What happened?
+      description: Tell us what went wrong and include an error message when available.
       placeholder: What is broken?
     validations:
       required: true
 
   - type: textarea
-    id: expected-behavior
+    id: reproduce
     attributes:
-      label: Expected Behavior
-      description: What should happen?
-    validations:
-      required: true
-
-  - type: textarea
-    id: actual-behavior
-    attributes:
-      label: Actual Behavior
-      description: What actually happens?
-    validations:
-      required: true
-
-  - type: textarea
-    id: steps-to-reproduce
-    attributes:
-      label: Steps To Reproduce
-      description: List exact steps and inputs
+      label: Steps to reproduce
+      description: Provide the exact steps needed to reproduce the problem.
       placeholder: |
         1. ...
         2. ...
@@ -42,26 +26,26 @@ body:
       required: true
 
   - type: textarea
-    id: impact
+    id: expected
     attributes:
-      label: Impact
-      description: User/business impact and severity
+      label: What did you expect instead?
+      description: Describe the expected result.
     validations:
-      required: false
-
-  - type: textarea
-    id: evidence
-    attributes:
-      label: Logs / Screenshots / Output
-      description: Paste relevant evidence
-    validations:
-      required: false
+      required: true
 
   - type: input
-    id: area
+    id: error-page-url
     attributes:
-      label: Suspected Area
-      description: Which layer/project is likely impacted?
-      placeholder: Domain, Application, Infrastructure, Presentation.Web, Presentation.Api
+      label: Error page URL
+      description: Paste the browser URL where the error occurred.
+      placeholder: https://example.com/path
     validations:
-      required: false
+      required: true
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag and drop or paste a screenshot of the error.
+    validations:
+      required: true

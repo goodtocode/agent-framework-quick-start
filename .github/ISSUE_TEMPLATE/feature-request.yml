@@ -1,5 +1,5 @@
 name: Feature Request
-description: Define a feature using the repository's AI-first structure
+description: Suggest an improvement
 title: "feat: <short-feature-title>"
 labels:
   - enhancement
@@ -7,73 +7,28 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this form to create implementation-ready feature requests aligned to governance and Sprint 0 artifacts.
+        A clear problem and a small proposed change are enough to start a useful discussion.
 
-  - type: input
-    id: business-problem
+  - type: textarea
+    id: problem
     attributes:
-      label: Business Problem
-      description: What problem are we solving?
-      placeholder: Describe current pain and impact
+      label: What problem would this solve?
+      description: Describe the user need, limitation, or friction.
     validations:
       required: true
 
   - type: textarea
-    id: business-value
+    id: proposal
     attributes:
-      label: Business Value
-      description: What measurable value does this feature produce?
-      placeholder: Time saved, risk reduced, revenue impact, user outcome
+      label: What would you like to happen?
+      description: Describe a possible solution or the outcome you expect.
     validations:
       required: true
 
   - type: textarea
-    id: user-story
+    id: context
     attributes:
-      label: User Story
-      description: Use the standard format
-      placeholder: As a <role>, I want <capability>, so that <outcome>.
-    validations:
-      required: true
-
-  - type: textarea
-    id: ontology-concepts
-    attributes:
-      label: Related Ontology Concepts
-      description: Terms from docs/product/sprint-0/ontology.md
-      placeholder: List canonical terms
-    validations:
-      required: true
-
-  - type: textarea
-    id: acceptance-criteria
-    attributes:
-      label: Acceptance Criteria
-      description: Testable outcomes
-      placeholder: "- [ ] ..."
-    validations:
-      required: true
-
-  - type: textarea
-    id: functional-requirements
-    attributes:
-      label: Functional Requirements
-      description: Required behavior
-    validations:
-      required: true
-
-  - type: textarea
-    id: non-functional-requirements
-    attributes:
-      label: Non-Functional Requirements
-      description: Security, performance, reliability, observability
-    validations:
-      required: false
-
-  - type: textarea
-    id: out-of-scope
-    attributes:
-      label: Out of Scope
-      description: Explicit exclusions
+      label: Additional context
+      description: Add examples, alternatives, links, screenshots, or implementation ideas.
     validations:
       required: false
