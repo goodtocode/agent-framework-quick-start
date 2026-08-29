@@ -1,4 +1,5 @@
 ﻿using Goodtocode.AgentFramework.Core.Domain.Chat;
+using Goodtocode.AgentFramework.Core.Application.Governance;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 
@@ -11,10 +12,11 @@ public class CreateMyChatMessageCommand : UserScopedRequest, IRequest<CommandRes
 
 }
 
-public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkContext context) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
+public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkContext context, ChatGovernanceGate governanceGate) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
 {
     private readonly AIAgent _agent = agent;
     private readonly IAgentFrameworkContext _context = context;
+    private readonly ChatGovernanceGate _governanceGate = governanceGate;
 
     public async Task<CommandResult<ChatMessageDto>> Handle(CreateMyChatMessageCommand request, CancellationToken cancellationToken)
     {
@@ -30,7 +32,15 @@ public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkConte
 
         ChatGuard.GuardAgainstUnauthorized(chatSession, request!.UserContext!);
 
-        var chatHistory = new List<ChatMessage>();
+        var governed = _governanceGate.Enforce(
+            request.UserContext,
+            chatSession.Id,
+            request.Message!);
+
+        var chatHistory = new List<ChatMessage>
+        {
+            new(ChatRole.System, governed.PromptContext.SystemInstruction)
+        };
         foreach (ChatMessageEntity message in chatSession.Messages)
         {
             chatHistory.Add(new ChatMessage(

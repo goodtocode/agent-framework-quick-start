@@ -59,3 +59,5 @@ This loop is the default workflow for every session and branch unless the develo
 - Validate ontology terms before behavior implementation.
 - Implement smallest complete vertical slice.
 - Validate build and tests before completion.
+- For agent features, document tool side effects, access scope, prompt/model configuration, governance evidence, quality criteria, and rollback or failure behavior.
+- Record unresolved product ambiguity in `docs/product/features/intent-gap-register.md` with an owner and closure evidence.

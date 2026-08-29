@@ -19,6 +19,9 @@ Define implementation expectations for contributors and AI agents.
 - Use structured logging with meaningful context.
 - Validate inbound commands/requests consistently.
 - Use explicit error handling and return stable outcomes.
+- Convert wire or JSON inputs to typed contracts at the application boundary.
+- Keep AI tool methods thin: map typed arguments to application requests and shape typed outcomes for conversation.
+- Include correlation IDs and outcome metadata in agent and tool logs; never log credentials or sensitive prompt content by default.
 
 ## Testing Expectations
 - Unit tests for domain and application logic.
@@ -39,3 +42,5 @@ Generated code must:
 - Follow naming and coding standards.
 - Include or update relevant tests.
 - Follow existing code patterns in the relevant folder before introducing new patterns.
+- Use `Description` attributes to define a tool's intent, scope, prerequisites, and side effects.
+- Add an architecture guard when a new tool boundary prohibits direct persistence or mediator access.

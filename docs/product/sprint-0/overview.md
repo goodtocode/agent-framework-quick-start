@@ -7,7 +7,7 @@ Sprint 0 establishes the minimum viable design and delivery foundation for a new
 Sprint 0 is strictly time-boxed to two weeks.
 
 ## Product Purpose
-Provide a practical Microsoft Agent Framework quick start that accelerates delivery of AI-enabled business applications with strong architecture and maintainable defaults.
+Provide a practical Microsoft Agent Framework quick start for building authenticated, governed, tool-enabled chat applications with Blazor, Web API, SQL Server, and Clean Architecture.
 
 ## Target Audience
 - Solution architects
@@ -22,8 +22,8 @@ Provide a practical Microsoft Agent Framework quick start that accelerates deliv
 
 ## Core Design Sequence
 1. Ontology definition (what exists).
-2. Event storming (what happens).
-3. Scope and bounded context definition.
+2. User journeys and state transitions (what happens).
+3. Agent, tool, and governance contract definition.
 4. Architecture and delivery scaffolding.
 
 ## Success Metrics
@@ -32,6 +32,7 @@ Provide a practical Microsoft Agent Framework quick start that accelerates deliv
 - Fewer architecture and standards violations in pull requests.
 
 ## High-Level Scope
-- Clean architecture baseline with Web API, Blazor UI, SQL persistence, and Agent Framework integration.
-- Reusable governance and feature documentation structure.
+- Clean architecture baseline with Web API, Blazor UI, SQL persistence, and Microsoft Agent Framework integration.
+- Governed inference and scoped tool-execution baseline.
+- Reusable governance, sprint-0, and feature documentation structure.
 - AI-ready knowledge hierarchy (governance, sprint-0, features).

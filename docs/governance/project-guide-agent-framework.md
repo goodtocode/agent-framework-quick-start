@@ -6,7 +6,8 @@ Define standards for Agent Framework implementation and operations.
 ## Standards
 - Register agents and dependencies through composition roots.
 - Keep orchestration in Application workflows and infrastructure adapters.
-- Implement tools with clear contracts and controlled side effects.
+- Implement tools according to [tool-design-and-implementation.md](tool-design-and-implementation.md): typed contracts, scoped execution gateway, application-owned policy, and controlled side effects.
+- Enforce [agent-governance-principles.md](agent-governance-principles.md) before every inference action.
 - Keep prompts versioned and discoverable.
 - Use memory intentionally; avoid hidden coupling.
 - Keep dependency registration explicit for testability.

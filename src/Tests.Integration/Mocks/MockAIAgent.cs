@@ -6,6 +6,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Mocks;
 
 public class MockAIAgent : AIAgent
 {
+    public IReadOnlyList<ChatMessage> LastMessages { get; private set; } = [];
 
     protected override ValueTask<AgentSession> CreateSessionCoreAsync(CancellationToken cancellationToken = default)
         => new(new MockAgentSession("mock-session"));
@@ -20,7 +21,10 @@ public class MockAIAgent : AIAgent
         => new(new MockAgentSession("mock-deserialized-session"));
 
     protected override Task<AgentResponse> RunCoreAsync(IEnumerable<ChatMessage> messages, AgentSession? session = null, AgentRunOptions? options = null, CancellationToken cancellationToken = default)
-        => Task.FromResult<AgentResponse>(new MockAgentResponse("mock-response"));
+    {
+        LastMessages = [.. messages];
+        return Task.FromResult<AgentResponse>(new MockAgentResponse("mock-response"));
+    }
 
     protected override async IAsyncEnumerable<AgentResponseUpdate> RunCoreStreamingAsync(IEnumerable<ChatMessage> messages, AgentSession? session = null, AgentRunOptions? options = null, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
     {

@@ -1,5 +1,6 @@
 ﻿using Goodtocode.AgentFramework.Core.Domain.Actor;
 using Goodtocode.AgentFramework.Core.Domain.Chat;
+using Goodtocode.AgentFramework.Core.Application.Governance;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 
@@ -14,10 +15,11 @@ public class CreateMyChatSessionCommand : UserScopedRequest, IRequest<ChatSessio
 
 }
 
-public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkContext context) : IRequestHandler<CreateMyChatSessionCommand, ChatSessionDto>
+public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkContext context, ChatGovernanceGate governanceGate) : IRequestHandler<CreateMyChatSessionCommand, ChatSessionDto>
 {
     private readonly AIAgent _agent = kernel;
     private readonly IAgentFrameworkContext _context = context;
+    private readonly ChatGovernanceGate _governanceGate = governanceGate;
 
     public async Task<ChatSessionDto> Handle(CreateMyChatSessionCommand request, CancellationToken cancellationToken)
     {
@@ -41,8 +43,14 @@ public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCo
             await _context.SaveChangesAsync(cancellationToken);
         }
 
+        var governed = _governanceGate.Enforce(
+            request.UserContext,
+            Guid.Empty,
+            request.Message!);
+
         var chatHistory = new List<ChatMessage>
         {
+            new(ChatRole.System, governed.PromptContext.SystemInstruction),
             new(ChatRole.User, request!.Message!)
         };
 

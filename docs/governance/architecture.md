@@ -31,9 +31,11 @@ This document is the primary architectural authority for the repository.
 
 ## Agent Architecture
 - Use Microsoft Agent Framework integrations in `src/Infrastructure.AgentFramework/`.
-- Add plugins in `src/Infrastructure.AgentFramework/Plugins/` and register through service configuration.
 - Keep orchestration in Application services and infrastructure adapters.
-- Tool invocation should be explicit, observable, and testable.
+- Use the tool path `Tool -> scoped execution gateway -> mediator pipeline -> command/query handler -> domain/infrastructure`.
+- Tools must not query persistence, implement domain policy, or bypass request validation and authorization behavior.
+- Enforce governance before every model inference and apply the resulting system instruction at the runtime boundary.
+- Preserve correlation, principal, tenant, model, tool, policy, and evidence metadata for agent operations.
 - Design adapters for future tool and model replacement.
 
 ## Definition of Done (Architecture)
