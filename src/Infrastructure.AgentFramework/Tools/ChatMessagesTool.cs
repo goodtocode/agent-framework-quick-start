@@ -12,7 +12,7 @@ public sealed class ChatMessagesTool(IServiceProvider serviceProvider) : ScopedA
     private string _currentFunctionName = string.Empty;
     private Dictionary<string, object> _currentParameters = [];
 
-    [Description("Retrieves the most recent messages from all chat sessions.")]
+    [Description("List recent messages from the current user's chat sessions. Optionally provide startDate and endDate to narrow the time range. Use for conversation-history questions.")]
     public async Task<IEnumerable<string>> ListRecentMessagesAsync(DateTime? startDate = null, DateTime? endDate = null,
         CancellationToken cancellationToken = default)
     {
@@ -32,7 +32,7 @@ public sealed class ChatMessagesTool(IServiceProvider serviceProvider) : ScopedA
         return messages.Items.Select(m => $"{m.ChatSessionId}: {m.Timestamp:u} - {m.Role}: {m.Content}");
     }
 
-    [Description("Retrieves all messages from a specific chat session.")]
+    [Description("List all messages for a chat session owned by the current user. Use when the user asks to inspect a specific conversation by sessionId.")]
     public async Task<IEnumerable<string>> GetChatMessagesAsync(Guid sessionId,
         CancellationToken cancellationToken = default)
     {

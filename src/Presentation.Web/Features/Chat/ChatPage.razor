@@ -7,6 +7,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.JSInterop
+@using System.Text.RegularExpressions
 
 @attribute [Authorize]
 @implements IAsyncDisposable
@@ -45,10 +46,13 @@
     </FluentGridItem>
 
     <FluentGridItem xs="12">
+      <ChatActionStrip Actions="pendingActions" OnActionClicked="HandleActionClickedAsync" />
       <NewChatMessageInput Width="100%"
+                           @ref="chatMessageInputRef"
                            Sessions="chatSessions"
                            OnSessionCreated="HandleSessionCreated"
                            OnMessageSubmitted="HandleMessageSubmitted" />
+      <SuggestedPromptsStrip Suggestions="SuggestedPrompts" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
     </FluentGridItem>
   }
   else
@@ -80,10 +84,13 @@
     <FluentGridItem xs="0" md="2"></FluentGridItem>
     <FluentGridItem xs="0" md="1"></FluentGridItem>
     <FluentGridItem xs="12" md="8">
+      <ChatActionStrip Actions="pendingActions" OnActionClicked="HandleActionClickedAsync" />
       <NewChatMessageCard Width="100%"
+                          @ref="chatMessageCardRef"
                           Sessions="chatSessions"
                           OnSessionCreated="HandleSessionCreated"
                           OnMessageSubmitted="HandleMessageSubmitted" />
+      <SuggestedPromptsStrip Suggestions="SuggestedPrompts" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
     </FluentGridItem>
     <FluentGridItem xs="0" md="1"></FluentGridItem>
   }
@@ -95,9 +102,19 @@
   private ChatSessionsModel chatSessions = new ChatSessionsModel();
   private ChatSessionList? chatSessionListRef;
   private ChatSessionStrip? chatSessionStripRef;
+  private NewChatMessageCard? chatMessageCardRef;
+  private NewChatMessageInput? chatMessageInputRef;
   private bool isMobileLayout;
   private bool shouldScrollToBottom;
   private IJSObjectReference? chatPageJsModule;
+  private List<ChatActionOption> pendingActions = [];
+  private static readonly IReadOnlyList<string> SuggestedPrompts =
+  [
+    "List my recent chat sessions",
+    "Find an actor by name",
+    "Search the web for current information"
+  ];
+  private static readonly Regex ActionTokenRegex = new(@"\[action\|(?<label>[^|\]]+)\|(?<prompt>[^\]]+)\]", RegexOptions.Compiled);
 
   protected override async Task OnInitializedAsync()
   {
@@ -117,6 +134,7 @@
     chatSessionListRef?.ClearSelection();
     chatSessionStripRef?.ClearSelection();
     chatSessions.ClearActive();
+    pendingActions = [];
     StateHasChanged();
   }
 
@@ -124,6 +142,7 @@
   {
     chatSessions.Add(chatSession);
     chatSessions.SetActive(chatSession);
+    RefreshPendingActions();
     shouldScrollToBottom = true;
     StateHasChanged();
   }
@@ -132,6 +151,7 @@
   {
     chatSessions.ClearActive();
     chatSessions.SetActive(chatSession);
+    RefreshPendingActions();
     shouldScrollToBottom = true;
     StateHasChanged();
   }
@@ -144,8 +164,63 @@
       chatSessions.RefreshItem(session);
     }
 
+    RefreshPendingActions();
     shouldScrollToBottom = true;
     StateHasChanged();
+  }
+
+  private async Task HandleSuggestedPromptClickedAsync(string prompt)
+  {
+    await SubmitPromptAsync(prompt);
+  }
+
+  private async Task HandleActionClickedAsync(ChatActionOption action)
+  {
+    pendingActions = [];
+    await SubmitPromptAsync(action.Prompt);
+  }
+
+  private async Task SubmitPromptAsync(string prompt)
+  {
+    if (isMobileLayout && chatMessageInputRef is not null)
+    {
+      await chatMessageInputRef.SubmitPresetMessageAsync(prompt);
+      return;
+    }
+
+    if (chatMessageCardRef is not null)
+    {
+      await chatMessageCardRef.SubmitPresetMessageAsync(prompt);
+      return;
+    }
+
+    if (chatMessageInputRef is not null)
+    {
+      await chatMessageInputRef.SubmitPresetMessageAsync(prompt);
+    }
+  }
+
+  private void RefreshPendingActions()
+  {
+    pendingActions = [];
+    var latestAssistant = chatSessions.ActiveSession?.Messages?.LastOrDefault(message =>
+      string.Equals(message.Role, "assistant", StringComparison.OrdinalIgnoreCase)
+      || string.Equals(message.Role, "system", StringComparison.OrdinalIgnoreCase));
+
+    if (string.IsNullOrWhiteSpace(latestAssistant?.Content))
+    {
+      return;
+    }
+
+    foreach (Match match in ActionTokenRegex.Matches(latestAssistant.Content))
+    {
+      var label = match.Groups["label"].Value.Trim();
+      var prompt = match.Groups["prompt"].Value.Trim();
+      if (!string.IsNullOrWhiteSpace(label) && !string.IsNullOrWhiteSpace(prompt))
+      {
+        pendingActions.Add(new ChatActionOption { Label = label, Prompt = prompt });
+      }
+    }
   }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -21,7 +21,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
     private string _currentFunctionName = string.Empty;
     private Dictionary<string, object> _currentParameters = [];
 
-    [Description("Returns structured actor info by ID including name, status, and explanation.")]
+    [Description("Get an actor by actorId when the user provides an identifier. Returns structured actor status: Found, Partial, or NotFound, with a brief explanation.")]
     public async Task<IActorResponse?> GetActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
     {
         _currentFunctionName = "get_actor_by_id";
@@ -51,7 +51,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
         };
     }
 
-    [Description("Returns structured actor info by name including ID, status, and explanation.")]
+    [Description("Search actors in the current tenant by name when the user asks to find a person. Returns matching actor IDs, names, statuses, and explanations. Never use this to search other tenants.")]
     public async Task<ICollection<IActorResponse>> GetActorsByNameAsync(string name, CancellationToken cancellationToken)
     {
         _currentFunctionName = "get_actors_by_name";

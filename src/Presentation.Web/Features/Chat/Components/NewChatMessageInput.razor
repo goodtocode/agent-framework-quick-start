@@ -3,7 +3,7 @@
 
 @inject IChatService chatService
 
-<EditForm FormName="ChatMessageInputSubmit" Model="messageModel" OnValidSubmit="SubmitMessage">
+<EditForm FormName="ChatMessageInputSubmit" Model="messageModel" OnValidSubmit="SubmitMessageAsync">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Wrap="true" Style="max-width:90%;">
         <FluentTextField Style="width:70%;" @bind-Value="messageModel.NewMessage"
                          Placeholder="Type your message here..."
@@ -38,7 +38,18 @@
         editContext = new EditContext(messageModel);
     }
 
-    private async Task SubmitMessage()
+    public async Task SubmitPresetMessageAsync(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        messageModel.NewMessage = message;
+        await SubmitMessageAsync();
+    }
+
+    private async Task SubmitMessageAsync()
     {
         if (isSubmitting)
         {

@@ -12,7 +12,7 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : ScopedA
     private string _currentFunctionName = string.Empty;
     private Dictionary<string, object> _currentParameters = [];
 
-    [Description("Retrieves a list of recent chat sessions. Optionally, filter results by start and/or end date to narrow the search.")]
+    [Description("List recent chat sessions owned by the current user. Optionally provide startDate and endDate to narrow the time range. Use before asking for a sessionId or conversation history.")]
     public async Task<IEnumerable<string>> ListRecentSessionsAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
         _currentFunctionName = "list_sessions";
@@ -31,7 +31,7 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : ScopedA
         return messages.Select(m => $"{m.Id}: {m.Timestamp} - {m.Title}");
     }
 
-    [Description("Changes the title on this chat session.")]
+    [Description("Change the title of a chat session owned by the current user. This writes data, so call it only after the user explicitly confirms the newTitle and sessionId. The result includes a follow-up action token for the chat UI.")]
     public async Task<string?> UpdateChatSessionTitleAsync(Guid sessionId, string newTitle, CancellationToken cancellationToken = default)
     {
         _currentFunctionName = "change_title";
@@ -59,6 +59,6 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : ScopedA
 
         return chatSession is null
             ? null
-            : $"{chatSession.Id}: {chatSession.Timestamp} - {chatSession.Title}";
+            : $"{chatSession.Id}: {chatSession.Timestamp} - {chatSession.Title}\n[action|Review chat sessions|List my recent chat sessions]";
     }
 }

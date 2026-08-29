@@ -1,9 +1,8 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Models
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Formatting
 @using Microsoft.AspNetCore.Components
-@using Microsoft.JSInterop
+@using System.Text.RegularExpressions
 
-@inject IJSRuntime JSRuntime
 @inject IChatMessageFormatter ChatMessageFormatter
 
 <FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Top" VerticalGap="8" Style="@($"width:{Width}; max-width:100%; margin-inline:auto;")">
@@ -30,15 +29,20 @@
 
 
 @code {
+    private static readonly Regex ActionToken = new(@"\[action\|(?<label>[^|\]]+)\|(?<prompt>[^\]]+)\]", RegexOptions.Compiled);
+
     [Parameter]
     public IEnumerable<ChatMessageModel> Messages { get; set; } = new List<ChatMessageModel>();
 
     [Parameter]
     public string Width { get; set; } = "100%";
 
-    private bool IsUserMessage(ChatMessageModel message) =>
+    private static bool IsUserMessage(ChatMessageModel message) =>
         message?.Role?.ToLowerInvariant() == "user";
 
     private string FormatAssistantMessage(ChatMessageModel message)
-        => ChatMessageFormatter.FormatAssistantMessageAsHtml(message.Content ?? string.Empty);
+        => ChatMessageFormatter.FormatAssistantMessageAsHtml(RemoveActionTokens(message.Content ?? string.Empty));
+
+    private static string RemoveActionTokens(string message)
+        => ActionToken.Replace(message, string.Empty).Trim();
 }
