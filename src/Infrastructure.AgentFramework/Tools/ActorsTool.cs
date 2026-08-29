@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.DependencyInjection;
+using Goodtocode.AgentFramework.Core.Application.Actor;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 
@@ -14,10 +12,8 @@ public class ActorResponse : IActorResponse
 }
 
 
-public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActorsTool
+public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTool(serviceProvider), IActorsTool
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
-
     public static string ToolName => "ActorsTool";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
@@ -25,7 +21,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
     private string _currentFunctionName = string.Empty;
     private Dictionary<string, object> _currentParameters = [];
 
-    [Description("Returns structured actor info by ID including name, status, and explanation.")]
+    [Description("Get an actor by actorId when the user provides an identifier. Returns structured actor status: Found, Partial, or NotFound, with a brief explanation.")]
     public async Task<IActorResponse?> GetActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
     {
         _currentFunctionName = "get_actor_by_id";
@@ -34,9 +30,10 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
             { "actorId", actorId }
         };
 
-        using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<IAgentFrameworkContext>();
-        var actor = await context.Actors.FindAsync([actorId, cancellationToken], cancellationToken: cancellationToken);
+        var actor = await SendAsync(new GetOurActorQuery
+        {
+            ActorId = actorId
+        }, cancellationToken);
 
         if (actor == null)
         {
@@ -54,7 +51,7 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
         };
     }
 
-    [Description("Returns structured actor info by name including ID, status, and explanation.")]
+    [Description("Search actors in the current tenant by name when the user asks to find a person. Returns matching actor IDs, names, statuses, and explanations. Never use this to search other tenants.")]
     public async Task<ICollection<IActorResponse>> GetActorsByNameAsync(string name, CancellationToken cancellationToken)
     {
         _currentFunctionName = "get_actors_by_name";
@@ -63,31 +60,10 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : AITool, IActo
             { "name", name }
         };
 
-        using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<IAgentFrameworkContext>();
-        var nameTokens = name?.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
-        var normalizedInput = name?.Trim() ?? string.Empty;
-
-        var actors = await context.Actors
-            .Where(a =>
-                nameTokens.Any(token =>
-                    EF.Functions.Like(a.FirstName, $"%{token}%") ||
-                    EF.Functions.Like(a.LastName, $"%{token}%")
-                )
-                || EF.Functions.Like(
-                    (a.FirstName + " " + a.LastName).Trim(), $"%{normalizedInput}%"
-                )
-                || EF.Functions.Like(
-                    (a.LastName + " " + a.FirstName).Trim(), $"%{normalizedInput}%"
-                )
-                || nameTokens.Any(token =>
-                    EF.Functions.Like(a.FirstName, $"{token}%") ||
-                    EF.Functions.Like(a.FirstName, $"%{token}") ||
-                    EF.Functions.Like(a.LastName, $"{token}%") ||
-                    EF.Functions.Like(a.LastName, $"%{token}")
-                )
-            )
-            .ToListAsync(cancellationToken);
+        var actors = await SendAsync(new GetOurActorsByNameQuery
+        {
+            Name = name
+        }, cancellationToken);
 
         return [.. actors.Select(a => new ActorResponse
         {

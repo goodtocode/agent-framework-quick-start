@@ -1,5 +1,6 @@
 ﻿using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
@@ -64,6 +65,7 @@ public static class ConfigureServices
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
         services.AddSingleton<ChatSessionsTool>();
         services.AddSingleton<ActorsTool>();
         services.AddSingleton<ChatMessagesTool>();

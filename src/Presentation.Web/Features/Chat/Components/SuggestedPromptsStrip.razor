@@ -1,0 +1,20 @@
+@if (Suggestions.Count > 0)
+{
+    <FluentStack Orientation="Orientation.Horizontal"
+                 HorizontalAlignment="HorizontalAlignment.Center"
+                 Wrap="true"
+                 Style="width:100%; margin-top:8px; gap:8px;">
+        @foreach (var suggestion in Suggestions)
+        {
+            <FluentButton Appearance="Appearance.Lightweight"
+                          OnClick="() => OnPromptClicked.InvokeAsync(suggestion)">
+                @suggestion
+            </FluentButton>
+        }
+    </FluentStack>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<string> Suggestions { get; set; } = [];
+    [Parameter] public EventCallback<string> OnPromptClicked { get; set; }
+}

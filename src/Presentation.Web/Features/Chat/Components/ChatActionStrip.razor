@@ -1,0 +1,22 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Models
+
+@if (Actions.Count > 0)
+{
+    <FluentStack Orientation="Orientation.Horizontal"
+                 HorizontalAlignment="HorizontalAlignment.Center"
+                 Wrap="true"
+                 Style="width:100%; margin-bottom:8px; gap:8px;">
+        @foreach (var action in Actions)
+        {
+            <FluentButton Appearance="Appearance.Stealth"
+                          OnClick="() => OnActionClicked.InvokeAsync(action)">
+                @action.Label
+            </FluentButton>
+        }
+    </FluentStack>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<ChatActionOption> Actions { get; set; } = [];
+    [Parameter] public EventCallback<ChatActionOption> OnActionClicked { get; set; }
+}

@@ -2,6 +2,7 @@
 using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
 using Goodtocode.AgentFramework.Tests.Integration.Mocks;
 using Microsoft.Agents.AI;
@@ -63,6 +64,7 @@ public abstract class TestBase : IDisposable
             typeof(TestInjectUserContextBehavior<,>));
 
         services.AddApplicationServices();
+        services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
 
         services.AddDbContext<AgentFrameworkContext>(options =>
             options.UseInMemoryDatabase($"AgentFrameworkContext-{Guid.NewGuid()}")
