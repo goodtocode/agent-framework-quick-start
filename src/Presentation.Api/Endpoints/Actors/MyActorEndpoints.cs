@@ -1,4 +1,4 @@
-using Goodtocode.AgentFramework.Core.Application.Actor;
+using Goodtocode.AgentFramework.Core.Application.Actors;
 
 namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints.Actor;
 

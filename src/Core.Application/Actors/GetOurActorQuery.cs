@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Actor;
+﻿namespace Goodtocode.AgentFramework.Core.Application.Actors;
 
 public class GetOurActorQuery : UserScopedRequest, IRequest<ActorDto?>
 {

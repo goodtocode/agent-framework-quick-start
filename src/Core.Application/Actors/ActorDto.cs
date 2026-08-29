@@ -1,6 +1,6 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Actor;
+﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
 
-namespace Goodtocode.AgentFramework.Core.Application.Actor;
+namespace Goodtocode.AgentFramework.Core.Application.Actors;
 
 public class ActorDto
 {

@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Markdig;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Formatting;
+namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Formatting;
 
 public sealed partial class MarkdownChatMessageFormatter : IChatMessageFormatter
 {

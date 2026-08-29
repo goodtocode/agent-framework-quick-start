@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Chat;
+﻿namespace Goodtocode.AgentFramework.Core.Application.Chats;
 
 public class GetMyChatSessionsQuery : UserScopedRequest, IRequest<ICollection<ChatSessionDto>>
 {

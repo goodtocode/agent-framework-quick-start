@@ -1,6 +1,6 @@
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Models
+namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models
 {
     public class ChatSessionTreeViewItem(ChatSessionModel session) : ITreeViewItem
     {

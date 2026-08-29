@@ -11,7 +11,7 @@
 #region Designer generated code
 #pragma warning disable
 using Reqnroll;
-namespace Goodtocode.AgentFramework.Tests.Integration.Actor
+namespace Goodtocode.AgentFramework.Tests.Integration.Actors
 {
     
     
@@ -28,7 +28,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         private static string[] featureTags = new string[] {
                 "deleteActorCommand"};
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Actor", "Delete Actor Command", "As a Actor owner\r\nWhen I select a Actor\r\nI can delete the Actor", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Actors", "Delete Actor Command", "As a Actor owner\r\nWhen I select a Actor\r\nI can delete the Actor", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
 #line 1 "DeleteActorCommand.feature"
 #line hidden
@@ -118,7 +118,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actor
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Actor/DeleteActorCommand.feature.ndjson", 4);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Actors/DeleteActorCommand.feature.ndjson", 4);
         }
         
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Delete Actor")]

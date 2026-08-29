@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Domain.Chat;
+﻿namespace Goodtocode.AgentFramework.Core.Domain.Chats;
 
 public class ChatSessionEntity : SecuredEntity<ChatSessionEntity>
 {

@@ -1,5 +1,5 @@
-using Goodtocode.AgentFramework.Core.Application.Actor;
-using Goodtocode.AgentFramework.Core.Domain.Actor;
+using Goodtocode.AgentFramework.Core.Application.Actors;
+using Goodtocode.AgentFramework.Core.Domain.Actors;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.Actor
 {

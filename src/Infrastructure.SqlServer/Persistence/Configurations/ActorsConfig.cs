@@ -1,4 +1,4 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Actor;
+﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
 

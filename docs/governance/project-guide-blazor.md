@@ -80,7 +80,7 @@ Features
 │
 ├── HomePage.razor
 │
-├── Chat
+├── Chats
 │   ├── ChatPage.razor
 │   ├── Components
 │   ├── Models
@@ -101,6 +101,7 @@ Features
 
 ## Rules
 
+- Use plural feature folders for collection boundaries, such as `Chats`, `Assets`, and `Attestations`; name files after their primary singular or plural type responsibility.
 - Features own their components.
 - Features own their models.
 - Features own their services.

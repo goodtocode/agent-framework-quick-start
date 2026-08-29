@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Goodtocode.AgentFramework.Core.Application.Actor;
+using Goodtocode.AgentFramework.Core.Application.Actors;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 

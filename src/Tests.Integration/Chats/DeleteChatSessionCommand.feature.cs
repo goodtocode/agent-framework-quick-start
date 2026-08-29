@@ -11,7 +11,7 @@
 #region Designer generated code
 #pragma warning disable
 using Reqnroll;
-namespace Goodtocode.AgentFramework.Tests.Integration.Chat
+namespace Goodtocode.AgentFramework.Tests.Integration.Chats
 {
     
     
@@ -28,7 +28,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
         private static string[] featureTags = new string[] {
                 "deleteChatSessionCommand"};
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Chat", "Delete Chat Session Command", "As a chat session owner\r\nWhen I select a chat session\r\nI can delete the chat sess" +
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Chats", "Delete Chat Session Command", "As a chat session owner\r\nWhen I select a chat session\r\nI can delete the chat sess" +
                 "ion", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
 #line 1 "DeleteChatSessionCommand.feature"
@@ -119,7 +119,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Chat/DeleteChatSessionCommand.feature.ndjson", 5);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Chats/DeleteChatSessionCommand.feature.ndjson", 5);
         }
         
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Delete Chat Session")]

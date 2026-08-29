@@ -11,7 +11,7 @@
 #region Designer generated code
 #pragma warning disable
 using Reqnroll;
-namespace Goodtocode.AgentFramework.Tests.Integration.Chat
+namespace Goodtocode.AgentFramework.Tests.Integration.Chats
 {
     
     
@@ -28,7 +28,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
         private static string[] featureTags = new string[] {
                 "getMyChatSessionMessagesQuery"};
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Chat", "Get My Chat Session Messages Query", "As a chat-session owner\r\nWhen I request messages for a chat session\r\nI receive on" +
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Chats", "Get My Chat Session Messages Query", "As a chat-session owner\r\nWhen I request messages for a chat session\r\nI receive on" +
                 "ly messages that I own within my tenant", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
 #line 1 "GetMyChatSessionMessagesQuery.feature"
@@ -119,7 +119,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Chat/GetMyChatSessionMessagesQuery.feature.ndjson", 6);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Chats/GetMyChatSessionMessagesQuery.feature.ndjson", 6);
         }
         
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Get chat session messages")]

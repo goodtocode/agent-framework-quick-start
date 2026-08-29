@@ -1,6 +1,6 @@
-﻿using Goodtocode.AgentFramework.Core.Application.Chat;
+﻿using Goodtocode.AgentFramework.Core.Application.Chats;
 
-namespace Goodtocode.AgentFramework.Core.Application.Actor;
+namespace Goodtocode.AgentFramework.Core.Application.Actors;
 
 public class GetOurActorChatSessionsQuery : UserScopedRequest, IRequest<ICollection<ChatSessionDto>>
 {

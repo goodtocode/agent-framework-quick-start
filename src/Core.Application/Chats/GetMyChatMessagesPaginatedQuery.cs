@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Chat;
+﻿namespace Goodtocode.AgentFramework.Core.Application.Chats;
 
 public class GetMyChatMessagesPaginatedQuery : UserScopedRequest, IRequest<IPaginatedList<ChatMessageDto>>
 {

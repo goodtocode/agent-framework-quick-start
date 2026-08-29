@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.Chat;
+using Goodtocode.AgentFramework.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Core.Application.Chat;
+namespace Goodtocode.AgentFramework.Core.Application.Chats;
 
 public class ChatMessageDto
 {

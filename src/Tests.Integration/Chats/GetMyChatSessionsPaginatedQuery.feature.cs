@@ -11,7 +11,7 @@
 #region Designer generated code
 #pragma warning disable
 using Reqnroll;
-namespace Goodtocode.AgentFramework.Tests.Integration.Chat
+namespace Goodtocode.AgentFramework.Tests.Integration.Chats
 {
     
     
@@ -28,7 +28,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
         private static string[] featureTags = new string[] {
                 "getChatSessionsPaginatedQuery"};
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Chat", "Get Chat Sessions Paginated Query", "As an owner of chat sessions\r\nWhen I get chat sessions all or by date range\r\nI ca" +
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Chats", "Get Chat Sessions Paginated Query", "As an owner of chat sessions\r\nWhen I get chat sessions all or by date range\r\nI ca" +
                 "n get a paginated collection of chat sessions", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
 #line 1 "GetMyChatSessionsPaginatedQuery.feature"
@@ -119,7 +119,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Chat
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Chat/GetMyChatSessionsPaginatedQuery.feature.ndjson", 7);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Chats/GetMyChatSessionsPaginatedQuery.feature.ndjson", 7);
         }
         
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Get chat sessions paginated")]

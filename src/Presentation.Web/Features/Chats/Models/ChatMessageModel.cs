@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Models;
+﻿namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models;
 
 public class ChatMessageModel
 {

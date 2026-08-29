@@ -1,4 +1,4 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Chat;
+﻿using Goodtocode.AgentFramework.Core.Domain.Chats;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
 

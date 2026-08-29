@@ -1,10 +1,10 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Actor;
-using Goodtocode.AgentFramework.Core.Domain.Chat;
+﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
+using Goodtocode.AgentFramework.Core.Domain.Chats;
 using Goodtocode.AgentFramework.Core.Application.Governance;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 
-namespace Goodtocode.AgentFramework.Core.Application.Chat;
+namespace Goodtocode.AgentFramework.Core.Application.Chats;
 
 public class CreateMyChatSessionCommand : UserScopedRequest, IRequest<ChatSessionDto>
 {

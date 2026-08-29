@@ -1,13 +1,13 @@
 ﻿@page "/chat"
 
-@using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Components
-@using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Models
-@using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Services
+@using System.Text.RegularExpressions
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Components
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services
 @using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.JSInterop
-@using System.Text.RegularExpressions
 
 @attribute [Authorize]
 @implements IAsyncDisposable

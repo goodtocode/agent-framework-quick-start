@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Domain.Actor;
+﻿namespace Goodtocode.AgentFramework.Core.Domain.Actors;
 
 public class ActorEntity : SecuredEntity<ActorEntity>
 {

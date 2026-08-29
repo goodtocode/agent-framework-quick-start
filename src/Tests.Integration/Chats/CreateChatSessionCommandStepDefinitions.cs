@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Application.Chat;
-using Goodtocode.AgentFramework.Core.Domain.Actor;
-using Goodtocode.AgentFramework.Core.Domain.Chat;
+using Goodtocode.AgentFramework.Core.Application.Chats;
+using Goodtocode.AgentFramework.Core.Domain.Actors;
+using Goodtocode.AgentFramework.Core.Domain.Chats;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.Chat;
 
