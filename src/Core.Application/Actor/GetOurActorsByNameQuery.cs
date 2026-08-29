@@ -12,22 +12,13 @@ public class GetOurActorsByNameQueryHandler(IAgentFrameworkContext context) : IR
     public async Task<ICollection<ActorDto>> Handle(GetOurActorsByNameQuery request, CancellationToken cancellationToken)
     {
         var tenantId = request.UserContext.TenantId;
-        var nameTokens = request.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var normalizedInput = request.Name.Trim();
 
         return await _context.Actors
             .Where(x => x.TenantId == tenantId)
             .Where(x =>
-                nameTokens.Any(token =>
-                    EF.Functions.Like(x.FirstName, $"%{token}%") ||
-                    EF.Functions.Like(x.LastName, $"%{token}%"))
-                || EF.Functions.Like((x.FirstName + " " + x.LastName).Trim(), $"%{normalizedInput}%")
-                || EF.Functions.Like((x.LastName + " " + x.FirstName).Trim(), $"%{normalizedInput}%")
-                || nameTokens.Any(token =>
-                    EF.Functions.Like(x.FirstName, $"{token}%") ||
-                    EF.Functions.Like(x.FirstName, $"%{token}") ||
-                    EF.Functions.Like(x.LastName, $"{token}%") ||
-                    EF.Functions.Like(x.LastName, $"%{token}")))
+                (x.FirstName != null && x.FirstName.Contains(normalizedInput))
+                || (x.LastName != null && x.LastName.Contains(normalizedInput)))
             .Select(x => ActorDto.CreateFrom(x))
             .ToListAsync(cancellationToken);
     }
