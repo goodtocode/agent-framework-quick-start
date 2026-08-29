@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 {
     [DbContext(typeof(AgentFrameworkContext))]
-    [Migration("20260809193939_InitialCreate-AgentFrameworkContext")]
+    [Migration("20260829161014_InitialCreate-AgentFrameworkContext")]
     partial class InitialCreateAgentFrameworkContext
     {
         /// <inheritdoc />
@@ -21,7 +21,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Chat")
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -29,7 +29,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Actor.ActorEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Actors.ActorEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +90,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.ToTable("Actors", "Chat");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chat.ChatMessageEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chats.ChatMessageEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -151,7 +151,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.ToTable("ChatMessages", "Chat");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chat.ChatSessionEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chats.ChatSessionEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,9 +212,9 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.ToTable("ChatSessions", "Chat");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chat.ChatMessageEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chats.ChatMessageEntity", b =>
                 {
-                    b.HasOne("Goodtocode.AgentFramework.Core.Domain.Chat.ChatSessionEntity", "ChatSession")
+                    b.HasOne("Goodtocode.AgentFramework.Core.Domain.Chats.ChatSessionEntity", "ChatSession")
                         .WithMany("Messages")
                         .HasForeignKey("ChatSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -223,7 +223,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Navigation("ChatSession");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chat.ChatSessionEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chats.ChatSessionEntity", b =>
                 {
                     b.Navigation("Messages");
                 });
