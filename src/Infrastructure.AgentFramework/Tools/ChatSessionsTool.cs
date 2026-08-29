@@ -1,14 +1,10 @@
 ﻿using System.ComponentModel;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.DependencyInjection;
+using Goodtocode.AgentFramework.Core.Application.Chat;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 
-public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool, IChatSessionsTool
+public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : ScopedAgentTool(serviceProvider), IChatSessionsTool
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
-
     public static string ToolName => "ChatSessionsTool";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
@@ -26,19 +22,11 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool,
             { "endDate", endDate ?? DateTime.UtcNow.AddSeconds(1)}
         };
 
-        using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<IAgentFrameworkContext>();
-
-        var query = context.ChatSessions.AsQueryable();
-
-        if (startDate.HasValue)
-            query = query.Where(x => x.Timestamp > startDate.Value);
-        if (endDate.HasValue)
-            query = query.Where(x => x.Timestamp < endDate.Value);
-
-        var messages = await query
-            .OrderByDescending(x => x.Timestamp)
-            .ToListAsync(cancellationToken);
+        var messages = await SendAsync(new GetMyChatSessionsQuery
+        {
+            StartDate = startDate,
+            EndDate = endDate
+        }, cancellationToken);
 
         return messages.Select(m => $"{m.Id}: {m.Timestamp} - {m.Title}");
     }
@@ -53,21 +41,24 @@ public sealed class ChatSessionsTool(IServiceProvider serviceProvider) : AITool,
             { "newTitle", newTitle }
         };
 
-        using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<IAgentFrameworkContext>();
+        var result = await SendAsync(new PatchMyChatSessionCommand
+        {
+            Id = sessionId,
+            Title = newTitle
+        }, cancellationToken);
 
-        var chatSession = await context.ChatSessions
-            .FirstOrDefaultAsync(x => x.Id == sessionId, cancellationToken: cancellationToken);
-
-        if (chatSession == null)
+        if (!result.IsSuccess)
         {
             return null;
         }
 
-        chatSession.Update(newTitle);
-        context.ChatSessions.Update(chatSession);
-        await context.SaveChangesAsync(cancellationToken);
+        var chatSession = await SendAsync(new GetMyChatSessionQuery
+        {
+            Id = sessionId
+        }, cancellationToken);
 
-        return $"{chatSession.Id}: {chatSession.Timestamp} - {chatSession.Title}";
+        return chatSession is null
+            ? null
+            : $"{chatSession.Id}: {chatSession.Timestamp} - {chatSession.Title}";
     }
 }
