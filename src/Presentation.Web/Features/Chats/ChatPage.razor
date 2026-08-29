@@ -227,7 +227,7 @@
   {
     if (firstRender)
     {
-      chatPageJsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Features/Chat/ChatPage.razor.js");
+      chatPageJsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Features/Chats/ChatPage.razor.js");
       shouldScrollToBottom = true;
     }
 
