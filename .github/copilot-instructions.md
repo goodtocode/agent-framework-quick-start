@@ -42,3 +42,6 @@
 - Use `docs/governance/` for detailed architecture, coding, tool, governance, runtime-observability, and administrative UX guidance.
 - Use `docs/product/` for product intent, ontology, user flows, feature definitions, and completion criteria.
 - Follow existing patterns in the local folder before adding a new abstraction or dependency.
+
+## Command and Query Guidelines
+- Commands and queries in Core.Application must remain presentation/infrastructure-agnostic; formatting and response shaping for agent/tool interactions belong in Infrastructure.AgentFramework tools/adapters, not in application handlers.

@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Auth;
 using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Storage;
-using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Services;
-using Goodtocode.AgentFramework.Presentation.Web.Features.Chat.Formatting;
+using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services;
+using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Formatting;
 using Microsoft.Extensions.Options;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;

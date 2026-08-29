@@ -24,7 +24,9 @@ Define repository-wide documentation and collaboration style.
 - Update affected docs when behavior or requirements change.
 
 ## GitHub Issue Style
-- Include business problem, value, acceptance criteria, and out-of-scope items.
+- Bug reports require the problem, steps to reproduce, expected behavior, error page URL, and screenshot.
+- Feature requests require the problem and requested outcome; contributors may add supporting context when useful.
+- Maintainers expand accepted work into feature documentation only when implementation planning needs additional detail.
 
 ## Pull Request Style
 - Summarize intent, changed layers, testing evidence, and follow-up risks.

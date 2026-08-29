@@ -6,6 +6,9 @@ Define implementation expectations for contributors and AI agents.
 ## Naming Standards
 - Projects and folders: PascalCase.
 - Namespaces: align with folder/project structure.
+- Use plural folders for feature and collection boundaries, such as `Actors`, `Chats`, `Tools`, `Configurations`, and `Endpoints`.
+- Name each source file after its primary type. Use singular or plural type names according to the type's responsibility, not mechanically: `ActorEntity.cs`, `ChatSession.cs`, `ChatSessionsQuery.cs`, and `ActorsTool.cs` are all valid.
+- Do not create a file whose name duplicates a folder merely to satisfy a naming rule; use the type's precise responsibility in the filename.
 - Classes, records, enums: PascalCase.
 - Interfaces: `I` prefix + PascalCase.
 - Private fields: `_camelCase`.

@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Goodtocode.AgentFramework.Core.Application.Abstractions;
-using Goodtocode.AgentFramework.Core.Domain.Actor;
-using Goodtocode.AgentFramework.Core.Domain.Chat;
+using Goodtocode.AgentFramework.Core.Domain.Actors;
+using Goodtocode.AgentFramework.Core.Domain.Chats;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;

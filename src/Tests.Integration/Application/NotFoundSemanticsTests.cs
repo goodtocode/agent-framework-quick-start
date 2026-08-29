@@ -1,5 +1,5 @@
-using Goodtocode.AgentFramework.Core.Application.Actor;
-using Goodtocode.AgentFramework.Core.Application.Chat;
+using Goodtocode.AgentFramework.Core.Application.Actors;
+using Goodtocode.AgentFramework.Core.Application.Chats;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.Application;
 

@@ -1,5 +1,5 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Actor;
-using Goodtocode.AgentFramework.Core.Domain.Chat;
+﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
+using Goodtocode.AgentFramework.Core.Domain.Chats;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Goodtocode.AgentFramework.Core.Application.Abstractions;
