@@ -21,7 +21,18 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
     private string _currentFunctionName = string.Empty;
     private Dictionary<string, object> _currentParameters = [];
 
-    [Description("Get an actor by actorId when the user provides an identifier. Returns structured actor status: Found, Partial, or NotFound, with a brief explanation.")]
+    [Description(
+        """
+        Looks up a single actor (user/profile record) by their actorId (a GUID).
+
+        Use this tool whenever the user asks things like:
+        - get actor {id}
+        - look up actor with id {id}
+        - find the actor whose id is {id}
+        - what is the status of actor {id}
+
+        Returns a structured status (Found, Partial, NotFound) with a human-readable message.
+        """)]
     public async Task<IActorResponse?> GetActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
     {
         _currentFunctionName = "get_actor_by_id";
@@ -51,7 +62,19 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
         };
     }
 
-    [Description("Search actors in the current tenant by name when the user asks to find a person. Returns matching actor IDs, names, statuses, and explanations. Never use this to search other tenants.")]
+    [Description(
+        """
+        Searches actors (user/profile records) by name (full or partial match) in the current tenant.
+
+        Use this tool whenever the user asks things like:
+        - find actor named {name}
+        - search actors for {name}
+        - who is {name}
+        - look up a user called {name}
+
+        Returns a collection of structured matches with actorId, name, status, and message (or a
+        single NotFound entry if nothing matches). Never use this to search other tenants.
+        """)]
     public async Task<ICollection<IActorResponse>> GetActorsByNameAsync(string name, CancellationToken cancellationToken)
     {
         _currentFunctionName = "get_actors_by_name";
@@ -64,6 +87,17 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
         {
             Name = name
         }, cancellationToken);
+
+        if (actors.Count == 0)
+        {
+            return [new ActorResponse
+            {
+                ActorId = Guid.Empty,
+                Name = name,
+                Status = "NotFound",
+                Message = "No actor found with the specified name."
+            }];
+        }
 
         return [.. actors.Select(a => new ActorResponse
         {

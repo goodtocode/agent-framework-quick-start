@@ -72,9 +72,9 @@ public static class ConfigureServices
         services.AddSingleton(DefaultIntentCatalogFactory.Create());
         services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
         
-        services.AddSingleton<ChatSessionsTool>();
+        services.AddSingleton<MyChatSessionsTool>();
         services.AddSingleton<ActorsTool>();
-        services.AddSingleton<ChatMessagesTool>();
+        services.AddSingleton<MyChatMessagesTool>();
         services.AddSingleton<WebSearchTool>();
 
         services.AddSingleton(provider =>
@@ -166,9 +166,9 @@ public static class ConfigureServices
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
             var tools = new List<AITool>
             {
-                provider.GetRequiredService<ChatSessionsTool>(),
+                provider.GetRequiredService<MyChatSessionsTool>(),
                 provider.GetRequiredService<ActorsTool>(),
-                provider.GetRequiredService<ChatMessagesTool>(),
+                provider.GetRequiredService<MyChatMessagesTool>(),
                 provider.GetRequiredService<WebSearchTool>()
             };
 

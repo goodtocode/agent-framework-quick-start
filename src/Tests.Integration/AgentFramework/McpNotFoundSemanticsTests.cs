@@ -18,7 +18,7 @@ public class McpNotFoundSemanticsTests : TestBase
     [TestMethod]
     public async Task ChatSessionsToolUpdateTitleReturnsNullWhenSessionMissing()
     {
-        var sut = new ChatSessionsTool(ServiceProvider);
+        var sut = new MyChatSessionsTool(ServiceProvider);
 
         var result = await sut.UpdateChatSessionTitleAsync(Guid.NewGuid(), "Updated Title", CancellationToken.None);
 
