@@ -1,6 +1,7 @@
 ﻿using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
@@ -66,6 +67,11 @@ public static class ConfigureServices
             .ValidateOnStart();
 
         services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
+        
+        // Register intent classification and routing services
+        services.AddSingleton(DefaultIntentCatalogFactory.Create());
+        services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
+        
         services.AddSingleton<ChatSessionsTool>();
         services.AddSingleton<ActorsTool>();
         services.AddSingleton<ChatMessagesTool>();
