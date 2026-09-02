@@ -1,6 +1,7 @@
 ﻿using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
@@ -66,9 +67,14 @@ public static class ConfigureServices
             .ValidateOnStart();
 
         services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
-        services.AddSingleton<ChatSessionsTool>();
+        
+        // Register intent classification and routing services
+        services.AddSingleton(DefaultIntentCatalogFactory.Create());
+        services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
+        
+        services.AddSingleton<MyChatSessionsTool>();
         services.AddSingleton<ActorsTool>();
-        services.AddSingleton<ChatMessagesTool>();
+        services.AddSingleton<MyChatMessagesTool>();
         services.AddSingleton<WebSearchTool>();
 
         services.AddSingleton(provider =>
@@ -160,9 +166,9 @@ public static class ConfigureServices
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
             var tools = new List<AITool>
             {
-                provider.GetRequiredService<ChatSessionsTool>(),
+                provider.GetRequiredService<MyChatSessionsTool>(),
                 provider.GetRequiredService<ActorsTool>(),
-                provider.GetRequiredService<ChatMessagesTool>(),
+                provider.GetRequiredService<MyChatMessagesTool>(),
                 provider.GetRequiredService<WebSearchTool>()
             };
 
