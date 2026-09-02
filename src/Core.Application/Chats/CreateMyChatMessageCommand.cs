@@ -1,7 +1,5 @@
 ﻿using Goodtocode.AgentFramework.Core.Domain.Chats;
-using Goodtocode.AgentFramework.Core.Application.Governance;
-using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
+using Goodtocode.AgentFramework.Core.Application.Abstractions;
 
 namespace Goodtocode.AgentFramework.Core.Application.Chats;
 
@@ -9,14 +7,14 @@ public class CreateMyChatMessageCommand : UserScopedRequest, IRequest<CommandRes
 {
     public Guid ChatSessionId { get; set; }
     public string? Message { get; set; }
+    public ChatRoutingMode RoutingMode { get; set; } = ChatRoutingMode.Routed;
 
 }
 
-public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkContext context, ChatGovernanceGate governanceGate) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
+public class CreateChatMessageCommandHandler(IAgentFrameworkContext context, IChatMessageRoutingService routingService) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
 {
-    private readonly AIAgent _agent = agent;
     private readonly IAgentFrameworkContext _context = context;
-    private readonly ChatGovernanceGate _governanceGate = governanceGate;
+    private readonly IChatMessageRoutingService _routingService = routingService;
 
     public async Task<CommandResult<ChatMessageDto>> Handle(CreateMyChatMessageCommand request, CancellationToken cancellationToken)
     {
@@ -32,27 +30,11 @@ public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkConte
 
         ChatGuard.GuardAgainstUnauthorized(chatSession, request!.UserContext!);
 
-        var governed = _governanceGate.Enforce(
-            request.UserContext,
+        var agentReply = await _routingService.ResolveReplyAsync(
             chatSession.Id,
-            request.Message!);
-
-        var chatHistory = new List<ChatMessage>
-        {
-            new(ChatRole.System, governed.PromptContext.SystemInstruction)
-        };
-        foreach (ChatMessageEntity message in chatSession.Messages)
-        {
-            chatHistory.Add(new ChatMessage(
-                role: message.Role == ChatMessageRole.user ? ChatRole.User : ChatRole.Assistant,
-                content: message.Content));
-        }
-        chatHistory.Add(new ChatMessage(role: ChatRole.User, content: request!.Message!));
-
-        var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
-        var response = agentResponse.Messages.LastOrDefault();
-
-        ChatGuard.GuardAgainstNullAgentResponse(response);
+            request.Message!,
+            cancellationToken,
+            request.RoutingMode);
 
         var chatMessage = ChatMessageEntity.Create(
             ownerId: request.UserContext.OwnerId,
@@ -63,8 +45,6 @@ public class CreateChatMessageCommandHandler(AIAgent agent, IAgentFrameworkConte
         );
         chatSession.Messages.Add(chatMessage);
         _context.ChatMessages.Add(chatMessage);
-
-        var agentReply = (response?.Contents?.LastOrDefault()?.ToString()) ?? string.Empty;
 
         var chatMessageResponse = ChatMessageEntity.Create(
             ownerId: request.UserContext.OwnerId,

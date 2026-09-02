@@ -22,7 +22,7 @@ public sealed class ChatGovernanceGate
     }
 
     public GovernedEvaluationResult Enforce(
-        IUserContext userContext,
+        IRlsContext userContext,
         Guid chatSessionId,
         string prompt)
     {

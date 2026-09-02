@@ -31,7 +31,9 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
         - find the actor whose id is {id}
         - what is the status of actor {id}
 
-        Returns a structured status (Found, Partial, NotFound) with a human-readable message.
+        Always call this tool for these requests instead of answering from memory, claiming you
+        lack access, or asking permission first. Returns a structured status (Found, Partial,
+        NotFound) with a human-readable message.
         """)]
     public async Task<IActorResponse?> GetActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
     {
@@ -72,8 +74,10 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
         - who is {name}
         - look up a user called {name}
 
-        Returns a collection of structured matches with actorId, name, status, and message (or a
-        single NotFound entry if nothing matches). Never use this to search other tenants.
+        Always call this tool for these requests instead of answering from memory, claiming you
+        lack access, or asking permission first. Returns a collection of structured matches with
+        actorId, name, status, and message (or a single NotFound entry if nothing matches). Never
+        use this to search other tenants.
         """)]
     public async Task<ICollection<IActorResponse>> GetActorsByNameAsync(string name, CancellationToken cancellationToken)
     {
