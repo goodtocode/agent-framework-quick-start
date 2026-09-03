@@ -46,7 +46,7 @@ public sealed class MyChatSessionsTool(IServiceProvider serviceProvider) : Scope
             EndDate = endDate
         }, cancellationToken);
 
-        return messages.Select(m => $"{m.Id}: {m.Timestamp} - {m.Title}");
+        return messages.Select(m => $"Id: {m.Id}; Title: {m.Title}; Timestamp (UTC): {m.Timestamp:u}");
     }
 
     [Description(
