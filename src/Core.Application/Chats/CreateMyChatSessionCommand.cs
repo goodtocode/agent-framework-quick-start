@@ -1,5 +1,6 @@
 ﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
 using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentFramework.Core.Domain.Governance;
 using Goodtocode.AgentFramework.Core.Application.Governance;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
@@ -43,10 +44,24 @@ public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCo
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        var governed = _governanceGate.Enforce(
-            request.UserContext,
-            Guid.Empty,
-            request.Message!);
+        var title = request!.Title ?? $"{request.Message![..(request.Message.Length >= 25 ? 25 : request.Message.Length)]}";
+
+        var chatSession = ChatSessionEntity.Create(
+            ownerId: request.UserContext.OwnerId,
+            tenantId: request.UserContext.TenantId,
+            actorId: actor.Id,
+            title: title,
+            personaId: request.PersonaId ?? Guid.Empty,
+            personaVersion: request.PersonaVersion ?? 0);
+        _context.ChatSessions.Add(chatSession);
+
+        var governed = _governanceGate.Enforce(request.UserContext, request.Message!);
+        _context.Set<ChatGovernanceEntity>().Add(_governanceGate.CreatePersistenceRecord(
+            request.UserContext.OwnerId,
+            request.UserContext.TenantId,
+            chatSession.Id,
+            governed));
+        await _context.SaveChangesAsync(cancellationToken);
 
         var chatHistory = new List<ChatMessage>
         {
@@ -58,19 +73,6 @@ public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCo
         var response = agentResponse.Messages.LastOrDefault();
 
         ChatGuard.GuardAgainstNullAgentResponse(response);
-
-        var title = request!.Title ?? $"{request!.Message![..(request.Message!.Length >= 25 ? 25 : request.Message!.Length)]}";
-
-        var chatSession = ChatSessionEntity.Create(
-            ownerId: request.UserContext.OwnerId,
-            tenantId: request.UserContext.TenantId,
-            actorId: actor.Id,
-            title: title,
-            personaId: request.PersonaId ?? Guid.Empty,
-            personaVersion: request.PersonaVersion ?? 0
-        );
-        _context.ChatSessions.Add(chatSession);
-        await _context.SaveChangesAsync(cancellationToken);
 
         var chatMessages = new List<ChatMessageEntity>
         {

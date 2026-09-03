@@ -3,6 +3,7 @@ using System.Globalization;
 using Goodtocode.AgentFramework.Core.Application.Common.Auth;
 using Goodtocode.AgentFramework.Core.Application.Chats;
 using Goodtocode.AgentFramework.Core.Application.Governance;
+using Goodtocode.AgentFramework.Core.Domain.Governance;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.Mediator;
 using Microsoft.Agents.AI;
@@ -19,6 +20,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 public sealed class ChatMessageRoutingService(
     AIAgent agent,
     ISender sender,
+    IAgentFrameworkContext context,
     ChatGovernanceGate governanceGate,
     IRlsContext rlsContext,
     IWebSearchProvider webSearchProvider,
@@ -27,6 +29,7 @@ public sealed class ChatMessageRoutingService(
 {
     private readonly AIAgent _agent = agent;
     private readonly ISender _sender = sender;
+    private readonly IAgentFrameworkContext _context = context;
     private readonly ChatGovernanceGate _governanceGate = governanceGate;
     private readonly IRlsContext _rlsContext = rlsContext;
     private readonly IWebSearchProvider _webSearchProvider = webSearchProvider;
@@ -96,10 +99,16 @@ public sealed class ChatMessageRoutingService(
         CancellationToken cancellationToken)
     {
         var chatSession = await _sender.Send(new GetMyChatSessionQuery { Id = chatSessionId }, cancellationToken);
-        var governed = _governanceGate.Enforce(_rlsContext, chatSessionId, userMessage);
+        var governed = _governanceGate.Enforce(_rlsContext, userMessage);
+        _context.Set<ChatGovernanceEntity>().Add(_governanceGate.CreatePersistenceRecord(
+            _rlsContext.OwnerId,
+            _rlsContext.TenantId,
+            chatSessionId,
+            governed));
+        await _context.SaveChangesAsync(cancellationToken);
         var chatHistory = new List<ChatMessage>
         {
-            new(ChatRole.System, governed.PromptContext?.SystemInstruction ?? string.Empty)
+            new(ChatRole.System, governed.PromptContext.SystemInstruction)
         };
 
         foreach (var message in chatSession?.Messages ?? [])

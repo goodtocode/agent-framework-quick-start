@@ -18,6 +18,11 @@ public class ChatGovernanceInvocationTests : TestBase
         (agent.LastMessages.Count > 1).ShouldBeTrue();
         agent.LastMessages[0].Role.ShouldBe(ChatRole.System);
         string.IsNullOrWhiteSpace(agent.LastMessages[0].Text).ShouldBeFalse();
+        var governance = await context.ChatGovernance.SingleAsync();
+        governance.PolicyProfileVersion.ShouldBe("chat-v1");
+        string.IsNullOrWhiteSpace(governance.PromptHash).ShouldBeFalse();
+        string.IsNullOrWhiteSpace(governance.InputHash).ShouldBeFalse();
+        string.IsNullOrWhiteSpace(governance.TraceId).ShouldBeFalse();
     }
 
     [TestMethod]
@@ -40,5 +45,10 @@ public class ChatGovernanceInvocationTests : TestBase
         (agent.LastMessages.Count > 1).ShouldBeTrue();
         agent.LastMessages[0].Role.ShouldBe(ChatRole.System);
         string.IsNullOrWhiteSpace(agent.LastMessages[0].Text).ShouldBeFalse();
+        var governance = await context.ChatGovernance.SingleAsync();
+        governance.ChatSessionId.ShouldBe(session.Id);
+        governance.PolicyProfileVersion.ShouldBe("chat-v1");
+        string.IsNullOrWhiteSpace(governance.PromptHash).ShouldBeFalse();
+        string.IsNullOrWhiteSpace(governance.InputHash).ShouldBeFalse();
     }
 }
