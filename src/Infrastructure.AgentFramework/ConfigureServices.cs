@@ -3,6 +3,8 @@ using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Core.Application.Governance;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
@@ -66,11 +68,18 @@ public static class ConfigureServices
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<AgentToolInstructionsOptions>()
+            .Bind(configuration.GetSection(AgentToolInstructionsOptions.SectionName));
+        services.AddSingleton<IAgentInstructionsComposer, AgentInstructionsComposer>();
+
         services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
-        
-        // Register intent classification and routing services
+
         services.AddSingleton(DefaultIntentCatalogFactory.Create());
         services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
+        services.AddScoped<ChatGovernanceGate>();
+        services.AddScoped<ChatMessageRoutingService>();
+        services.AddScoped<IChatMessageRoutingService>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
+        services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
         
         services.AddSingleton<MyChatSessionsTool>();
         services.AddSingleton<ActorsTool>();
@@ -164,6 +173,7 @@ public static class ConfigureServices
         {
             var chatClient = provider.GetRequiredService<ChatClient>();
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var instructionsComposer = provider.GetRequiredService<IAgentInstructionsComposer>();
             var tools = new List<AITool>
             {
                 provider.GetRequiredService<MyChatSessionsTool>(),
@@ -178,6 +188,7 @@ public static class ConfigureServices
                 Description = "GoodToCode AgentFramework Copilot",
                 ChatOptions = new Microsoft.Extensions.AI.ChatOptions
                 {
+                    Instructions = instructionsComposer.Compose(),
                     Tools = tools
                 }
             };

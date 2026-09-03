@@ -1,8 +1,12 @@
 ﻿using Goodtocode.AgentFramework.Core.Application;
 using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Core.Application.Governance;
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
 using Goodtocode.AgentFramework.Tests.Integration.Mocks;
 using Microsoft.Agents.AI;
@@ -65,6 +69,13 @@ public abstract class TestBase : IDisposable
 
         services.AddApplicationServices();
         services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
+        services.AddSingleton(DefaultIntentCatalogFactory.Create());
+        services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
+        services.AddScoped<IWebSearchProvider, NoOpWebSearchProvider>();
+        services.AddScoped<ChatGovernanceGate>();
+        services.AddScoped<ChatMessageRoutingService>();
+        services.AddScoped<IChatMessageRoutingService>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
+        services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
 
         services.AddDbContext<AgentFrameworkContext>(options =>
             options.UseInMemoryDatabase($"AgentFrameworkContext-{Guid.NewGuid()}")
