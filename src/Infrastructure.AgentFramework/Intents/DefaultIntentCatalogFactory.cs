@@ -21,8 +21,10 @@ public static class DefaultIntentCatalogFactory
         new IntentDefinition(IntentNames.QueryChatSessionsList,
         [
             "list my chat sessions",
+            "list my recent chat sessions",
             "list my chats",
             "show my chat history",
+            "show my recent chat sessions",
             "show recent conversations",
             "show my conversations",
             "what conversations have i had",

@@ -1,9 +1,5 @@
 ﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
 using Goodtocode.AgentFramework.Core.Domain.Chats;
-using Goodtocode.AgentFramework.Core.Domain.Governance;
-using Goodtocode.AgentFramework.Core.Application.Governance;
-using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
 
 namespace Goodtocode.AgentFramework.Core.Application.Chats;
 
@@ -16,16 +12,16 @@ public class CreateMyChatSessionCommand : UserScopedRequest, IRequest<ChatSessio
 
 }
 
-public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkContext context, ChatGovernanceGate governanceGate) : IRequestHandler<CreateMyChatSessionCommand, ChatSessionDto>
+public class CreateMyChatSessionCommandHandler(IAgentFrameworkContext context, ISender sender) : IRequestHandler<CreateMyChatSessionCommand, ChatSessionDto>
 {
-    private readonly AIAgent _agent = kernel;
     private readonly IAgentFrameworkContext _context = context;
-    private readonly ChatGovernanceGate _governanceGate = governanceGate;
+    private readonly ISender _sender = sender;
 
     public async Task<ChatSessionDto> Handle(CreateMyChatSessionCommand request, CancellationToken cancellationToken)
     {
         ChatGuard.GuardAgainstEmptyMessage(request?.Message);
         ChatGuard.GuardAgainstEmptyUser(request?.UserContext);
+        var message = request!.Message!;
 
         var actor = await _context.Actors
             .FirstOrDefaultAsync(a => a.OwnerId == request!.UserContext!.OwnerId
@@ -44,7 +40,7 @@ public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCo
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        var title = request!.Title ?? $"{request.Message![..(request.Message.Length >= 25 ? 25 : request.Message.Length)]}";
+        var title = request.Title ?? message[..(message.Length >= 25 ? 25 : message.Length)];
 
         var chatSession = ChatSessionEntity.Create(
             ownerId: request.UserContext.OwnerId,
@@ -55,44 +51,14 @@ public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCo
             personaVersion: request.PersonaVersion ?? 0);
         _context.ChatSessions.Add(chatSession);
 
-        var governed = _governanceGate.Enforce(request.UserContext, request.Message!);
-        _context.Set<ChatGovernanceEntity>().Add(_governanceGate.CreatePersistenceRecord(
-            request.UserContext.OwnerId,
-            request.UserContext.TenantId,
-            chatSession.Id,
-            governed));
         await _context.SaveChangesAsync(cancellationToken);
 
-        var chatHistory = new List<ChatMessage>
+        await _sender.Send(new CreateMyChatMessageCommand
         {
-            new(ChatRole.System, governed.PromptContext.SystemInstruction),
-            new(ChatRole.User, request!.Message!)
-        };
-
-        var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
-        var response = agentResponse.Messages.LastOrDefault();
-
-        ChatGuard.GuardAgainstNullAgentResponse(response);
-
-        var chatMessages = new List<ChatMessageEntity>
-        {
-            ChatMessageEntity.Create(
-                ownerId: request.UserContext.OwnerId,
-                tenantId: request.UserContext.TenantId,
-                chatSessionId: chatSession.Id,
-                role: ChatMessageRole.user,
-                content: request!.Message!
-            ),
-            ChatMessageEntity.Create(
-                ownerId: request.UserContext.OwnerId,
-                tenantId: request.UserContext.TenantId,
-                chatSessionId: chatSession.Id,
-                role: ChatMessageRole.system,
-                content: response!.Text
-            )
-        };
-        _context.ChatMessages.AddRange(chatMessages);
-        await _context.SaveChangesAsync(cancellationToken);
+            ChatSessionId = chatSession.Id,
+            Message = message,
+            RoutingMode = ChatRoutingMode.Routed
+        }, cancellationToken);
 
         return ChatSessionDto.CreateFrom(chatSession);
     }

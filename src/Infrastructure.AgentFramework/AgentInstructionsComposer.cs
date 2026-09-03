@@ -1,4 +1,5 @@
 using System.Text;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Microsoft.Extensions.Options;
 
@@ -25,6 +26,9 @@ public sealed class AgentInstructionsComposer(IOptionsMonitor<AgentToolInstructi
     {
         var options = _optionsMonitor.CurrentValue;
         var instructions = new StringBuilder();
+
+        instructions.AppendLine(ToolRoutingInstructions.AntiAnnouncementGuidance.Trim());
+        instructions.AppendLine();
 
         if (!string.IsNullOrWhiteSpace(options.GlobalPreamble))
         {

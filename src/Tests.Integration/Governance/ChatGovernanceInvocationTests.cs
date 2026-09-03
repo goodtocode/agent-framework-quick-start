@@ -51,4 +51,23 @@ public class ChatGovernanceInvocationTests : TestBase
         string.IsNullOrWhiteSpace(governance.PromptHash).ShouldBeFalse();
         string.IsNullOrWhiteSpace(governance.InputHash).ShouldBeFalse();
     }
+
+    [TestMethod]
+    public async Task QueryIntentReturnsDataWithoutModelConfirmationTurn()
+    {
+        await Sender.Send(new CreateMyChatSessionCommand
+        {
+            Message = "List my recent chat sessions"
+        }, CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        var response = await context.ChatMessages
+            .Where(x => x.Role == ChatMessageRole.assistant)
+            .Select(x => x.Content)
+            .SingleAsync();
+
+        response.Contains("Chat Session Id", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("May I call", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+        response.Contains("please wait", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+    }
 }
