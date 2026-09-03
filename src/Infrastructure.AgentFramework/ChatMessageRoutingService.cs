@@ -128,6 +128,7 @@ public sealed class ChatMessageRoutingService(
         IntentNames.QueryChatSessionsList => QueryChatSessionsListAsync(cancellationToken),
         IntentNames.QueryChatMessagesList => QueryChatMessagesListAsync(cancellationToken),
         IntentNames.QueryActorById => QueryActorByIdAsync(Guid.Parse(match.Captures!["id"]), cancellationToken),
+        IntentNames.QueryActorsByName => QueryActorsByNameAsync(match.Captures!["name"], cancellationToken),
         IntentNames.SearchWeb => QueryWebSearchAsync(match.Captures!["query"], cancellationToken),
         _ => throw new InvalidOperationException($"No route registered for intent '{match.Intent.Name}'.")
     };
@@ -181,6 +182,28 @@ public sealed class ChatMessageRoutingService(
         return actor is null
             ? $"No actor was found with id `{actorId:D}`."
             : $"Actor `{actor.Id:D}`: {actor.FirstName} {actor.LastName}".TrimEnd();
+    }
+
+    private async Task<string> QueryActorsByNameAsync(string name, CancellationToken cancellationToken)
+    {
+        var actors = await _sender.Send(new Core.Application.Actors.GetOurActorsByNameQuery
+        {
+            Name = name
+        }, cancellationToken);
+        if (actors.Count == 0)
+        {
+            return $"No actors were found matching \"{EscapeCell(name)}\".";
+        }
+
+        var reply = new StringBuilder("| # | Actor ID | Name | Timestamp (UTC) |\n|---|---|---|---|\n");
+        foreach (var actor in actors.Select((actor, index) => new { Actor = actor, Index = index }))
+        {
+            var displayName = $"{actor.Actor.FirstName} {actor.Actor.LastName}".Trim();
+            reply.AppendLine(CultureInfo.InvariantCulture,
+                $"| {actor.Index + 1} | `{actor.Actor.Id:D}` | {EscapeCell(displayName)} | {actor.Actor.CreatedOn:u} |");
+        }
+
+        return reply.ToString();
     }
 
     private async Task<string> QueryWebSearchAsync(string query, CancellationToken cancellationToken)

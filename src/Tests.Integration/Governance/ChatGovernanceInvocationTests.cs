@@ -1,4 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Chats;
+using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Core.Domain.Actors;
 using Goodtocode.AgentFramework.Core.Domain.Chats;
 using Microsoft.Extensions.AI;
 
@@ -69,5 +71,29 @@ public class ChatGovernanceInvocationTests : TestBase
         response.Contains("Chat Session Id", StringComparison.Ordinal).ShouldBeTrue();
         response.Contains("May I call", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
         response.Contains("please wait", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ActorNameQueryReturnsDatabaseActorWithoutWebSearch()
+    {
+        var actor = ActorEntity.Create(
+            claimsReader.ObjectId,
+            claimsReader.TenantId,
+            "Robert",
+            "Good",
+            "robert.good@example.test");
+        context.Actors.Add(actor);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var routingService = ServiceProvider.GetRequiredService<IChatMessageRoutingService>();
+        var response = await routingService.ResolveReplyAsync(
+            Guid.NewGuid(),
+            "Find an actor by name robert",
+            CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        response.Contains(actor.Id.ToString("D"), StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+        response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("Web search", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
     }
 }

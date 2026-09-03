@@ -12,13 +12,13 @@ public class GetOurActorsByNameQueryHandler(IAgentFrameworkContext context) : IR
     public async Task<ICollection<ActorDto>> Handle(GetOurActorsByNameQuery request, CancellationToken cancellationToken)
     {
         var tenantId = request.UserContext.TenantId;
-        var normalizedInput = request.Name.Trim();
+        var normalizedInput = request.Name.Trim().ToLowerInvariant();
 
         return await _context.Actors
             .Where(x => x.TenantId == tenantId)
             .Where(x =>
-                (x.FirstName != null && x.FirstName.Contains(normalizedInput))
-                || (x.LastName != null && x.LastName.Contains(normalizedInput)))
+                (x.FirstName != null && x.FirstName.ToLowerInvariant().Contains(normalizedInput))
+                || (x.LastName != null && x.LastName.ToLowerInvariant().Contains(normalizedInput)))
             .Select(x => ActorDto.CreateFrom(x))
             .ToListAsync(cancellationToken);
     }

@@ -10,5 +10,6 @@ public static class IntentNames
     public const string QueryChatSessionsList = nameof(QueryChatSessionsList);
     public const string QueryChatMessagesList = nameof(QueryChatMessagesList);
     public const string QueryActorById = nameof(QueryActorById);
+    public const string QueryActorsByName = nameof(QueryActorsByName);
     public const string SearchWeb = nameof(SearchWeb);
 }
