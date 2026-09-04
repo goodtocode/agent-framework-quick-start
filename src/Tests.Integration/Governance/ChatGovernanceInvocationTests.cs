@@ -143,4 +143,44 @@ public class ChatGovernanceInvocationTests : TestBase
         response.Contains(actor.Id.ToString("D"), StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
         response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
     }
+
+    [TestMethod]
+    public async Task ActorNameFollowUpUsesPersistedPromptContextWithoutModelTurn()
+    {
+        var actor = ActorEntity.Create(
+            claimsReader.ObjectId,
+            claimsReader.TenantId,
+            "Robert",
+            "Good",
+            "robert.good@example.test");
+        context.Actors.Add(actor);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var session = await Sender.Send(new CreateMyChatSessionCommand
+        {
+            Message = "Find an actor by name"
+        }, CancellationToken.None);
+
+        var clarification = await context.ChatMessages
+            .Where(x => x.ChatSessionId == session.Id && x.Role == ChatMessageRole.assistant)
+            .Select(x => x.Content)
+            .SingleAsync();
+        clarification.Contains("provide the name", StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+
+        await Sender.Send(new CreateMyChatMessageCommand
+        {
+            ChatSessionId = session.Id,
+            Message = "robert"
+        }, CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        var response = await context.ChatMessages
+            .Where(x => x.ChatSessionId == session.Id && x.Role == ChatMessageRole.assistant)
+            .OrderByDescending(x => x.Timestamp)
+            .Select(x => x.Content)
+            .FirstAsync();
+        response.Contains(actor.Id.ToString("D"), StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+        response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("Searching for actor", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+    }
 }

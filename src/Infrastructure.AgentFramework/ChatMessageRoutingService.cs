@@ -49,10 +49,13 @@ public sealed class ChatMessageRoutingService(
     {
         if (mode == ChatRoutingMode.Routed)
         {
-            var match = _intentClassifier.Classify(message);
-            var deterministicReply = match is null
-                ? null
-                : await RouteAsync(chatSessionId, match, cancellationToken);
+            var session = await _sender.Send(new GetMyChatSessionQuery { Id = chatSessionId }, cancellationToken);
+            var priorUserMessages = session?.Messages?
+                .Where(x => x.Role.Equals("user", StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.Content)
+                .ToList();
+            var match = _intentClassifier.Classify(message, priorUserMessages);
+            var deterministicReply = match is null ? null : await RouteAsync(chatSessionId, match, cancellationToken);
             if (!string.IsNullOrWhiteSpace(deterministicReply))
             {
                 return deterministicReply;
@@ -128,7 +131,7 @@ public sealed class ChatMessageRoutingService(
         IntentNames.QueryChatSessionsList => QueryChatSessionsListAsync(cancellationToken),
         IntentNames.QueryChatMessagesList => QueryChatMessagesListAsync(cancellationToken),
         IntentNames.QueryActorById => QueryActorByIdAsync(Guid.Parse(match.Captures!["id"]), cancellationToken),
-        IntentNames.QueryActorsByName => QueryActorsByNameAsync(match.Captures!["name"], cancellationToken),
+        IntentNames.QueryActorsByName => QueryActorsByNameAsync(match, cancellationToken),
         IntentNames.QueryActorsList => QueryActorsListAsync(cancellationToken),
         IntentNames.QueryMyActorsList => QueryMyActorsListAsync(cancellationToken),
         IntentNames.SearchWeb => QueryWebSearchAsync(match.Captures!["query"], cancellationToken),
@@ -186,8 +189,16 @@ public sealed class ChatMessageRoutingService(
             : $"Actor `{actor.Id:D}`: {actor.FirstName} {actor.LastName}".TrimEnd();
     }
 
-    private async Task<string> QueryActorsByNameAsync(string name, CancellationToken cancellationToken)
+    private async Task<string> QueryActorsByNameAsync(IntentMatch match, CancellationToken cancellationToken)
     {
+        if (match.Captures is null)
+        {
+            return "Please provide the name of the actor you want to find.";
+        }
+
+        var name = match.Captures.TryGetValue("name", out var capturedName)
+            ? capturedName
+            : match.Captures["followUp"];
         var actors = await _sender.Send(new Core.Application.Actors.GetOurActorsByNameQuery
         {
             Name = name

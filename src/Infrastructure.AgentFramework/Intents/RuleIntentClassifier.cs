@@ -11,7 +11,7 @@ public sealed class RuleIntentClassifier(IntentCatalog catalog) : IIntentClassif
 {
     private readonly IntentCatalog _catalog = catalog;
 
-    public IntentMatch? Classify(string message)
+    public IntentMatch? Classify(string message, IReadOnlyList<string>? priorUserMessages = null)
     {
         if (string.IsNullOrWhiteSpace(message))
         {
@@ -42,6 +42,21 @@ public sealed class RuleIntentClassifier(IntentCatalog catalog) : IIntentClassif
                 if (normalized.Contains(example, StringComparison.Ordinal))
                 {
                     return new IntentMatch(intent);
+                }
+            }
+        }
+
+        var priorMessage = priorUserMessages is { Count: > 0 } ? priorUserMessages[^1] : null;
+        if (!string.IsNullOrWhiteSpace(priorMessage))
+        {
+            foreach (var intent in _catalog.Intents)
+            {
+                if (intent.FollowUpExamples?.Any(example => priorMessage.Trim().Equals(example, StringComparison.OrdinalIgnoreCase)) == true)
+                {
+                    return new IntentMatch(intent, new Dictionary<string, string>
+                    {
+                        ["followUp"] = message.Trim()
+                    });
                 }
             }
         }

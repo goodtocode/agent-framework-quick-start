@@ -18,7 +18,8 @@ public static class DefaultIntentCatalogFactory
         // all resolve to the same deterministic route.
         IntentDefinitionFactory.ByIdKeyword(IntentNames.QueryActorById, "actor "),
 
-        new IntentDefinition(IntentNames.QueryActorsByName, Examples: [],
+        new IntentDefinition(IntentNames.QueryActorsByName,
+            Examples: ["find an actor by name"],
             Captures:
             [
                 new PhraseCapture("find an actor by name ", "name", CaptureKind.Rest),
@@ -26,7 +27,8 @@ public static class DefaultIntentCatalogFactory
                 new PhraseCapture("search actors for ", "name", CaptureKind.Rest),
                 new PhraseCapture("look up a user called ", "name", CaptureKind.Rest),
                 new PhraseCapture("who is actor ", "name", CaptureKind.Rest)
-            ]),
+            ],
+            FollowUpExamples: ["find an actor by name"]),
 
         new IntentDefinition(IntentNames.QueryActorsList,
         [
