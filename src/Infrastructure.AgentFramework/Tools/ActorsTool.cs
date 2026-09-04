@@ -23,7 +23,27 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
 
     [Description(
         """
+        Lists all actor records in the current tenant.
+
+        Use this read-only tool whenever the user asks to list, show, or browse actors. Call it
+        immediately without asking permission, announcing the call, or searching the web. Return
+        only the actor records returned by the application query; never invent actor IDs.
+        """)]
+    public async Task<ICollection<IActorResponse>> GetActorsAsync(CancellationToken cancellationToken)
+    {
+        _currentFunctionName = "get_actors";
+        _currentParameters = [];
+
+        var actors = await SendAsync(new GetOurActorsQuery(), cancellationToken);
+        return [.. actors.Select(CreateResponse)];
+    }
+
+    [Description(
+        """
         Looks up a single actor (user/profile record) by their actorId (a GUID).
+
+        For a request to list actors without a name, use GetActorsAsync immediately. This is a
+        read-only query and does not require confirmation or web search.
 
         Use this tool whenever the user asks things like:
         - get actor {id}
@@ -103,14 +123,20 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
             }];
         }
 
-        return [.. actors.Select(a => new ActorResponse
+        return [.. actors.Select(CreateResponse)];
+    }
+
+    private static ActorResponse CreateResponse(ActorDto actor)
+    {
+        var name = $"{actor.FirstName} {actor.LastName}";
+        return new ActorResponse
         {
-            ActorId = a.Id,
-            Name = $"{a.FirstName} {a.LastName}",
-            Status = string.IsNullOrWhiteSpace($"{a.FirstName} {a.LastName}") ? "Partial" : "Found",
-            Message = string.IsNullOrWhiteSpace($"{a.FirstName} {a.LastName}")
+            ActorId = actor.Id,
+            Name = name,
+            Status = string.IsNullOrWhiteSpace(name) ? "Partial" : "Found",
+            Message = string.IsNullOrWhiteSpace(name)
                 ? "Actor exists but name is not yet linked to Entra External ID."
                 : "Actor found."
-        })];
+        };
     }
 }

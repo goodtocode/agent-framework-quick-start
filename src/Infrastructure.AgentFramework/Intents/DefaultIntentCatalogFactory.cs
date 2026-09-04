@@ -28,6 +28,16 @@ public static class DefaultIntentCatalogFactory
                 new PhraseCapture("who is actor ", "name", CaptureKind.Rest)
             ]),
 
+        new IntentDefinition(IntentNames.QueryActorsList,
+        [
+            "please list actors",
+            "list actors",
+            "show actors",
+            "list all actors",
+            "show all actors",
+            "what actors do we have"
+        ]),
+
         new IntentDefinition(IntentNames.QueryChatSessionsList,
         [
             "list my chat sessions",

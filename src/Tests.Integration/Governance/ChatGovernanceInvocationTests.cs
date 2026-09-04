@@ -96,4 +96,28 @@ public class ChatGovernanceInvocationTests : TestBase
         response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
         response.Contains("Web search", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
     }
+
+    [TestMethod]
+    public async Task ActorListQueryReturnsDatabaseActorsWithoutModelTurn()
+    {
+        var actor = ActorEntity.Create(
+            claimsReader.ObjectId,
+            claimsReader.TenantId,
+            "Robert",
+            "Good",
+            "robert.good@example.test");
+        context.Actors.Add(actor);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var routingService = ServiceProvider.GetRequiredService<IChatMessageRoutingService>();
+        var response = await routingService.ResolveReplyAsync(
+            Guid.NewGuid(),
+            "please list actors",
+            CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        response.Contains(actor.Id.ToString("D"), StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+        response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("Actor ID", StringComparison.Ordinal).ShouldBeTrue();
+    }
 }
