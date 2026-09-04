@@ -130,6 +130,7 @@ public sealed class ChatMessageRoutingService(
         IntentNames.QueryActorById => QueryActorByIdAsync(Guid.Parse(match.Captures!["id"]), cancellationToken),
         IntentNames.QueryActorsByName => QueryActorsByNameAsync(match.Captures!["name"], cancellationToken),
         IntentNames.QueryActorsList => QueryActorsListAsync(cancellationToken),
+        IntentNames.QueryMyActorsList => QueryMyActorsListAsync(cancellationToken),
         IntentNames.SearchWeb => QueryWebSearchAsync(match.Captures!["query"], cancellationToken),
         _ => throw new InvalidOperationException($"No route registered for intent '{match.Intent.Name}'.")
     };
@@ -210,6 +211,17 @@ public sealed class ChatMessageRoutingService(
     private async Task<string> QueryActorsListAsync(CancellationToken cancellationToken)
     {
         var actors = await _sender.Send(new Core.Application.Actors.GetOurActorsQuery(), cancellationToken);
+        return FormatActors(actors);
+    }
+
+    private async Task<string> QueryMyActorsListAsync(CancellationToken cancellationToken)
+    {
+        var actors = await _sender.Send(new Core.Application.Actors.GetMyActorsQuery(), cancellationToken);
+        return FormatActors(actors);
+    }
+
+    private static string FormatActors(ICollection<Core.Application.Actors.ActorDto> actors)
+    {
         if (actors.Count == 0)
         {
             return "No actors were found.";

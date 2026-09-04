@@ -38,6 +38,16 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
         return [.. actors.Select(CreateResponse)];
     }
 
+    [Description("Lists actor records owned by the current authenticated user. This is a read-only query; call it immediately without confirmation, announcements, or web search.")]
+    public async Task<ICollection<IActorResponse>> GetMyActorsAsync(CancellationToken cancellationToken)
+    {
+        _currentFunctionName = "get_my_actors";
+        _currentParameters = [];
+
+        var actors = await SendAsync(new GetMyActorsQuery(), cancellationToken);
+        return [.. actors.Select(CreateResponse)];
+    }
+
     [Description(
         """
         Looks up a single actor (user/profile record) by their actorId (a GUID).

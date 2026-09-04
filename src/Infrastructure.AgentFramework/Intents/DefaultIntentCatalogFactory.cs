@@ -38,6 +38,14 @@ public static class DefaultIntentCatalogFactory
             "what actors do we have"
         ]),
 
+        new IntentDefinition(IntentNames.QueryMyActorsList,
+        [
+            "please list my actors",
+            "list my actors",
+            "show my actors",
+            "what actors do i have"
+        ]),
+
         new IntentDefinition(IntentNames.QueryChatSessionsList,
         [
             "list my chat sessions",
