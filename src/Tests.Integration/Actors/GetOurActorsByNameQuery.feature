@@ -18,5 +18,6 @@ Examples:
 	| def                         | result     | responseErrors | name  | exists | otherTenantExists | count |
 	| success current tenant      | Success    |                | Avery | true   | false             | 1     |
 	| success excludes other tenant | Success  |                | Avery | true   | true              | 1     |
+	| lowercase name is supported  | Success    |                | robert | true  | false             | 1     |
 	| success no matching actors  | Success    |                | Avery | false  | true              | 0     |
 	| bad request empty name      | BadRequest | Name           |       | false  | false             | 0     |
