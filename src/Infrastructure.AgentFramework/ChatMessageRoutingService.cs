@@ -149,14 +149,13 @@ public sealed class ChatMessageRoutingService(
             return "You have no chat sessions yet.";
         }
 
-        var reply = new StringBuilder("| # | Title | Chat Session Id | Timestamp (UTC) |\n|---|---|---|---|\n");
-        for (var index = 0; index < sessions.Count; index++)
-        {
-            var session = sessions[index];
-            reply.AppendLine(CultureInfo.InvariantCulture, $"| {index + 1} | {EscapeCell(session.Title)} | `{session.Id:D}` | {session.Timestamp:u} |");
-        }
-
-        return reply.ToString();
+        return MarkdownTableFormatter.Format(
+            ["#", "Title", "Chat Session Id", "Timestamp (UTC)"],
+            sessions.Select((session, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                session.Title,
+                $"`{session.Id:D}`",
+                session.Timestamp.ToString("u", CultureInfo.InvariantCulture)]));
     }
 
     private async Task<string> QueryChatMessagesListAsync(CancellationToken cancellationToken)
@@ -172,13 +171,14 @@ public sealed class ChatMessageRoutingService(
             return "You have no recent chat messages in the last 7 days.";
         }
 
-        var reply = new StringBuilder("| # | Chat Session Id | Timestamp (UTC) | Role | Content |\n|---|---|---|---|---|\n");
-        foreach (var message in messages.Items.Select((message, index) => new { Message = message, Index = index }))
-        {
-            reply.AppendLine(CultureInfo.InvariantCulture, $"| {message.Index + 1} | `{message.Message.ChatSessionId:D}` | {message.Message.Timestamp:u} | {message.Message.Role} | {EscapeCell(message.Message.Content)} |");
-        }
-
-        return reply.ToString();
+        return MarkdownTableFormatter.Format(
+            ["#", "Chat Session Id", "Timestamp (UTC)", "Role", "Content"],
+            messages.Items.Select((message, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{message.ChatSessionId:D}`",
+                message.Timestamp.ToString("u", CultureInfo.InvariantCulture),
+                message.Role,
+                message.Content]));
     }
 
     private async Task<string> QueryActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
@@ -208,15 +208,13 @@ public sealed class ChatMessageRoutingService(
             return $"No actors were found matching \"{EscapeCell(name)}\".";
         }
 
-        var reply = new StringBuilder("| # | Actor ID | Name | Timestamp (UTC) |\n|---|---|---|---|\n");
-        foreach (var actor in actors.Select((actor, index) => new { Actor = actor, Index = index }))
-        {
-            var displayName = $"{actor.Actor.FirstName} {actor.Actor.LastName}".Trim();
-            reply.AppendLine(CultureInfo.InvariantCulture,
-                $"| {actor.Index + 1} | `{actor.Actor.Id:D}` | {EscapeCell(displayName)} | {actor.Actor.CreatedOn:u} |");
-        }
-
-        return reply.ToString();
+        return MarkdownTableFormatter.Format(
+            ["#", "Actor ID", "Name", "Timestamp (UTC)"],
+            actors.Select((actor, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{actor.Id:D}`",
+                $"{actor.FirstName} {actor.LastName}".Trim(),
+                actor.CreatedOn.ToString("u", CultureInfo.InvariantCulture)]));
     }
 
     private async Task<string> QueryActorsListAsync(CancellationToken cancellationToken)
@@ -238,15 +236,13 @@ public sealed class ChatMessageRoutingService(
             return "No actors were found.";
         }
 
-        var reply = new StringBuilder("| # | Actor ID | Name | Timestamp (UTC) |\n|---|---|---|---|\n");
-        foreach (var actor in actors.Select((actor, index) => new { Actor = actor, Index = index }))
-        {
-            var displayName = $"{actor.Actor.FirstName} {actor.Actor.LastName}".Trim();
-            reply.AppendLine(CultureInfo.InvariantCulture,
-                $"| {actor.Index + 1} | `{actor.Actor.Id:D}` | {EscapeCell(displayName)} | {actor.Actor.CreatedOn:u} |");
-        }
-
-        return reply.ToString();
+        return MarkdownTableFormatter.Format(
+            ["#", "Actor ID", "Name", "Timestamp (UTC)"],
+            actors.Select((actor, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{actor.Id:D}`",
+                $"{actor.FirstName} {actor.LastName}".Trim(),
+                actor.CreatedOn.ToString("u", CultureInfo.InvariantCulture)]));
     }
 
     private async Task<string> QueryWebSearchAsync(string query, CancellationToken cancellationToken)
@@ -262,15 +258,14 @@ public sealed class ChatMessageRoutingService(
             return $"No web search results were found for \"{query}\".";
         }
 
-        var reply = new StringBuilder($"Web search results for \"{query}\":\n\n| # | Title | Snippet | Url |\n|---|---|---|---|\n");
-        for (var index = 0; index < result.Results.Count; index++)
-        {
-            var item = result.Results[index];
-            reply.AppendLine(CultureInfo.InvariantCulture, $"| {index + 1} | {EscapeCell(item.Title)} | {EscapeCell(item.Snippet)} | {item.Url} |");
-        }
-
-        return reply.ToString();
+        var rows = result.Results.Select((item, index) => (IReadOnlyList<string?>)[
+            (index + 1).ToString(CultureInfo.InvariantCulture),
+            item.Title,
+            item.Snippet,
+            item.Url]);
+        return $"Web search results for \"{MarkdownTableFormatter.EscapeCell(query)}\":\n\n" +
+            MarkdownTableFormatter.Format(["#", "Title", "Snippet", "Url"], rows);
     }
 
-    private static string EscapeCell(string? value) => (value ?? string.Empty).Replace("|", "\\|").Replace("\r", " ").Replace("\n", " ");
+    private static string EscapeCell(string? value) => MarkdownTableFormatter.EscapeCell(value);
 }
