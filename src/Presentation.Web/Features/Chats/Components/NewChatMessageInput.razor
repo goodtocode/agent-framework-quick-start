@@ -1,14 +1,16 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services
+@using Microsoft.AspNetCore.Components.Web
 
 @inject IChatService chatService
 
-<EditForm FormName="ChatMessageInputSubmit" Model="messageModel" OnValidSubmit="SubmitMessageAsync">
+<EditForm FormName="ChatMessageInputSubmit" Model="messageModel" OnSubmit="HandleFormSubmitAsync">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Wrap="true" Style="max-width:90%;">
         <FluentTextField Style="width:70%;" @bind-Value="messageModel.NewMessage"
                          Placeholder="Type your message here..."
                          AriaLabel="Type your message here..."
-                         Disabled="@isSubmitting" />
+                         Disabled="@isSubmitting"
+                         @onkeyup="HandleTextFieldKeyUpAsync" />
         <SubmittingButton Style="width:20%;" IsSubmitting="@isSubmitting" Label="Send" />
     </FluentStack>
     <DataAnnotationsValidator />
@@ -49,9 +51,27 @@
         await SubmitMessageAsync();
     }
 
+    private async Task HandleFormSubmitAsync(EditContext _)
+        => await SubmitMessageAsync();
+
+    private async Task HandleTextFieldKeyUpAsync(KeyboardEventArgs args)
+    {
+        if (!args.Key.Equals("Enter", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        await SubmitMessageAsync();
+    }
+
     private async Task SubmitMessageAsync()
     {
         if (isSubmitting)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(messageModel.NewMessage))
         {
             return;
         }
