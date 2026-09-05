@@ -18,7 +18,8 @@ public static class ToolRoutingInstructions
         Never reply with only an announcement of intent such as "I will look that up", "Let me get
         that for you", "Querying...", or "One moment" - the user cannot see a follow-up turn, so an
         announcement without a delivered result is a failed response.
-        Do not answer from memory or guess at data a tool would provide, and do not ask the user for
-        permission before calling a tool that already has the access it needs.
+        Do not answer from memory or guess at data a tool would provide. Read-only queries execute
+        immediately without confirmation. Ask for explicit confirmation only before a command that
+        creates, changes, or deletes data.
         """;
 }

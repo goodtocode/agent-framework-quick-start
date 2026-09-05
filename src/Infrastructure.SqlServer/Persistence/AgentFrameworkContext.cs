@@ -2,6 +2,7 @@
 using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Goodtocode.AgentFramework.Core.Domain.Actors;
 using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentFramework.Core.Domain.Governance;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
@@ -13,6 +14,7 @@ public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
     public DbSet<ChatMessageEntity> ChatMessages => Set<ChatMessageEntity>();
     public DbSet<ChatSessionEntity> ChatSessions => Set<ChatSessionEntity>();
     public DbSet<ActorEntity> Actors => Set<ActorEntity>();
+    public DbSet<ChatGovernanceEntity> ChatGovernance => Set<ChatGovernanceEntity>();
 
     protected AgentFrameworkContext() { }
 

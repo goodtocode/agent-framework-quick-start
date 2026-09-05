@@ -1315,6 +1315,16 @@ namespace Goodtocode.AgentFramework.Api.Clients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum ChatRoutingMode
+    {
+
+        _0 = 0,
+
+        _1 = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ChatSessionDto
     {
 
@@ -1371,6 +1381,9 @@ namespace Goodtocode.AgentFramework.Api.Clients
 
         [System.Text.Json.Serialization.JsonPropertyName("message")]
         public string Message { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("routingMode")]
+        public ChatRoutingMode RoutingMode { get; set; }
 
     }
 

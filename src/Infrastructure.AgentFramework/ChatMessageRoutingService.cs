@@ -3,6 +3,7 @@ using System.Globalization;
 using Goodtocode.AgentFramework.Core.Application.Common.Auth;
 using Goodtocode.AgentFramework.Core.Application.Chats;
 using Goodtocode.AgentFramework.Core.Application.Governance;
+using Goodtocode.AgentFramework.Core.Domain.Governance;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.Mediator;
 using Microsoft.Agents.AI;
@@ -19,6 +20,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 public sealed class ChatMessageRoutingService(
     AIAgent agent,
     ISender sender,
+    IAgentFrameworkContext context,
     ChatGovernanceGate governanceGate,
     IRlsContext rlsContext,
     IWebSearchProvider webSearchProvider,
@@ -27,6 +29,7 @@ public sealed class ChatMessageRoutingService(
 {
     private readonly AIAgent _agent = agent;
     private readonly ISender _sender = sender;
+    private readonly IAgentFrameworkContext _context = context;
     private readonly ChatGovernanceGate _governanceGate = governanceGate;
     private readonly IRlsContext _rlsContext = rlsContext;
     private readonly IWebSearchProvider _webSearchProvider = webSearchProvider;
@@ -46,10 +49,13 @@ public sealed class ChatMessageRoutingService(
     {
         if (mode == ChatRoutingMode.Routed)
         {
-            var match = _intentClassifier.Classify(message);
-            var deterministicReply = match is null
-                ? null
-                : await RouteAsync(chatSessionId, match, cancellationToken);
+            var session = await _sender.Send(new GetMyChatSessionQuery { Id = chatSessionId }, cancellationToken);
+            var priorUserMessages = session?.Messages?
+                .Where(x => x.Role.Equals("user", StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.Content)
+                .ToList();
+            var match = _intentClassifier.Classify(message, priorUserMessages);
+            var deterministicReply = match is null ? null : await RouteAsync(chatSessionId, match, cancellationToken);
             if (!string.IsNullOrWhiteSpace(deterministicReply))
             {
                 return deterministicReply;
@@ -96,10 +102,16 @@ public sealed class ChatMessageRoutingService(
         CancellationToken cancellationToken)
     {
         var chatSession = await _sender.Send(new GetMyChatSessionQuery { Id = chatSessionId }, cancellationToken);
-        var governed = _governanceGate.Enforce(_rlsContext, chatSessionId, userMessage);
+        var governed = _governanceGate.Enforce(_rlsContext, userMessage);
+        _context.Set<ChatGovernanceEntity>().Add(_governanceGate.CreatePersistenceRecord(
+            _rlsContext.OwnerId,
+            _rlsContext.TenantId,
+            chatSessionId,
+            governed));
+        await _context.SaveChangesAsync(cancellationToken);
         var chatHistory = new List<ChatMessage>
         {
-            new(ChatRole.System, governed.PromptContext?.SystemInstruction ?? string.Empty)
+            new(ChatRole.System, governed.PromptContext.SystemInstruction)
         };
 
         foreach (var message in chatSession?.Messages ?? [])
@@ -119,6 +131,9 @@ public sealed class ChatMessageRoutingService(
         IntentNames.QueryChatSessionsList => QueryChatSessionsListAsync(cancellationToken),
         IntentNames.QueryChatMessagesList => QueryChatMessagesListAsync(cancellationToken),
         IntentNames.QueryActorById => QueryActorByIdAsync(Guid.Parse(match.Captures!["id"]), cancellationToken),
+        IntentNames.QueryActorsByName => QueryActorsByNameAsync(match, cancellationToken),
+        IntentNames.QueryActorsList => QueryActorsListAsync(cancellationToken),
+        IntentNames.QueryMyActorsList => QueryMyActorsListAsync(cancellationToken),
         IntentNames.SearchWeb => QueryWebSearchAsync(match.Captures!["query"], cancellationToken),
         _ => throw new InvalidOperationException($"No route registered for intent '{match.Intent.Name}'.")
     };
@@ -134,14 +149,13 @@ public sealed class ChatMessageRoutingService(
             return "You have no chat sessions yet.";
         }
 
-        var reply = new StringBuilder("| # | Title | Chat Session Id | Timestamp (UTC) |\n|---|---|---|---|\n");
-        for (var index = 0; index < sessions.Count; index++)
-        {
-            var session = sessions[index];
-            reply.AppendLine(CultureInfo.InvariantCulture, $"| {index + 1} | {EscapeCell(session.Title)} | `{session.Id:D}` | {session.Timestamp:u} |");
-        }
-
-        return reply.ToString();
+        return MarkdownTableFormatter.Format(
+            ["#", "Title", "Chat Session Id", "Timestamp (UTC)"],
+            sessions.Select((session, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                session.Title,
+                $"`{session.Id:D}`",
+                session.Timestamp.ToString("u", CultureInfo.InvariantCulture)]));
     }
 
     private async Task<string> QueryChatMessagesListAsync(CancellationToken cancellationToken)
@@ -157,13 +171,14 @@ public sealed class ChatMessageRoutingService(
             return "You have no recent chat messages in the last 7 days.";
         }
 
-        var reply = new StringBuilder("| # | Chat Session Id | Timestamp (UTC) | Role | Content |\n|---|---|---|---|---|\n");
-        foreach (var message in messages.Items.Select((message, index) => new { Message = message, Index = index }))
-        {
-            reply.AppendLine(CultureInfo.InvariantCulture, $"| {message.Index + 1} | `{message.Message.ChatSessionId:D}` | {message.Message.Timestamp:u} | {message.Message.Role} | {EscapeCell(message.Message.Content)} |");
-        }
-
-        return reply.ToString();
+        return MarkdownTableFormatter.Format(
+            ["#", "Chat Session Id", "Timestamp (UTC)", "Role", "Content"],
+            messages.Items.Select((message, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{message.ChatSessionId:D}`",
+                message.Timestamp.ToString("u", CultureInfo.InvariantCulture),
+                message.Role,
+                message.Content]));
     }
 
     private async Task<string> QueryActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
@@ -172,6 +187,62 @@ public sealed class ChatMessageRoutingService(
         return actor is null
             ? $"No actor was found with id `{actorId:D}`."
             : $"Actor `{actor.Id:D}`: {actor.FirstName} {actor.LastName}".TrimEnd();
+    }
+
+    private async Task<string> QueryActorsByNameAsync(IntentMatch match, CancellationToken cancellationToken)
+    {
+        if (match.Captures is null)
+        {
+            return "Please provide the name of the actor you want to find.";
+        }
+
+        var name = match.Captures.TryGetValue("name", out var capturedName)
+            ? capturedName
+            : match.Captures["followUp"];
+        var actors = await _sender.Send(new Core.Application.Actors.GetOurActorsByNameQuery
+        {
+            Name = name
+        }, cancellationToken);
+        if (actors.Count == 0)
+        {
+            return $"No actors were found matching \"{EscapeCell(name)}\".";
+        }
+
+        return MarkdownTableFormatter.Format(
+            ["#", "Actor ID", "Name", "Timestamp (UTC)"],
+            actors.Select((actor, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{actor.Id:D}`",
+                $"{actor.FirstName} {actor.LastName}".Trim(),
+                actor.CreatedOn.ToString("u", CultureInfo.InvariantCulture)]));
+    }
+
+    private async Task<string> QueryActorsListAsync(CancellationToken cancellationToken)
+    {
+        var actors = await _sender.Send(new Core.Application.Actors.GetOurActorsQuery(), cancellationToken);
+        return FormatActors(actors);
+    }
+
+    private async Task<string> QueryMyActorsListAsync(CancellationToken cancellationToken)
+    {
+        var actors = await _sender.Send(new Core.Application.Actors.GetMyActorsQuery(), cancellationToken);
+        return FormatActors(actors);
+    }
+
+    private static string FormatActors(ICollection<Core.Application.Actors.ActorDto> actors)
+    {
+        if (actors.Count == 0)
+        {
+            return "No actors were found.";
+        }
+
+        return MarkdownTableFormatter.Format(
+            ["#", "Actor ID", "Name", "Timestamp (UTC)"],
+            actors.Select((actor, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{actor.Id:D}`",
+                $"{actor.FirstName} {actor.LastName}".Trim(),
+                actor.CreatedOn.ToString("u", CultureInfo.InvariantCulture)]));
     }
 
     private async Task<string> QueryWebSearchAsync(string query, CancellationToken cancellationToken)
@@ -187,15 +258,14 @@ public sealed class ChatMessageRoutingService(
             return $"No web search results were found for \"{query}\".";
         }
 
-        var reply = new StringBuilder($"Web search results for \"{query}\":\n\n| # | Title | Snippet | Url |\n|---|---|---|---|\n");
-        for (var index = 0; index < result.Results.Count; index++)
-        {
-            var item = result.Results[index];
-            reply.AppendLine(CultureInfo.InvariantCulture, $"| {index + 1} | {EscapeCell(item.Title)} | {EscapeCell(item.Snippet)} | {item.Url} |");
-        }
-
-        return reply.ToString();
+        var rows = result.Results.Select((item, index) => (IReadOnlyList<string?>)[
+            (index + 1).ToString(CultureInfo.InvariantCulture),
+            item.Title,
+            item.Snippet,
+            item.Url]);
+        return $"Web search results for \"{MarkdownTableFormatter.EscapeCell(query)}\":\n\n" +
+            MarkdownTableFormatter.Format(["#", "Title", "Snippet", "Url"], rows);
     }
 
-    private static string EscapeCell(string? value) => (value ?? string.Empty).Replace("|", "\\|").Replace("\r", " ").Replace("\n", " ");
+    private static string EscapeCell(string? value) => MarkdownTableFormatter.EscapeCell(value);
 }

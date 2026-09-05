@@ -18,11 +18,46 @@ public static class DefaultIntentCatalogFactory
         // all resolve to the same deterministic route.
         IntentDefinitionFactory.ByIdKeyword(IntentNames.QueryActorById, "actor "),
 
+        new IntentDefinition(IntentNames.QueryActorsByName,
+            Examples: ["find an actor by name"],
+            Captures:
+            [
+                new PhraseCapture("find an actor by name ", "name", CaptureKind.Rest),
+                new PhraseCapture("find actor named ", "name", CaptureKind.Rest),
+                new PhraseCapture("search actors for ", "name", CaptureKind.Rest),
+                new PhraseCapture("look up a user called ", "name", CaptureKind.Rest),
+                new PhraseCapture("who is actor ", "name", CaptureKind.Rest)
+            ],
+            FollowUpExamples: ["find an actor by name"]),
+
+        new IntentDefinition(IntentNames.QueryActorsList,
+        [
+            "please list actors",
+            "list actors",
+            "show actors",
+            "list all actors",
+            "show all actors",
+            "what actors do we have"
+        ]),
+
+        new IntentDefinition(IntentNames.QueryMyActorsList,
+        [
+            "please list my actors",
+            "list my actors",
+            "show my actors",
+            "what actors do i have"
+        ]),
+
         new IntentDefinition(IntentNames.QueryChatSessionsList,
         [
             "list my chat sessions",
+            "list my recent chat sessions",
+            "list all of my recent chat sessions",
+            "please list all of my recent chat sessions",
+            "show all of my recent chat sessions",
             "list my chats",
             "show my chat history",
+            "show my recent chat sessions",
             "show recent conversations",
             "show my conversations",
             "what conversations have i had",

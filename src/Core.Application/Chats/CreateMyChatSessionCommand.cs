@@ -1,8 +1,5 @@
 ﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
 using Goodtocode.AgentFramework.Core.Domain.Chats;
-using Goodtocode.AgentFramework.Core.Application.Governance;
-using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
 
 namespace Goodtocode.AgentFramework.Core.Application.Chats;
 
@@ -15,16 +12,16 @@ public class CreateMyChatSessionCommand : UserScopedRequest, IRequest<ChatSessio
 
 }
 
-public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkContext context, ChatGovernanceGate governanceGate) : IRequestHandler<CreateMyChatSessionCommand, ChatSessionDto>
+public class CreateMyChatSessionCommandHandler(IAgentFrameworkContext context, ISender sender) : IRequestHandler<CreateMyChatSessionCommand, ChatSessionDto>
 {
-    private readonly AIAgent _agent = kernel;
     private readonly IAgentFrameworkContext _context = context;
-    private readonly ChatGovernanceGate _governanceGate = governanceGate;
+    private readonly ISender _sender = sender;
 
     public async Task<ChatSessionDto> Handle(CreateMyChatSessionCommand request, CancellationToken cancellationToken)
     {
         ChatGuard.GuardAgainstEmptyMessage(request?.Message);
         ChatGuard.GuardAgainstEmptyUser(request?.UserContext);
+        var message = request!.Message!;
 
         var actor = await _context.Actors
             .FirstOrDefaultAsync(a => a.OwnerId == request!.UserContext!.OwnerId
@@ -43,23 +40,7 @@ public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCo
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        var governed = _governanceGate.Enforce(
-            request.UserContext,
-            Guid.Empty,
-            request.Message!);
-
-        var chatHistory = new List<ChatMessage>
-        {
-            new(ChatRole.System, governed.PromptContext.SystemInstruction),
-            new(ChatRole.User, request!.Message!)
-        };
-
-        var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
-        var response = agentResponse.Messages.LastOrDefault();
-
-        ChatGuard.GuardAgainstNullAgentResponse(response);
-
-        var title = request!.Title ?? $"{request!.Message![..(request.Message!.Length >= 25 ? 25 : request.Message!.Length)]}";
+        var title = request.Title ?? message[..(message.Length >= 25 ? 25 : message.Length)];
 
         var chatSession = ChatSessionEntity.Create(
             ownerId: request.UserContext.OwnerId,
@@ -67,30 +48,17 @@ public class CreateMyChatSessionCommandHandler(AIAgent kernel, IAgentFrameworkCo
             actorId: actor.Id,
             title: title,
             personaId: request.PersonaId ?? Guid.Empty,
-            personaVersion: request.PersonaVersion ?? 0
-        );
+            personaVersion: request.PersonaVersion ?? 0);
         _context.ChatSessions.Add(chatSession);
+
         await _context.SaveChangesAsync(cancellationToken);
 
-        var chatMessages = new List<ChatMessageEntity>
+        await _sender.Send(new CreateMyChatMessageCommand
         {
-            ChatMessageEntity.Create(
-                ownerId: request.UserContext.OwnerId,
-                tenantId: request.UserContext.TenantId,
-                chatSessionId: chatSession.Id,
-                role: ChatMessageRole.user,
-                content: request!.Message!
-            ),
-            ChatMessageEntity.Create(
-                ownerId: request.UserContext.OwnerId,
-                tenantId: request.UserContext.TenantId,
-                chatSessionId: chatSession.Id,
-                role: ChatMessageRole.system,
-                content: response!.Text
-            )
-        };
-        _context.ChatMessages.AddRange(chatMessages);
-        await _context.SaveChangesAsync(cancellationToken);
+            ChatSessionId = chatSession.Id,
+            Message = message,
+            RoutingMode = ChatRoutingMode.Routed
+        }, cancellationToken);
 
         return ChatSessionDto.CreateFrom(chatSession);
     }

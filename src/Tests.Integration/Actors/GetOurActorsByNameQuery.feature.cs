@@ -119,7 +119,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actors
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Actors/GetOurActorsByNameQuery.feature.ndjson", 6);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Actors/GetOurActorsByNameQuery.feature.ndjson", 7);
         }
         
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute(callerLineNumber: 7, DisplayName="Get actors by name")]
@@ -128,8 +128,9 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Actors
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("getOurActorsByNameQuery")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success current tenant", "Success", "", "Avery", "true", "false", "1", "0", null, DisplayName="Get actors by name(success current tenant,Success,,Avery,true,false,1,0)")]
         [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success excludes other tenant", "Success", "", "Avery", "true", "true", "1", "1", null, DisplayName="Get actors by name(success excludes other tenant,Success,,Avery,true,true,1,1)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no matching actors", "Success", "", "Avery", "false", "true", "0", "2", null, DisplayName="Get actors by name(success no matching actors,Success,,Avery,false,true,0,2)")]
-        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request empty name", "BadRequest", "Name", "", "false", "false", "0", "3", null, DisplayName="Get actors by name(bad request empty name,BadRequest,Name,,false,false,0,3)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("lowercase name is supported", "Success", "", "robert", "true", "false", "1", "2", null, DisplayName="Get actors by name(lowercase name is supported,Success,,robert,true,false,1,2)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("success no matching actors", "Success", "", "Avery", "false", "true", "0", "3", null, DisplayName="Get actors by name(success no matching actors,Success,,Avery,false,true,0,3)")]
+        [global::Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute("bad request empty name", "BadRequest", "Name", "", "false", "false", "0", "4", null, DisplayName="Get actors by name(bad request empty name,BadRequest,Name,,false,false,0,4)")]
         public async global::System.Threading.Tasks.Task GetActorsByName(string def, string result, string responseErrors, string name, string exists, string otherTenantExists, string count, string @__pickleIndex, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

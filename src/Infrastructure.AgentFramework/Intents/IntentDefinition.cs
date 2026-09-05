@@ -20,4 +20,5 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 public sealed record IntentDefinition(
     string Name,
     IReadOnlyList<string> Examples,
-    IReadOnlyList<PhraseCapture>? Captures = null);
+    IReadOnlyList<PhraseCapture>? Captures = null,
+    IReadOnlyList<string>? FollowUpExamples = null);

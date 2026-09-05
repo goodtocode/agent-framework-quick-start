@@ -11,6 +11,12 @@
 		<UserSecretsId>bf5b92ab-f3fe-4af6-b299-583240397247</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Compile Remove="Common\Idempotency\**" />
+	  <Content Remove="Common\Idempotency\**" />
+	  <EmbeddedResource Remove="Common\Idempotency\**" />
+	  <None Remove="Common\Idempotency\**" />
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="Asp.Versioning.Mvc" Version="10.2.1" />
 		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.2.1" />
 		<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.2" />
@@ -40,8 +46,5 @@
 		<ProjectReference Include="..\Core.Application\Core.Application.csproj" />
 		<ProjectReference Include="..\Infrastructure.AgentFramework\Infrastructure.AgentFramework.csproj" />
 		<ProjectReference Include="..\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Common\Idempotency\" />
 	</ItemGroup>
 </Project>

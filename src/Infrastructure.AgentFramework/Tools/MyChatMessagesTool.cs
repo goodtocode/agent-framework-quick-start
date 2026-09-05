@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Globalization;
 using Goodtocode.AgentFramework.Core.Application.Chats;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
@@ -41,7 +42,20 @@ public sealed class MyChatMessagesTool(IServiceProvider serviceProvider) : Scope
             EndDate = endDate,
             PageSize = 100
         }, cancellationToken);
-        return messages.Items.Select(m => $"{m.ChatSessionId}: {m.Timestamp:u} - {m.Role}: {m.Content}");
+        var items = messages.Items.ToList();
+        if (items.Count == 0)
+        {
+            return ["You have no recent chat messages."];
+        }
+
+        return [MarkdownTableFormatter.Format(
+            ["#", "Chat Session Id", "Timestamp (UTC)", "Role", "Content"],
+            items.Select((item, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{item.ChatSessionId:D}`",
+                item.Timestamp.ToString("u", CultureInfo.InvariantCulture),
+                item.Role,
+                item.Content]))];
     }
 
     [Description(
@@ -70,6 +84,19 @@ public sealed class MyChatMessagesTool(IServiceProvider serviceProvider) : Scope
             ChatSessionId = sessionId
         }, cancellationToken);
 
-        return messages.Select(m => $"{m.ChatSessionId}: {m.Timestamp:u} - {m.Role}: {m.Content}");
+        var items = messages.ToList();
+        if (items.Count == 0)
+        {
+            return ["No messages were found for this chat session."];
+        }
+
+        return [MarkdownTableFormatter.Format(
+            ["#", "Chat Session Id", "Timestamp (UTC)", "Role", "Content"],
+            items.Select((item, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{item.ChatSessionId:D}`",
+                item.Timestamp.ToString("u", CultureInfo.InvariantCulture),
+                item.Role,
+                item.Content]))];
     }
 }

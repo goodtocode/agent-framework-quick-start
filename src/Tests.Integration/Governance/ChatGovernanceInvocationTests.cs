@@ -1,4 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Chats;
+using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Core.Domain.Actors;
 using Goodtocode.AgentFramework.Core.Domain.Chats;
 using Microsoft.Extensions.AI;
 
@@ -18,6 +20,11 @@ public class ChatGovernanceInvocationTests : TestBase
         (agent.LastMessages.Count > 1).ShouldBeTrue();
         agent.LastMessages[0].Role.ShouldBe(ChatRole.System);
         string.IsNullOrWhiteSpace(agent.LastMessages[0].Text).ShouldBeFalse();
+        var governance = await context.ChatGovernance.SingleAsync();
+        governance.PolicyProfileVersion.ShouldBe("chat-v1");
+        string.IsNullOrWhiteSpace(governance.PromptHash).ShouldBeFalse();
+        string.IsNullOrWhiteSpace(governance.InputHash).ShouldBeFalse();
+        string.IsNullOrWhiteSpace(governance.TraceId).ShouldBeFalse();
     }
 
     [TestMethod]
@@ -40,5 +47,159 @@ public class ChatGovernanceInvocationTests : TestBase
         (agent.LastMessages.Count > 1).ShouldBeTrue();
         agent.LastMessages[0].Role.ShouldBe(ChatRole.System);
         string.IsNullOrWhiteSpace(agent.LastMessages[0].Text).ShouldBeFalse();
+        var governance = await context.ChatGovernance.SingleAsync();
+        governance.ChatSessionId.ShouldBe(session.Id);
+        governance.PolicyProfileVersion.ShouldBe("chat-v1");
+        string.IsNullOrWhiteSpace(governance.PromptHash).ShouldBeFalse();
+        string.IsNullOrWhiteSpace(governance.InputHash).ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task QueryIntentReturnsDataWithoutModelConfirmationTurn()
+    {
+        await Sender.Send(new CreateMyChatSessionCommand
+        {
+            Message = "List my recent chat sessions"
+        }, CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        var response = await context.ChatMessages
+            .Where(x => x.Role == ChatMessageRole.assistant)
+            .Select(x => x.Content)
+            .SingleAsync();
+
+        response.Contains("Chat Session Id", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("May I call", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+        response.Contains("please wait", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task RecentChatSessionQueryWithAllMyWordingReturnsDataWithoutModelTurn()
+    {
+        await Sender.Send(new CreateMyChatSessionCommand
+        {
+            Message = "list all of my recent chat sessions please"
+        }, CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        var response = await context.ChatMessages
+            .Where(x => x.Role == ChatMessageRole.assistant)
+            .Select(x => x.Content)
+            .SingleAsync();
+
+        response.Contains("Chat Session Id", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("Calling MyChatSessionsTool", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+        response.Contains("please wait", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ActorNameQueryReturnsDatabaseActorWithoutWebSearch()
+    {
+        var actor = ActorEntity.Create(
+            claimsReader.ObjectId,
+            claimsReader.TenantId,
+            "Robert",
+            "Good",
+            "robert.good@example.test");
+        context.Actors.Add(actor);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var routingService = ServiceProvider.GetRequiredService<IChatMessageRoutingService>();
+        var response = await routingService.ResolveReplyAsync(
+            Guid.NewGuid(),
+            "Find an actor by name robert",
+            CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        response.Contains(actor.Id.ToString("D"), StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+        response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("Web search", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ActorListQueryReturnsDatabaseActorsWithoutModelTurn()
+    {
+        var actor = ActorEntity.Create(
+            claimsReader.ObjectId,
+            claimsReader.TenantId,
+            "Robert",
+            "Good",
+            "robert.good@example.test");
+        context.Actors.Add(actor);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var routingService = ServiceProvider.GetRequiredService<IChatMessageRoutingService>();
+        var response = await routingService.ResolveReplyAsync(
+            Guid.NewGuid(),
+            "please list actors",
+            CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        response.Contains(actor.Id.ToString("D"), StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+        response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("Actor ID", StringComparison.Ordinal).ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task MyActorListQueryReturnsOwnedActorsWithoutModelTurn()
+    {
+        var actor = ActorEntity.Create(
+            claimsReader.ObjectId,
+            claimsReader.TenantId,
+            "Robert",
+            "Good",
+            "robert.good@example.test");
+        context.Actors.Add(actor);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var routingService = ServiceProvider.GetRequiredService<IChatMessageRoutingService>();
+        var response = await routingService.ResolveReplyAsync(
+            Guid.NewGuid(),
+            "list my actors",
+            CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        response.Contains(actor.Id.ToString("D"), StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+        response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task ActorNameFollowUpUsesPersistedPromptContextWithoutModelTurn()
+    {
+        var actor = ActorEntity.Create(
+            claimsReader.ObjectId,
+            claimsReader.TenantId,
+            "Robert",
+            "Good",
+            "robert.good@example.test");
+        context.Actors.Add(actor);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var session = await Sender.Send(new CreateMyChatSessionCommand
+        {
+            Message = "Find an actor by name"
+        }, CancellationToken.None);
+
+        var clarification = await context.ChatMessages
+            .Where(x => x.ChatSessionId == session.Id && x.Role == ChatMessageRole.assistant)
+            .Select(x => x.Content)
+            .SingleAsync();
+        clarification.Contains("provide the name", StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+
+        await Sender.Send(new CreateMyChatMessageCommand
+        {
+            ChatSessionId = session.Id,
+            Message = "robert"
+        }, CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        var response = await context.ChatMessages
+            .Where(x => x.ChatSessionId == session.Id && x.Role == ChatMessageRole.assistant)
+            .OrderByDescending(x => x.Timestamp)
+            .Select(x => x.Content)
+            .FirstAsync();
+        response.Contains(actor.Id.ToString("D"), StringComparison.OrdinalIgnoreCase).ShouldBeTrue();
+        response.Contains("Robert Good", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("Searching for actor", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
     }
 }

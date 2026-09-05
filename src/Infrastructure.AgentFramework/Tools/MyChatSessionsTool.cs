@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Globalization;
 using Goodtocode.AgentFramework.Core.Application.Chats;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
@@ -46,7 +47,19 @@ public sealed class MyChatSessionsTool(IServiceProvider serviceProvider) : Scope
             EndDate = endDate
         }, cancellationToken);
 
-        return messages.Select(m => $"{m.Id}: {m.Timestamp} - {m.Title}");
+        var sessions = messages.ToList();
+        if (sessions.Count == 0)
+        {
+            return ["You have no chat sessions yet."];
+        }
+
+        return [MarkdownTableFormatter.Format(
+            ["#", "Title", "Chat Session Id", "Timestamp (UTC)"],
+            sessions.Select((session, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                session.Title,
+                $"`{session.Id:D}`",
+                session.Timestamp.ToString("u", CultureInfo.InvariantCulture)]))];
     }
 
     [Description(

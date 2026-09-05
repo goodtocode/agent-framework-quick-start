@@ -12,14 +12,20 @@ public class GetOurActorsByNameQueryHandler(IAgentFrameworkContext context) : IR
     public async Task<ICollection<ActorDto>> Handle(GetOurActorsByNameQuery request, CancellationToken cancellationToken)
     {
         var tenantId = request.UserContext.TenantId;
-        var normalizedInput = request.Name.Trim();
+        var searchPattern = $"%{EscapeLikePattern(request.Name.Trim())}%";
 
         return await _context.Actors
             .Where(x => x.TenantId == tenantId)
             .Where(x =>
-                (x.FirstName != null && x.FirstName.Contains(normalizedInput))
-                || (x.LastName != null && x.LastName.Contains(normalizedInput)))
+                (x.FirstName != null && EF.Functions.Like(x.FirstName, searchPattern, "\\"))
+                || (x.LastName != null && EF.Functions.Like(x.LastName, searchPattern, "\\")))
             .Select(x => ActorDto.CreateFrom(x))
             .ToListAsync(cancellationToken);
     }
+
+    private static string EscapeLikePattern(string value) => value
+        .Replace("\\", "\\\\", StringComparison.Ordinal)
+        .Replace("%", "\\%", StringComparison.Ordinal)
+        .Replace("_", "\\_", StringComparison.Ordinal)
+        .Replace("[", "\\[", StringComparison.Ordinal);
 }
