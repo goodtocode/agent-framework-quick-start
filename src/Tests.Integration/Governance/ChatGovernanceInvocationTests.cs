@@ -74,6 +74,25 @@ public class ChatGovernanceInvocationTests : TestBase
     }
 
     [TestMethod]
+    public async Task RecentChatSessionQueryWithAllMyWordingReturnsDataWithoutModelTurn()
+    {
+        await Sender.Send(new CreateMyChatSessionCommand
+        {
+            Message = "list all of my recent chat sessions please"
+        }, CancellationToken.None);
+
+        agent.LastMessages.Count.ShouldBe(0);
+        var response = await context.ChatMessages
+            .Where(x => x.Role == ChatMessageRole.assistant)
+            .Select(x => x.Content)
+            .SingleAsync();
+
+        response.Contains("Chat Session Id", StringComparison.Ordinal).ShouldBeTrue();
+        response.Contains("Calling MyChatSessionsTool", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+        response.Contains("please wait", StringComparison.OrdinalIgnoreCase).ShouldBeFalse();
+    }
+
+    [TestMethod]
     public async Task ActorNameQueryReturnsDatabaseActorWithoutWebSearch()
     {
         var actor = ActorEntity.Create(

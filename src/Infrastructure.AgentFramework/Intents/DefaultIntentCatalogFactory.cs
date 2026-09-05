@@ -52,6 +52,9 @@ public static class DefaultIntentCatalogFactory
         [
             "list my chat sessions",
             "list my recent chat sessions",
+            "list all of my recent chat sessions",
+            "please list all of my recent chat sessions",
+            "show all of my recent chat sessions",
             "list my chats",
             "show my chat history",
             "show my recent chat sessions",
