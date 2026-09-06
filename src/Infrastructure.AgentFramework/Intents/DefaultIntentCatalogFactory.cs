@@ -75,6 +75,14 @@ public static class DefaultIntentCatalogFactory
             "show my message history"
         ]),
 
+        new IntentDefinition(IntentNames.QueryChatMessagesForSession, Examples: [],
+            Captures:
+            [
+                new PhraseCapture("show messages for chat session ", "sessionId", CaptureKind.GuidDFormat),
+                new PhraseCapture("conversation history for chat session ", "sessionId", CaptureKind.GuidDFormat),
+                new PhraseCapture("messages in chat session ", "sessionId", CaptureKind.GuidDFormat)
+            ]),
+
         // Level 4 deterministic routing for web search: guarantee the "search the web for [query]"
         // phrasing never falls through to the LLM's own tool-selection. The Capture extracts the
         // query part so it can be passed to the search tool.

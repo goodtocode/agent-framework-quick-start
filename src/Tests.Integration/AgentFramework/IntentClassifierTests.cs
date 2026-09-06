@@ -65,6 +65,26 @@ public sealed class IntentClassifierTests
         Assert.IsNull(result);
     }
 
+    [TestMethod]
+    public async Task DefaultCatalogRoutesPerSessionMessagePromptsWithSessionCapture()
+    {
+        var sessionId = Guid.NewGuid();
+        var classifier = new RuleIntentClassifier(DefaultIntentCatalogFactory.Create());
+
+        foreach (var prompt in new[]
+        {
+            $"Show messages for chat session {sessionId:D}",
+            $"Can you pull up the conversation history for chat session {sessionId:D}?"
+        })
+        {
+            var result = await classifier.ClassifyAsync(prompt);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(IntentNames.QueryChatMessagesForSession, result!.Intent.Name);
+            Assert.AreEqual(sessionId.ToString("D"), result.Captures!["sessionId"]);
+        }
+    }
+
     private static SemanticIntentClassifier CreateSemanticClassifier(EmbeddingMatch? match)
     {
         var catalog = new IntentCatalog([new IntentDefinition("list-actors", ["show actors"])]);
