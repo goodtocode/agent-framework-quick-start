@@ -3,6 +3,8 @@ using System.Text;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
 
@@ -52,17 +54,13 @@ public sealed class AzureOpenAiEmbeddingGeneratorTests
 
     private static AzureOpenAiEmbeddingGenerator CreateGenerator(HttpMessageHandler handler)
     {
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["AzureOpenAi:ApiKey"] = "test-key",
-                ["AzureOpenAi:Endpoint"] = "https://example.test",
-                ["AzureOpenAi:EmbeddingDeploymentName"] = "embedding-fast"
-            })
-            .Build();
-
         return new AzureOpenAiEmbeddingGenerator(
-            configuration,
+            Options.Create(new AzureOpenAIOptions
+            {
+                ApiKey = "test-key",
+                Endpoint = "https://example.test",
+                EmbeddingDeploymentName = "embedding-fast"
+            }),
             NullLogger<AzureOpenAiEmbeddingGenerator>.Instance,
             new HttpClient(handler));
     }

@@ -54,7 +54,7 @@ public sealed class ChatMessageRoutingService(
                 .Where(x => x.Role.Equals("user", StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Content)
                 .ToList();
-            var match = _intentClassifier.Classify(message, priorUserMessages);
+            var match = await _intentClassifier.ClassifyAsync(message, priorUserMessages, cancellationToken);
             var deterministicReply = match is null ? null : await RouteAsync(chatSessionId, match, cancellationToken);
             if (!string.IsNullOrWhiteSpace(deterministicReply))
             {

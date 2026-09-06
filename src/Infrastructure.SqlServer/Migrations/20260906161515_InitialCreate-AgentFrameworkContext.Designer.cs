@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 {
     [DbContext(typeof(AgentFrameworkContext))]
-    [Migration("20260903055155_InitialCreate-AgentFrameworkContext")]
+    [Migration("20260906161515_InitialCreate-AgentFrameworkContext")]
     partial class InitialCreateAgentFrameworkContext
     {
         /// <inheritdoc />
@@ -336,6 +336,64 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.HasIndex("TenantId", "OwnerId", "ChatSessionId");
 
                     b.ToTable("ChatGovernance", "Chat");
+                });
+
+            modelBuilder.Entity("Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities.IntentEmbeddingEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAtUtc")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("IntentName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("IntentName")
+                        .UseCollation("SQL_Latin1_General_CP1_CI_AS");
+
+                    b.Property<int>("Source")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Source");
+
+                    b.Property<string>("SourceText")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)")
+                        .HasColumnName("SourceText");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAtUtc")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Vector")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)")
+                        .HasColumnName("Vector");
+
+                    b.Property<float>("Weight")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("REAL")
+                        .HasDefaultValue(1f)
+                        .HasColumnName("Weight");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IntentName")
+                        .HasDatabaseName("IX_IntentEmbeddings_IntentName");
+
+                    b.HasIndex("IntentName", "Source")
+                        .HasDatabaseName("IX_IntentEmbeddings_IntentName_Source");
+
+                    b.ToTable("IntentEmbeddings", "Chat");
                 });
 
             modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chats.ChatMessageEntity", b =>

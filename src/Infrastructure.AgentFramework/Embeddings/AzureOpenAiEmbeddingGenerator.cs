@@ -1,7 +1,8 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 
@@ -24,23 +25,24 @@ public sealed class AzureOpenAiEmbeddingGenerator : IEmbeddingGenerator
     /// <summary>
     /// Creates a new instance of the Azure OpenAI embedding generator.
     /// Configuration is read from appsettings:
-    /// - AzureOpenAi:ApiKey (required)
-    /// - AzureOpenAi:Endpoint (required)
-    /// - AzureOpenAi:EmbeddingDeploymentName (optional, default: "embedding-fast")
+    /// - AzureOpenAI:ApiKey (required)
+    /// - AzureOpenAI:Endpoint (required)
+    /// - AzureOpenAI:EmbeddingDeploymentName (optional, default: "embedding-fast")
     /// </summary>
     /// <param name="config">Configuration provider.</param>
     /// <param name="logger">Structured logger.</param>
     /// <exception cref="InvalidOperationException">If required configuration is missing.</exception>
     public AzureOpenAiEmbeddingGenerator(
-        IConfiguration config,
+        IOptions<AzureOpenAIOptions> options,
         ILogger<AzureOpenAiEmbeddingGenerator> logger,
         HttpClient httpClient)
     {
-        _apiKey = config["AzureOpenAi:ApiKey"]
-            ?? throw new InvalidOperationException("Missing required config: AzureOpenAi:ApiKey");
-        _endpoint = config["AzureOpenAi:Endpoint"]
-            ?? throw new InvalidOperationException("Missing required config: AzureOpenAi:Endpoint");
-        _deploymentName = config["AzureOpenAi:EmbeddingDeploymentName"] ?? "embedding-fast";
+        var config = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _apiKey = config.ApiKey;
+        _endpoint = config.Endpoint;
+        _deploymentName = config.EmbeddingDeploymentName;
+        if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_endpoint))
+            throw new InvalidOperationException("AzureOpenAI ApiKey and Endpoint are required for embedding generation.");
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }

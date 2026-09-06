@@ -10,5 +10,8 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 public interface IIntentClassifier
 {
     /// <summary>Attempts to classify <paramref name="message"/> against the registered <see cref="IntentCatalog"/> and prior conversation context.</summary>
-    IntentMatch? Classify(string message, IReadOnlyList<string>? priorUserMessages = null);
+    Task<IntentMatch?> ClassifyAsync(
+        string message,
+        IReadOnlyList<string>? priorUserMessages = null,
+        CancellationToken cancellationToken = default);
 }
