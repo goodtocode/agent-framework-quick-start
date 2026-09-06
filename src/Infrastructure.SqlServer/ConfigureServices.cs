@@ -1,4 +1,5 @@
 ﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,10 @@ public static class ConfigureServices
                 .UseLazyLoadingProxies());
 
         services.AddScoped<IAgentFrameworkContext, AgentFrameworkContext>();
+        services.AddHttpClient<AzureOpenAiEmbeddingGenerator>();
+        services.AddScoped<IEmbeddingGenerator>(provider =>
+            provider.GetRequiredService<AzureOpenAiEmbeddingGenerator>());
+        services.AddScoped<IIntentEmbeddingStore, Embeddings.SqlIntentEmbeddingStore>();
 
         return services;
     }

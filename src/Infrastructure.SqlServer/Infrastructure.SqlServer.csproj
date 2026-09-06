@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Goodtocode.AgentFramework.Infrastructure.SqlServer</RootNamespace>
 		<AssemblyName>Goodtocode.AgentFramework.Infrastructure.SqlServer</AssemblyName>
@@ -26,5 +26,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Core.Application\Core.Application.csproj" />
+	  <ProjectReference Include="..\Infrastructure.AgentFramework\Infrastructure.AgentFramework.csproj" />
 	</ItemGroup>
 </Project>
