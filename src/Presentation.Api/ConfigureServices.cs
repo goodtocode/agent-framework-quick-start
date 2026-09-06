@@ -113,7 +113,7 @@ public static class ConfigureServices
         {
             var info = new OpenApiInfo
             {
-                Title = $"GoodToCode Application API ({Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")})",
+                Title = $"Quick-start for Microsoft Agent Framework API ({Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")})",
                 Version = description.ApiVersion.ToString(),
                 Description = "An API to interact with this application",
                 Contact = new OpenApiContact
