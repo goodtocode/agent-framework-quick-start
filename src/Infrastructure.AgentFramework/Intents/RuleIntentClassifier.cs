@@ -11,11 +11,14 @@ public sealed class RuleIntentClassifier(IntentCatalog catalog) : IIntentClassif
 {
     private readonly IntentCatalog _catalog = catalog;
 
-    public IntentMatch? Classify(string message, IReadOnlyList<string>? priorUserMessages = null)
+    public Task<IntentMatch?> ClassifyAsync(
+        string message,
+        IReadOnlyList<string>? priorUserMessages = null,
+        CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(message))
         {
-            return null;
+            return Task.FromResult<IntentMatch?>(null);
         }
 
         foreach (var intent in _catalog.Intents)
@@ -29,7 +32,7 @@ public sealed class RuleIntentClassifier(IntentCatalog catalog) : IIntentClassif
             {
                 if (capture.TryMatch(message, out var value))
                 {
-                    return new IntentMatch(intent, new Dictionary<string, string> { [capture.CaptureName] = value });
+                    return Task.FromResult<IntentMatch?>(new IntentMatch(intent, new Dictionary<string, string> { [capture.CaptureName] = value }));
                 }
             }
         }
@@ -41,7 +44,7 @@ public sealed class RuleIntentClassifier(IntentCatalog catalog) : IIntentClassif
             {
                 if (normalized.Contains(example, StringComparison.Ordinal))
                 {
-                    return new IntentMatch(intent);
+                    return Task.FromResult<IntentMatch?>(new IntentMatch(intent));
                 }
             }
         }
@@ -53,14 +56,14 @@ public sealed class RuleIntentClassifier(IntentCatalog catalog) : IIntentClassif
             {
                 if (intent.FollowUpExamples?.Any(example => priorMessage.Trim().Equals(example, StringComparison.OrdinalIgnoreCase)) == true)
                 {
-                    return new IntentMatch(intent, new Dictionary<string, string>
+                    return Task.FromResult<IntentMatch?>(new IntentMatch(intent, new Dictionary<string, string>
                     {
                         ["followUp"] = message.Trim()
-                    });
+                    }));
                 }
             }
         }
 
-        return null;
+        return Task.FromResult<IntentMatch?>(null);
     }
 }

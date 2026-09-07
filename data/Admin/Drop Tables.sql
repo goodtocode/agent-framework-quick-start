@@ -8,6 +8,14 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[__EFM
 DROP TABLE [dbo].[__EFMigrationsHistory]
 GO
 
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[IntentEmbeddings]') AND type in (N'U'))
+DROP TABLE [Chat].[IntentEmbeddings]
+GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[ChatGovernance]') AND type in (N'U'))
+DROP TABLE [Chat].[ChatGovernance]
+GO
+
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[ChatMessages]') AND type in (N'U'))
 DROP TABLE [Chat].[ChatMessages]
 GO

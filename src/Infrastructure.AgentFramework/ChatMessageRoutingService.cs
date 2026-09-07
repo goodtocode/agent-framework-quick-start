@@ -54,7 +54,7 @@ public sealed class ChatMessageRoutingService(
                 .Where(x => x.Role.Equals("user", StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Content)
                 .ToList();
-            var match = _intentClassifier.Classify(message, priorUserMessages);
+            var match = await _intentClassifier.ClassifyAsync(message, priorUserMessages, cancellationToken);
             var deterministicReply = match is null ? null : await RouteAsync(chatSessionId, match, cancellationToken);
             if (!string.IsNullOrWhiteSpace(deterministicReply))
             {
@@ -130,6 +130,7 @@ public sealed class ChatMessageRoutingService(
     {
         IntentNames.QueryChatSessionsList => QueryChatSessionsListAsync(cancellationToken),
         IntentNames.QueryChatMessagesList => QueryChatMessagesListAsync(cancellationToken),
+        IntentNames.QueryChatMessagesForSession => QueryChatMessagesForSessionAsync(Guid.Parse(match.Captures!["sessionId"]), cancellationToken),
         IntentNames.QueryActorById => QueryActorByIdAsync(Guid.Parse(match.Captures!["id"]), cancellationToken),
         IntentNames.QueryActorsByName => QueryActorsByNameAsync(match, cancellationToken),
         IntentNames.QueryActorsList => QueryActorsListAsync(cancellationToken),
@@ -215,6 +216,29 @@ public sealed class ChatMessageRoutingService(
                 $"`{actor.Id:D}`",
                 $"{actor.FirstName} {actor.LastName}".Trim(),
                 actor.CreatedOn.ToString("u", CultureInfo.InvariantCulture)]));
+    }
+
+    private async Task<string> QueryChatMessagesForSessionAsync(Guid sessionId, CancellationToken cancellationToken)
+    {
+        var messages = await _sender.Send(new GetMyChatSessionMessagesQuery
+        {
+            ChatSessionId = sessionId
+        }, cancellationToken);
+
+        var items = messages.ToList();
+        if (items.Count == 0)
+        {
+            return "No messages were found for this chat session.";
+        }
+
+        return MarkdownTableFormatter.Format(
+            ["#", "Chat Session Id", "Timestamp (UTC)", "Role", "Content"],
+            items.Select((message, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                $"`{message.ChatSessionId:D}`",
+                message.Timestamp.ToString("u", CultureInfo.InvariantCulture),
+                message.Role,
+                message.Content]));
     }
 
     private async Task<string> QueryActorsListAsync(CancellationToken cancellationToken)

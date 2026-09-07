@@ -1,4 +1,5 @@
 ﻿using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
@@ -70,12 +71,19 @@ public static class ConfigureServices
 
         services.AddOptions<AgentToolInstructionsOptions>()
             .Bind(configuration.GetSection(AgentToolInstructionsOptions.SectionName));
+        services.AddOptions<IntentClassificationOptions>()
+            .Bind(configuration.GetSection(IntentClassificationOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.AddSingleton<IAgentInstructionsComposer, AgentInstructionsComposer>();
 
         services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
 
         services.AddSingleton(DefaultIntentCatalogFactory.Create());
-        services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
+        services.AddSingleton<RuleIntentClassifier>();
+        services.AddScoped<SemanticIntentClassifier>();
+        services.AddScoped<IIntentClassifier, HybridIntentClassifier>();
+        services.AddHostedService<IntentEmbeddingInitializationService>();
         services.AddScoped<ChatGovernanceGate>();
         services.AddScoped<ChatMessageRoutingService>();
         services.AddScoped<IChatMessageRoutingService>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
