@@ -66,6 +66,29 @@ public sealed class IntentClassifierTests
     }
 
     [TestMethod]
+    public async Task SemanticClassifierSearchesOnlyNonParameterizedIntents()
+    {
+        var store = new FakeEmbeddingStore(null);
+        var classifier = new SemanticIntentClassifier(
+            new IntentCatalog(
+            [
+                new IntentDefinition("list-actors", ["list actors"]),
+                new IntentDefinition("find-actor", ["find an actor by name"],
+                    [new PhraseCapture("find an actor by name ", "name", CaptureKind.Rest)])
+            ]),
+            new FakeEmbeddingGenerator(),
+            store,
+            Options.Create(new IntentClassificationOptions { EnableSemantic = true }),
+            NullLogger<SemanticIntentClassifier>.Instance);
+
+        await classifier.ClassifyAsync("show me the people", cancellationToken: CancellationToken.None);
+
+        Assert.IsNotNull(store.EligibleIntentNames);
+        CollectionAssert.Contains(store.EligibleIntentNames.ToList(), "list-actors");
+        CollectionAssert.DoesNotContain(store.EligibleIntentNames.ToList(), "find-actor");
+    }
+
+    [TestMethod]
     public async Task DefaultCatalogRoutesPerSessionMessagePromptsWithSessionCapture()
     {
         var sessionId = Guid.NewGuid();
@@ -106,9 +129,15 @@ public sealed class IntentClassifierTests
 
     private sealed class FakeEmbeddingStore(EmbeddingMatch? match) : IIntentEmbeddingStore
     {
+        public IReadOnlySet<string>? EligibleIntentNames { get; private set; }
+
         public Task UpsertIntentEmbeddingsAsync(string intentName, IEnumerable<Embedding> embeddings, CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task<IReadOnlyList<EmbeddingMatch>> SearchAsync(float[] queryVector, CancellationToken cancellationToken, int topK = 5, float similarityThreshold = 0.75f) =>
-            Task.FromResult<IReadOnlyList<EmbeddingMatch>>(match is null ? [] : [match]);
+        public Task<IReadOnlyList<EmbeddingMatch>> SearchAsync(float[] queryVector, CancellationToken cancellationToken, int topK = 5, float similarityThreshold = 0.75f, IReadOnlySet<string>? eligibleIntentNames = null)
+        {
+            EligibleIntentNames = eligibleIntentNames;
+            return Task.FromResult<IReadOnlyList<EmbeddingMatch>>(match is null ? [] : [match]);
+        }
+
         public Task DeleteIntentEmbeddingsAsync(string intentName, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task<bool> IsReadyAsync(CancellationToken cancellationToken) => Task.FromResult(true);
     }

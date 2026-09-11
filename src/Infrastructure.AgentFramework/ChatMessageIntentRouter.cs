@@ -87,6 +87,12 @@ public sealed class ChatMessageIntentRouter(
         {
             var runOptions = new ChatClientAgentRunOptions(new ChatOptions { ToolMode = ChatToolMode.RequireAny });
             var agentResponse = await _agent.RunAsync(chatHistory, options: runOptions, cancellationToken: cancellationToken);
+            if (!agentResponse.Messages.Any(message => message.Contents.OfType<FunctionCallContent>().Any()))
+            {
+                _logger.LogWarning("Forced-tool inference did not invoke a tool; falling back to an open agent turn.");
+                return null;
+            }
+
             return agentResponse.Messages.LastOrDefault()?.Contents.LastOrDefault()?.ToString();
         }
         catch (Exception exception)

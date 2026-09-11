@@ -36,7 +36,8 @@ public interface IIntentEmbeddingStore
         float[] queryVector,
         CancellationToken cancellationToken,
         int topK = 5,
-        float similarityThreshold = 0.75f);
+        float similarityThreshold = 0.75f,
+        IReadOnlySet<string>? eligibleIntentNames = null);
 
     /// <summary>
     /// Deletes all embeddings for a specific intent.

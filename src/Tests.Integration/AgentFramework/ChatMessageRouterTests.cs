@@ -19,15 +19,16 @@ public sealed class ChatMessageRouterTests : TestBase
     }
 
     [TestMethod]
-    public async Task ResolveReplyAsyncAmbiguousMessageReturnsForcedToolReply()
+    public async Task ResolveReplyAsyncForcedToolReplyWithoutInvocationFallsThroughToOpenAgentTurn()
     {
         var router = ServiceProvider.GetRequiredService<IChatMessageRouter>();
 
         var reply = await router.ResolveReplyAsync(Guid.NewGuid(), "Can you help with my saved information?", CancellationToken.None);
 
         Assert.AreEqual("mock-response", reply);
-        Assert.AreEqual(1, agent.RunCount);
+        Assert.AreEqual(2, agent.RunCount);
         Assert.IsInstanceOfType<ChatClientAgentRunOptions>(agent.RunOptions[0]);
+        Assert.IsNull(agent.RunOptions[1]);
     }
 
     [TestMethod]
