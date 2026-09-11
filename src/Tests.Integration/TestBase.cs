@@ -1,11 +1,13 @@
 ﻿using Goodtocode.AgentFramework.Core.Application;
 using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
 using Goodtocode.AgentFramework.Core.Application.Governance;
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
@@ -74,6 +76,10 @@ public abstract class TestBase : IDisposable
         services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
         services.AddScoped<IWebSearchProvider, NoOpWebSearchProvider>();
         services.AddSingleton<IAgentChatContextAccessor, AgentChatContextAccessor>();
+        services.AddSingleton<IChatJourneyCatalogContributor, DefaultChatJourneyCatalogContributor>();
+        services.AddSingleton<ChatJourneyCatalogFactory>();
+        services.AddSingleton<IChatJourneyProvider, RuleChatJourneyProvider>();
+        services.AddSingleton<IChatJourneyContextAccessor, AgentChatJourneyContextAccessor>();
         services.AddScoped<ChatGovernanceGate>();
         services.AddScoped<ChatMessageIntentRouter>();
         services.AddScoped<IChatMessageRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
