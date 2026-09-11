@@ -8,7 +8,7 @@ public class McpNotFoundSemanticsTests : TestBase
     [TestMethod]
     public async Task ActorsToolGetActorByIdReturnsNullWhenMissing()
     {
-        var sut = new ActorsTool(ServiceProvider);
+        var sut = new ActorsTool(ServiceProvider, new AgentChatContextAccessor());
 
         var result = await sut.GetActorByIdAsync(Guid.NewGuid(), CancellationToken.None);
 

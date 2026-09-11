@@ -52,7 +52,7 @@
                            Sessions="chatSessions"
                            OnSessionCreated="HandleSessionCreated"
                            OnMessageSubmitted="HandleMessageSubmitted" />
-      <SuggestedPromptsStrip Suggestions="SuggestedPrompts" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
+      <SuggestedPromptsStrip Suggestions="GetSuggestedPrompts()" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
     </FluentGridItem>
   }
   else
@@ -90,7 +90,7 @@
                           Sessions="chatSessions"
                           OnSessionCreated="HandleSessionCreated"
                           OnMessageSubmitted="HandleMessageSubmitted" />
-      <SuggestedPromptsStrip Suggestions="SuggestedPrompts" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
+      <SuggestedPromptsStrip Suggestions="GetSuggestedPrompts()" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
     </FluentGridItem>
     <FluentGridItem xs="0" md="1"></FluentGridItem>
   }
@@ -107,14 +107,10 @@
   private bool isMobileLayout;
   private bool shouldScrollToBottom;
   private IJSObjectReference? chatPageJsModule;
-  private List<ChatActionOption> pendingActions = [];
-  private static readonly IReadOnlyList<string> SuggestedPrompts =
-  [
-    "List my recent chat sessions",
-    "Find an actor by name",
-    "Search the web for current information"
-  ];
-  private static readonly Regex ActionTokenRegex = new(@"\[action\|(?<label>[^|\]]+)\|(?<prompt>[^\]]+)\]", RegexOptions.Compiled);
+  private string? selectedActorId;
+  private string? selectedChatSessionId;
+  private List<ChatSelectionOption> pendingActions = [];
+  private static readonly Regex SelectionTokenRegex = new(@"\[selection\|(?<kind>[^|\]]+)\|(?<id>[^|\]]+)\|(?<value>[^|\]]*)\|(?<label>[^\]]*)\]", RegexOptions.Compiled);
 
   protected override async Task OnInitializedAsync()
   {
@@ -134,6 +130,8 @@
     chatSessionListRef?.ClearSelection();
     chatSessionStripRef?.ClearSelection();
     chatSessions.ClearActive();
+    selectedActorId = null;
+    selectedChatSessionId = null;
     pendingActions = [];
     StateHasChanged();
   }
@@ -142,6 +140,8 @@
   {
     chatSessions.Add(chatSession);
     chatSessions.SetActive(chatSession);
+    selectedActorId = null;
+    selectedChatSessionId = null;
     RefreshPendingActions();
     shouldScrollToBottom = true;
     StateHasChanged();
@@ -151,6 +151,8 @@
   {
     chatSessions.ClearActive();
     chatSessions.SetActive(chatSession);
+    selectedActorId = null;
+    selectedChatSessionId = null;
     RefreshPendingActions();
     shouldScrollToBottom = true;
     StateHasChanged();
@@ -174,10 +176,21 @@
     await SubmitPromptAsync(prompt);
   }
 
-  private async Task HandleActionClickedAsync(ChatActionOption action)
+  private async Task HandleActionClickedAsync(ChatSelectionOption selection)
   {
+    switch (selection.Kind.ToLowerInvariant())
+    {
+      case "actor":
+        selectedActorId = selection.Id;
+        selectedChatSessionId = null;
+        break;
+      case "chatsession":
+        selectedChatSessionId = selection.Id;
+        break;
+    }
+
     pendingActions = [];
-    await SubmitPromptAsync(action.Prompt);
+    await SubmitPromptAsync(selection.BuildSelectionPrompt());
   }
 
   private async Task SubmitPromptAsync(string prompt)
@@ -200,6 +213,34 @@
     }
   }
 
+  private IReadOnlyList<string> GetSuggestedPrompts()
+  {
+    if (!string.IsNullOrWhiteSpace(selectedChatSessionId))
+    {
+      return
+      [
+        "Query chat messages for the selected chat session",
+        "Query our actor list"
+      ];
+    }
+
+    if (!string.IsNullOrWhiteSpace(selectedActorId))
+    {
+      return
+      [
+        "Query chat sessions for the selected actor",
+        "Query my actor user profile"
+      ];
+    }
+
+    return
+    [
+      "List my recent chat sessions",
+      "Find an actor by name",
+      "Search the web for current information"
+    ];
+  }
+
   private void RefreshPendingActions()
   {
     pendingActions = [];
@@ -212,14 +253,24 @@
       return;
     }
 
-    foreach (Match match in ActionTokenRegex.Matches(latestAssistant.Content))
+    foreach (Match match in SelectionTokenRegex.Matches(latestAssistant.Content))
     {
-      var label = match.Groups["label"].Value.Trim();
-      var prompt = match.Groups["prompt"].Value.Trim();
-      if (!string.IsNullOrWhiteSpace(label) && !string.IsNullOrWhiteSpace(prompt))
+      var kind = match.Groups["kind"].Value.Trim();
+      var id = match.Groups["id"].Value.Trim();
+      if (string.IsNullOrWhiteSpace(kind) || string.IsNullOrWhiteSpace(id))
       {
-        pendingActions.Add(new ChatActionOption { Label = label, Prompt = prompt });
+        continue;
       }
+
+      var value = match.Groups["value"].Value.Trim();
+      var label = match.Groups["label"].Value.Trim();
+      pendingActions.Add(new ChatSelectionOption
+      {
+        Kind = kind,
+        Id = id,
+        Value = value,
+        Label = string.IsNullOrWhiteSpace(label) ? $"{kind}:{id}" : label
+      });
     }
   }
 

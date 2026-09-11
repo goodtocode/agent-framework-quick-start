@@ -25,6 +25,7 @@ public sealed class ChatMessageIntentRouter(
     IRlsContext rlsContext,
     IWebSearchProvider webSearchProvider,
     IIntentClassifier intentClassifier,
+    Tools.IAgentChatContextAccessor chatContextAccessor,
     ILogger<ChatMessageIntentRouter> logger) : IChatMessageRouter, IIntentRouter
 {
     private readonly AIAgent _agent = agent;
@@ -34,6 +35,7 @@ public sealed class ChatMessageIntentRouter(
     private readonly IRlsContext _rlsContext = rlsContext;
     private readonly IWebSearchProvider _webSearchProvider = webSearchProvider;
     private readonly IIntentClassifier _intentClassifier = intentClassifier;
+    private readonly Tools.IAgentChatContextAccessor _chatContextAccessor = chatContextAccessor;
     private readonly ILogger<ChatMessageIntentRouter> _logger = logger;
     private static readonly Action<ILogger, Exception?> LogForcedToolInferenceFailure = LoggerMessage.Define(
         LogLevel.Warning,
@@ -62,21 +64,29 @@ public sealed class ChatMessageIntentRouter(
             }
         }
 
-        var chatHistory = await BuildChatHistoryAsync(chatSessionId, message, cancellationToken);
-
-        if (mode == ChatRoutingMode.Routed)
+        _chatContextAccessor.SetCurrentChatSession(chatSessionId);
+        try
         {
-            var forcedToolReply = await TryResolveViaForcedToolInferenceAsync(chatHistory, cancellationToken);
-            if (!string.IsNullOrWhiteSpace(forcedToolReply))
-            {
-                return forcedToolReply;
-            }
-        }
+            var chatHistory = await BuildChatHistoryAsync(chatSessionId, message, cancellationToken);
 
-        var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
-        var response = agentResponse.Messages.LastOrDefault();
-        ChatGuard.GuardAgainstNullAgentResponse(response);
-        return response!.Contents.LastOrDefault()?.ToString() ?? string.Empty;
+            if (mode == ChatRoutingMode.Routed)
+            {
+                var forcedToolReply = await TryResolveViaForcedToolInferenceAsync(chatHistory, cancellationToken);
+                if (!string.IsNullOrWhiteSpace(forcedToolReply))
+                {
+                    return forcedToolReply;
+                }
+            }
+
+            var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
+            var response = agentResponse.Messages.LastOrDefault();
+            ChatGuard.GuardAgainstNullAgentResponse(response);
+            return response!.Contents.LastOrDefault()?.ToString() ?? string.Empty;
+        }
+        finally
+        {
+            _chatContextAccessor.ClearCurrentChatSession();
+        }
     }
 
     private async Task<string?> TryResolveViaForcedToolInferenceAsync(
@@ -117,7 +127,8 @@ public sealed class ChatMessageIntentRouter(
         await _context.SaveChangesAsync(cancellationToken);
         var chatHistory = new List<ChatMessage>
         {
-            new(ChatRole.System, governed.PromptContext.SystemInstruction)
+            new(ChatRole.System, governed.PromptContext.SystemInstruction),
+            BuildSelectionContextMessage(chatSessionId)
         };
 
         foreach (var message in chatSession?.Messages ?? [])
@@ -131,16 +142,32 @@ public sealed class ChatMessageIntentRouter(
         return chatHistory;
     }
 
+    private ChatMessage BuildSelectionContextMessage(Guid chatSessionId)
+    {
+        var selection = _chatContextAccessor.GetOrCreateContext(chatSessionId);
+        var content = $"""
+            Current chat selection context:
+            - Selected ActorId: {selection.ActorId?.ToString("D") ?? "none"}
+            - Selected ChatSessionId: {selection.SelectedChatSessionId?.ToString("D") ?? "none"}
+            """;
+
+        return new ChatMessage(ChatRole.System, content);
+    }
+
     /// <inheritdoc />
     public Task<string> RouteAsync(Guid chatSessionId, IntentMatch match, CancellationToken cancellationToken) => match.Intent.Name switch
     {
         IntentNames.QueryChatSessionsList => QueryChatSessionsListAsync(cancellationToken),
         IntentNames.QueryChatMessagesList => QueryChatMessagesListAsync(cancellationToken),
         IntentNames.QueryChatMessagesForSession => QueryChatMessagesForSessionAsync(Guid.Parse(match.Captures!["sessionId"]), cancellationToken),
-        IntentNames.QueryActorById => QueryActorByIdAsync(Guid.Parse(match.Captures!["id"]), cancellationToken),
-        IntentNames.QueryActorsByName => QueryActorsByNameAsync(match, cancellationToken),
-        IntentNames.QueryActorsList => QueryActorsListAsync(cancellationToken),
-        IntentNames.QueryMyActorsList => QueryMyActorsListAsync(cancellationToken),
+        IntentNames.QueryActorById => QueryActorByIdAsync(chatSessionId, Guid.Parse(match.Captures!["id"]), cancellationToken),
+        IntentNames.QueryActorsByName => QueryActorsByNameAsync(chatSessionId, match, cancellationToken),
+        IntentNames.QueryActorsList => QueryActorsListAsync(chatSessionId, cancellationToken),
+        IntentNames.QueryMyActorsList => QueryMyActorsListAsync(chatSessionId, cancellationToken),
+        IntentNames.SelectActor => SelectActorAsync(chatSessionId, Guid.Parse(match.Captures!["id"]), cancellationToken),
+        IntentNames.SelectChatSession => SelectChatSessionAsync(chatSessionId, Guid.Parse(match.Captures!["id"]), cancellationToken),
+        IntentNames.QueryChatSessionsForSelectedActor => QueryChatSessionsForSelectedActorAsync(chatSessionId, cancellationToken),
+        IntentNames.QueryChatMessagesForSelectedChatSession => QueryChatMessagesForSelectedChatSessionAsync(chatSessionId, cancellationToken),
         IntentNames.SearchWeb => QueryWebSearchAsync(match.Captures!["query"], cancellationToken),
         _ => throw new InvalidOperationException($"No route registered for intent '{match.Intent.Name}'.")
     };
@@ -188,15 +215,19 @@ public sealed class ChatMessageIntentRouter(
                 message.Content]));
     }
 
-    private async Task<string> QueryActorByIdAsync(Guid actorId, CancellationToken cancellationToken)
+    private async Task<string> QueryActorByIdAsync(Guid chatSessionId, Guid actorId, CancellationToken cancellationToken)
     {
         var actor = await _sender.Send(new Core.Application.Actors.GetOurActorQuery { ActorId = actorId }, cancellationToken);
-        return actor is null
-            ? $"No actor was found with id `{actorId:D}`."
-            : $"Actor `{actor.Id:D}`: {actor.FirstName} {actor.LastName}".TrimEnd();
+        if (actor is null)
+        {
+            return $"No actor was found with id `{actorId:D}`.";
+        }
+
+        _chatContextAccessor.UpsertContext(chatSessionId, current => current with { ActorId = actor.Id });
+        return $"Actor `{actor.Id:D}`: {actor.FirstName} {actor.LastName}".TrimEnd();
     }
 
-    private async Task<string> QueryActorsByNameAsync(IntentMatch match, CancellationToken cancellationToken)
+    private async Task<string> QueryActorsByNameAsync(Guid chatSessionId, IntentMatch match, CancellationToken cancellationToken)
     {
         if (match.Captures is null)
         {
@@ -206,22 +237,16 @@ public sealed class ChatMessageIntentRouter(
         var name = match.Captures.TryGetValue("name", out var capturedName)
             ? capturedName
             : match.Captures["followUp"];
-        var actors = await _sender.Send(new Core.Application.Actors.GetOurActorsByNameQuery
+        var actors = (await _sender.Send(new Core.Application.Actors.GetOurActorsByNameQuery
         {
             Name = name
-        }, cancellationToken);
+        }, cancellationToken)).ToList();
         if (actors.Count == 0)
         {
             return $"No actors were found matching \"{EscapeCell(name)}\".";
         }
 
-        return MarkdownTableFormatter.Format(
-            ["#", "Actor ID", "Name", "Timestamp (UTC)"],
-            actors.Select((actor, index) => (IReadOnlyList<string?>)[
-                (index + 1).ToString(CultureInfo.InvariantCulture),
-                $"`{actor.Id:D}`",
-                $"{actor.FirstName} {actor.LastName}".Trim(),
-                actor.CreatedOn.ToString("u", CultureInfo.InvariantCulture)]));
+        return BuildActorSelectionMarkdown(chatSessionId, actors);
     }
 
     private async Task<string> QueryChatMessagesForSessionAsync(Guid sessionId, CancellationToken cancellationToken)
@@ -247,32 +272,125 @@ public sealed class ChatMessageIntentRouter(
                 message.Content]));
     }
 
-    private async Task<string> QueryActorsListAsync(CancellationToken cancellationToken)
+    private async Task<string> QueryActorsListAsync(Guid chatSessionId, CancellationToken cancellationToken)
     {
-        var actors = await _sender.Send(new Core.Application.Actors.GetOurActorsQuery(), cancellationToken);
-        return FormatActors(actors);
+        var actors = (await _sender.Send(new Core.Application.Actors.GetOurActorsQuery(), cancellationToken)).ToList();
+        return BuildActorSelectionMarkdown(chatSessionId, actors);
     }
 
-    private async Task<string> QueryMyActorsListAsync(CancellationToken cancellationToken)
+    private async Task<string> QueryMyActorsListAsync(Guid chatSessionId, CancellationToken cancellationToken)
     {
-        var actors = await _sender.Send(new Core.Application.Actors.GetMyActorsQuery(), cancellationToken);
-        return FormatActors(actors);
+        var actors = (await _sender.Send(new Core.Application.Actors.GetMyActorsQuery(), cancellationToken)).ToList();
+        return BuildActorSelectionMarkdown(chatSessionId, actors);
     }
 
-    private static string FormatActors(ICollection<Core.Application.Actors.ActorDto> actors)
+    private string BuildActorSelectionMarkdown(Guid chatSessionId, IReadOnlyList<Core.Application.Actors.ActorDto> actors)
     {
         if (actors.Count == 0)
         {
             return "No actors were found.";
         }
 
-        return MarkdownTableFormatter.Format(
+        var ordered = actors.OrderByDescending(actor => actor.CreatedOn).ToList();
+        var markdown = new StringBuilder(MarkdownTableFormatter.Format(
             ["#", "Actor ID", "Name", "Timestamp (UTC)"],
-            actors.Select((actor, index) => (IReadOnlyList<string?>)[
+            ordered.Select((actor, index) => (IReadOnlyList<string?>)[
                 (index + 1).ToString(CultureInfo.InvariantCulture),
                 $"`{actor.Id:D}`",
                 $"{actor.FirstName} {actor.LastName}".Trim(),
-                actor.CreatedOn.ToString("u", CultureInfo.InvariantCulture)]));
+                actor.CreatedOn.ToString("u", CultureInfo.InvariantCulture)])));
+
+        markdown.AppendLine();
+        markdown.AppendLine("Select an actor:");
+        foreach (var actor in ordered)
+        {
+            var label = $"{actor.FirstName} {actor.LastName}".Trim();
+            markdown.AppendLine($"[selection|actor|{actor.Id:D}||{EscapeSelectionLabel(string.IsNullOrWhiteSpace(label) ? actor.Id.ToString("D") : label)}]");
+        }
+
+        _chatContextAccessor.UpsertContext(chatSessionId, context => context with
+        {
+            ActorId = ordered[0].Id,
+            SelectedChatSessionId = null
+        });
+
+        return markdown.ToString();
+    }
+
+    private async Task<string> SelectActorAsync(Guid chatSessionId, Guid actorId, CancellationToken cancellationToken)
+    {
+        var actor = await _sender.Send(new Core.Application.Actors.GetOurActorQuery { ActorId = actorId }, cancellationToken);
+        if (actor is null)
+        {
+            return $"No actor was found with id `{actorId:D}`.";
+        }
+
+        _chatContextAccessor.UpsertContext(chatSessionId, current => current with
+        {
+            ActorId = actor.Id,
+            SelectedChatSessionId = null
+        });
+
+        var markdown = new StringBuilder();
+        var name = $"{actor.FirstName} {actor.LastName}".Trim();
+        markdown.AppendLine($"Selected actor: **{name}** (`{actor.Id:D}`)");
+        markdown.AppendLine();
+        markdown.AppendLine(await QueryChatSessionsForSelectedActorAsync(chatSessionId, cancellationToken));
+        return markdown.ToString();
+    }
+
+    private async Task<string> QueryChatSessionsForSelectedActorAsync(Guid chatSessionId, CancellationToken cancellationToken)
+    {
+        var context = _chatContextAccessor.GetOrCreateContext(chatSessionId);
+        if (!context.ActorId.HasValue)
+        {
+            return "No actor is selected. First run: Query our actor list.";
+        }
+
+        var sessions = (await _sender.Send(new Core.Application.Actors.GetOurActorChatSessionsQuery
+        {
+            ActorId = context.ActorId.Value
+        }, cancellationToken)).OrderByDescending(session => session.Timestamp).Take(10).ToList();
+
+        if (sessions.Count == 0)
+        {
+            return $"No chat sessions were found for actor `{context.ActorId.Value:D}`.";
+        }
+
+        var markdown = new StringBuilder(MarkdownTableFormatter.Format(
+            ["#", "Title", "Chat Session Id", "Timestamp (UTC)"],
+            sessions.Select((session, index) => (IReadOnlyList<string?>)[
+                (index + 1).ToString(CultureInfo.InvariantCulture),
+                session.Title,
+                $"`{session.Id:D}`",
+                session.Timestamp.ToString("u", CultureInfo.InvariantCulture)])));
+
+        markdown.AppendLine();
+        markdown.AppendLine("Select a chat session:");
+        foreach (var session in sessions)
+        {
+            markdown.AppendLine($"[selection|chatsession|{session.Id:D}||{EscapeSelectionLabel(session.Title)}]");
+        }
+
+        _chatContextAccessor.UpsertContext(chatSessionId, current => current with { SelectedChatSessionId = sessions[0].Id });
+        return markdown.ToString();
+    }
+
+    private async Task<string> SelectChatSessionAsync(Guid chatSessionId, Guid selectedChatSessionId, CancellationToken cancellationToken)
+    {
+        _chatContextAccessor.UpsertContext(chatSessionId, current => current with { SelectedChatSessionId = selectedChatSessionId });
+        return await QueryChatMessagesForSelectedChatSessionAsync(chatSessionId, cancellationToken);
+    }
+
+    private async Task<string> QueryChatMessagesForSelectedChatSessionAsync(Guid chatSessionId, CancellationToken cancellationToken)
+    {
+        var context = _chatContextAccessor.GetOrCreateContext(chatSessionId);
+        if (!context.SelectedChatSessionId.HasValue)
+        {
+            return "No chat session is selected. First run: Query chat sessions for the selected actor.";
+        }
+
+        return await QueryChatMessagesForSessionAsync(context.SelectedChatSessionId.Value, cancellationToken);
     }
 
     private async Task<string> QueryWebSearchAsync(string query, CancellationToken cancellationToken)
@@ -298,4 +416,14 @@ public sealed class ChatMessageIntentRouter(
     }
 
     private static string EscapeCell(string? value) => MarkdownTableFormatter.EscapeCell(value);
+
+    private static string EscapeSelectionLabel(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return value.Replace("]", ")", StringComparison.Ordinal).Replace("|", "/", StringComparison.Ordinal);
+    }
 }

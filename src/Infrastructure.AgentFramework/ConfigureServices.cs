@@ -84,6 +84,7 @@ public static class ConfigureServices
         services.AddScoped<SemanticIntentClassifier>();
         services.AddScoped<IIntentClassifier, HybridIntentClassifier>();
         services.AddHostedService<IntentEmbeddingInitializationService>();
+        services.AddSingleton<IAgentChatContextAccessor, AgentChatContextAccessor>();
         services.AddScoped<ChatGovernanceGate>();
         services.AddScoped<ChatMessageIntentRouter>();
         services.AddScoped<IChatMessageRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
