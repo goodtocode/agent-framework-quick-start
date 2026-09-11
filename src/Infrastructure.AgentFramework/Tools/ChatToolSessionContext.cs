@@ -10,4 +10,10 @@ public sealed record ChatToolSessionContext
     public Guid? ActorId { get; init; }
 
     public Guid? SelectedChatSessionId { get; init; }
+
+    /// <summary>
+    /// Set when the customer entered the journey mid-chain by listing their own chat sessions
+    /// (scoped by the authenticated user's OwnerId) rather than by selecting an actor first.
+    /// </summary>
+    public bool MyChatSessionsListed { get; init; }
 }

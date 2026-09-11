@@ -108,6 +108,44 @@ public sealed class IntentClassifierTests
         }
     }
 
+    [TestMethod]
+    public async Task DefaultCatalogRoutesMidChainMyChatSessionsEntryPoint()
+    {
+        var classifier = new RuleIntentClassifier(DefaultIntentCatalogFactory.Create());
+
+        foreach (var prompt in new[]
+        {
+            "List my chat sessions",
+            "Please list my recent chat sessions",
+            "Show my conversations"
+        })
+        {
+            var result = await classifier.ClassifyAsync(prompt);
+
+            Assert.IsNotNull(result, $"Expected a deterministic match for '{prompt}'.");
+            Assert.AreEqual(IntentNames.QueryChatSessionsList, result!.Intent.Name);
+        }
+    }
+
+    [TestMethod]
+    public async Task DefaultCatalogRoutesMidChainMyMessagesForCurrentChatSessionEntryPoint()
+    {
+        var classifier = new RuleIntentClassifier(DefaultIntentCatalogFactory.Create());
+
+        foreach (var prompt in new[]
+        {
+            "List my messages for this chat session",
+            "Show my messages for this chat session",
+            "List messages for this chat session"
+        })
+        {
+            var result = await classifier.ClassifyAsync(prompt);
+
+            Assert.IsNotNull(result, $"Expected a deterministic match for '{prompt}'.");
+            Assert.AreEqual(IntentNames.QueryMyChatMessagesForCurrentChatSession, result!.Intent.Name);
+        }
+    }
+
     private static SemanticIntentClassifier CreateSemanticClassifier(EmbeddingMatch? match)
     {
         var catalog = new IntentCatalog([new IntentDefinition("list-actors", ["show actors"])]);

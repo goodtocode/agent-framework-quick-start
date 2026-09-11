@@ -11,6 +11,7 @@ public interface IChatService
     Task<ChatSessionModel> CreateSessionAsync(string firstMessage);
     Task RenameSessionAsync(Guid chatSessionId, string newTitle);
     Task<ChatMessageModel> SendMessageAsync(Guid chatSessionId, string newMessage);
+    Task<ChatJourneyStepModel> GetJourneyStepAsync(Guid chatSessionId);
 }
 
 public class ChatService(BackendApiClient client, IClaimsReader userInfo) : ApiService, IChatService
@@ -64,5 +65,13 @@ public class ChatService(BackendApiClient client, IClaimsReader userInfo) : ApiS
             }));
 
         return ChatMessageModel.Create(response);
+    }
+
+    public async Task<ChatJourneyStepModel> GetJourneyStepAsync(Guid chatSessionId)
+    {
+        var response = await HandleApiExceptionOrDefault(() => _apiClient.GetMyChatSessionJourneyStepAsync(
+            chatSessionId));
+
+        return ChatJourneyStepModel.Create(response);
     }
 }

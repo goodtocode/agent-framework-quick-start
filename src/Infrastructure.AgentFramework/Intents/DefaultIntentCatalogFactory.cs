@@ -30,6 +30,24 @@ public static class DefaultIntentCatalogFactory
             "show chat messages for the selected chat session"
         ]),
 
+        // Mid-chain journey entry point: the customer can jump straight to their own messages for
+        // the chat session they are already in / have selected, without first walking the
+        // actor -> chat session chain. Listed before the broader QueryChatMessagesList so these
+        // more specific phrasings win the substring match.
+        new IntentDefinition(IntentNames.QueryMyChatMessagesForCurrentChatSession,
+        [
+            "list my messages for this chat session",
+            "list my chat messages for this chat session",
+            "show my messages for this chat session",
+            "show my chat messages for this chat session",
+            "list messages for this chat session",
+            "show messages for this chat session",
+            "list my messages in this conversation",
+            "show my messages in this conversation",
+            "what have i said in this chat session",
+            "show this chat session's messages"
+        ]),
+
         // Level 4 deterministic routing for actor-by-id lookup: guarantee this known-good
         // phrasing never falls through to the LLM's own tool-selection. Matches "actor {guid}"
         // anywhere in the message so phrasings like "get actor {id}", "find the actor whose id is {id}"

@@ -157,7 +157,8 @@ public sealed class ChatMessageIntentRouter(
     /// <inheritdoc />
     public Task<string> RouteAsync(Guid chatSessionId, IntentMatch match, CancellationToken cancellationToken) => match.Intent.Name switch
     {
-        IntentNames.QueryChatSessionsList => QueryChatSessionsListAsync(cancellationToken),
+        IntentNames.QueryChatSessionsList => QueryChatSessionsListAsync(chatSessionId, cancellationToken),
+        IntentNames.QueryMyChatMessagesForCurrentChatSession => QueryMyChatMessagesForCurrentChatSessionAsync(chatSessionId, cancellationToken),
         IntentNames.QueryChatMessagesList => QueryChatMessagesListAsync(cancellationToken),
         IntentNames.QueryChatMessagesForSession => QueryChatMessagesForSessionAsync(Guid.Parse(match.Captures!["sessionId"]), cancellationToken),
         IntentNames.QueryActorById => QueryActorByIdAsync(chatSessionId, Guid.Parse(match.Captures!["id"]), cancellationToken),
@@ -172,7 +173,13 @@ public sealed class ChatMessageIntentRouter(
         _ => throw new InvalidOperationException($"No route registered for intent '{match.Intent.Name}'.")
     };
 
-    private async Task<string> QueryChatSessionsListAsync(CancellationToken cancellationToken)
+    /// <summary>
+    /// Mid-chain journey entry point: lists the current user's own chat sessions without first
+    /// requiring an actor lookup/selection. The actor is implied by the authenticated user's
+    /// OwnerId, so the journey context is advanced to that actor and chat-session selection chips
+    /// are emitted, letting the customer continue straight into the standard aggregate chain.
+    /// </summary>
+    private async Task<string> QueryChatSessionsListAsync(Guid chatSessionId, CancellationToken cancellationToken)
     {
         var sessions = (await _sender.Send(new GetMyChatSessionsQuery(), cancellationToken))
             .OrderByDescending(session => session.Timestamp)
@@ -183,13 +190,48 @@ public sealed class ChatMessageIntentRouter(
             return "You have no chat sessions yet.";
         }
 
-        return MarkdownTableFormatter.Format(
+        var markdown = new StringBuilder(MarkdownTableFormatter.Format(
             ["#", "Title", "Chat Session Id", "Timestamp (UTC)"],
             sessions.Select((session, index) => (IReadOnlyList<string?>)[
                 (index + 1).ToString(CultureInfo.InvariantCulture),
                 session.Title,
                 $"`{session.Id:D}`",
-                session.Timestamp.ToString("u", CultureInfo.InvariantCulture)]));
+                session.Timestamp.ToString("u", CultureInfo.InvariantCulture)])));
+
+        markdown.AppendLine();
+        markdown.AppendLine("Select a chat session:");
+        foreach (var session in sessions)
+        {
+            markdown.AppendLine($"[selection|chatsession|{session.Id:D}||{EscapeSelectionLabel(session.Title)}]");
+        }
+
+        var currentActor = await _sender.Send(new Core.Application.Actors.GetMyActorQuery(), cancellationToken);
+        _chatContextAccessor.UpsertContext(chatSessionId, current => current with
+        {
+            ActorId = currentActor?.Id ?? current.ActorId,
+            MyChatSessionsListed = true,
+            SelectedChatSessionId = null
+        });
+
+        return markdown.ToString();
+    }
+
+    /// <summary>
+    /// Mid-chain journey entry point: lists the current user's messages for the chat session that is
+    /// currently selected, falling back to the conversation the customer is already in. Scoping stays
+    /// on the authenticated user's OwnerId/TenantId because the underlying query is a My request.
+    /// </summary>
+    private async Task<string> QueryMyChatMessagesForCurrentChatSessionAsync(Guid chatSessionId, CancellationToken cancellationToken)
+    {
+        var context = _chatContextAccessor.GetOrCreateContext(chatSessionId);
+        var targetChatSessionId = context.SelectedChatSessionId ?? chatSessionId;
+
+        _chatContextAccessor.UpsertContext(chatSessionId, current => current with
+        {
+            SelectedChatSessionId = targetChatSessionId
+        });
+
+        return await QueryChatMessagesForSessionAsync(targetChatSessionId, cancellationToken);
     }
 
     private async Task<string> QueryChatMessagesListAsync(CancellationToken cancellationToken)
@@ -311,6 +353,7 @@ public sealed class ChatMessageIntentRouter(
         _chatContextAccessor.UpsertContext(chatSessionId, context => context with
         {
             ActorId = ordered[0].Id,
+            MyChatSessionsListed = false,
             SelectedChatSessionId = null
         });
 
@@ -328,6 +371,7 @@ public sealed class ChatMessageIntentRouter(
         _chatContextAccessor.UpsertContext(chatSessionId, current => current with
         {
             ActorId = actor.Id,
+            MyChatSessionsListed = false,
             SelectedChatSessionId = null
         });
 

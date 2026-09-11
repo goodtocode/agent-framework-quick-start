@@ -1,6 +1,5 @@
-﻿@page "/chat"
+@page "/chat"
 
-@using System.Text.RegularExpressions
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Components
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services
@@ -46,7 +45,7 @@
     </FluentGridItem>
 
     <FluentGridItem xs="12">
-      <ChatActionStrip Actions="pendingActions" OnActionClicked="HandleActionClickedAsync" />
+      <ChatActionStrip Actions="journeyStep.ActionOptions" OnActionClicked="HandleActionClickedAsync" />
       <NewChatMessageInput Width="100%"
                            @ref="chatMessageInputRef"
                            Sessions="chatSessions"
@@ -84,7 +83,7 @@
     <FluentGridItem xs="0" md="2"></FluentGridItem>
     <FluentGridItem xs="0" md="1"></FluentGridItem>
     <FluentGridItem xs="12" md="8">
-      <ChatActionStrip Actions="pendingActions" OnActionClicked="HandleActionClickedAsync" />
+      <ChatActionStrip Actions="journeyStep.ActionOptions" OnActionClicked="HandleActionClickedAsync" />
       <NewChatMessageCard Width="100%"
                           @ref="chatMessageCardRef"
                           Sessions="chatSessions"
@@ -107,10 +106,14 @@
   private bool isMobileLayout;
   private bool shouldScrollToBottom;
   private IJSObjectReference? chatPageJsModule;
-  private string? selectedActorId;
-  private string? selectedChatSessionId;
-  private List<ChatSelectionOption> pendingActions = [];
-  private static readonly Regex SelectionTokenRegex = new(@"\[selection\|(?<kind>[^|\]]+)\|(?<id>[^|\]]+)\|(?<value>[^|\]]*)\|(?<label>[^\]]*)\]", RegexOptions.Compiled);
+  private ChatJourneyStepModel journeyStep = ChatJourneyStepModel.Empty;
+  private static readonly IReadOnlyList<string> DefaultSuggestedPrompts =
+  [
+    "List my chat sessions",
+    "List my messages for this chat session",
+    "Find an actor by name",
+    "Search the web for current information"
+  ];
 
   protected override async Task OnInitializedAsync()
   {
@@ -130,30 +133,24 @@
     chatSessionListRef?.ClearSelection();
     chatSessionStripRef?.ClearSelection();
     chatSessions.ClearActive();
-    selectedActorId = null;
-    selectedChatSessionId = null;
-    pendingActions = [];
+    journeyStep = ChatJourneyStepModel.Empty;
     StateHasChanged();
   }
 
-  private void HandleSessionCreated(ChatSessionModel chatSession)
+  private async Task HandleSessionCreated(ChatSessionModel chatSession)
   {
     chatSessions.Add(chatSession);
     chatSessions.SetActive(chatSession);
-    selectedActorId = null;
-    selectedChatSessionId = null;
-    RefreshPendingActions();
+    await RefreshJourneyStepAsync();
     shouldScrollToBottom = true;
     StateHasChanged();
   }
 
-  private void HandleSessionSelected(ChatSessionModel chatSession)
+  private async Task HandleSessionSelected(ChatSessionModel chatSession)
   {
     chatSessions.ClearActive();
     chatSessions.SetActive(chatSession);
-    selectedActorId = null;
-    selectedChatSessionId = null;
-    RefreshPendingActions();
+    await RefreshJourneyStepAsync();
     shouldScrollToBottom = true;
     StateHasChanged();
   }
@@ -166,9 +163,17 @@
       chatSessions.RefreshItem(session);
     }
 
-    RefreshPendingActions();
+    await RefreshJourneyStepAsync();
     shouldScrollToBottom = true;
     StateHasChanged();
+  }
+
+  private async Task RefreshJourneyStepAsync()
+  {
+    var activeSessionId = chatSessions.ActiveSession?.Id ?? Guid.Empty;
+    journeyStep = activeSessionId == Guid.Empty
+      ? ChatJourneyStepModel.Empty
+      : await chatService.GetJourneyStepAsync(activeSessionId);
   }
 
   private async Task HandleSuggestedPromptClickedAsync(string prompt)
@@ -178,18 +183,7 @@
 
   private async Task HandleActionClickedAsync(ChatSelectionOption selection)
   {
-    switch (selection.Kind.ToLowerInvariant())
-    {
-      case "actor":
-        selectedActorId = selection.Id;
-        selectedChatSessionId = null;
-        break;
-      case "chatsession":
-        selectedChatSessionId = selection.Id;
-        break;
-    }
-
-    pendingActions = [];
+    journeyStep = journeyStep with { ActionOptions = [] };
     await SubmitPromptAsync(selection.BuildSelectionPrompt());
   }
 
@@ -214,65 +208,7 @@
   }
 
   private IReadOnlyList<string> GetSuggestedPrompts()
-  {
-    if (!string.IsNullOrWhiteSpace(selectedChatSessionId))
-    {
-      return
-      [
-        "Query chat messages for the selected chat session",
-        "Query our actor list"
-      ];
-    }
-
-    if (!string.IsNullOrWhiteSpace(selectedActorId))
-    {
-      return
-      [
-        "Query chat sessions for the selected actor",
-        "Query my actor user profile"
-      ];
-    }
-
-    return
-    [
-      "List my recent chat sessions",
-      "Find an actor by name",
-      "Search the web for current information"
-    ];
-  }
-
-  private void RefreshPendingActions()
-  {
-    pendingActions = [];
-    var latestAssistant = chatSessions.ActiveSession?.Messages?.LastOrDefault(message =>
-      string.Equals(message.Role, "assistant", StringComparison.OrdinalIgnoreCase)
-      || string.Equals(message.Role, "system", StringComparison.OrdinalIgnoreCase));
-
-    if (string.IsNullOrWhiteSpace(latestAssistant?.Content))
-    {
-      return;
-    }
-
-    foreach (Match match in SelectionTokenRegex.Matches(latestAssistant.Content))
-    {
-      var kind = match.Groups["kind"].Value.Trim();
-      var id = match.Groups["id"].Value.Trim();
-      if (string.IsNullOrWhiteSpace(kind) || string.IsNullOrWhiteSpace(id))
-      {
-        continue;
-      }
-
-      var value = match.Groups["value"].Value.Trim();
-      var label = match.Groups["label"].Value.Trim();
-      pendingActions.Add(new ChatSelectionOption
-      {
-        Kind = kind,
-        Id = id,
-        Value = value,
-        Label = string.IsNullOrWhiteSpace(label) ? $"{kind}:{id}" : label
-      });
-    }
-  }
+    => journeyStep.SuggestedPrompts.Count > 0 ? journeyStep.SuggestedPrompts : DefaultSuggestedPrompts;
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {

@@ -7,6 +7,7 @@ using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
 using Goodtocode.AgentFramework.Tests.Integration.Mocks;
 using Microsoft.Agents.AI;
@@ -72,6 +73,7 @@ public abstract class TestBase : IDisposable
         services.AddSingleton(DefaultIntentCatalogFactory.Create());
         services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
         services.AddScoped<IWebSearchProvider, NoOpWebSearchProvider>();
+        services.AddSingleton<IAgentChatContextAccessor, AgentChatContextAccessor>();
         services.AddScoped<ChatGovernanceGate>();
         services.AddScoped<ChatMessageIntentRouter>();
         services.AddScoped<IChatMessageRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
