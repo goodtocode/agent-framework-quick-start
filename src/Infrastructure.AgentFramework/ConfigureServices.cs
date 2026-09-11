@@ -85,9 +85,9 @@ public static class ConfigureServices
         services.AddScoped<IIntentClassifier, HybridIntentClassifier>();
         services.AddHostedService<IntentEmbeddingInitializationService>();
         services.AddScoped<ChatGovernanceGate>();
-        services.AddScoped<ChatMessageRoutingService>();
-        services.AddScoped<IChatMessageRoutingService>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
-        services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
+        services.AddScoped<ChatMessageIntentRouter>();
+        services.AddScoped<IChatMessageRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
+        services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
         
         services.AddSingleton<MyChatSessionsTool>();
         services.AddSingleton<ActorsTool>();

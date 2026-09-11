@@ -104,7 +104,7 @@ public class ChatGovernanceInvocationTests : TestBase
         context.Actors.Add(actor);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var routingService = ServiceProvider.GetRequiredService<IChatMessageRoutingService>();
+        var routingService = ServiceProvider.GetRequiredService<IChatMessageRouter>();
         var response = await routingService.ResolveReplyAsync(
             Guid.NewGuid(),
             "Find an actor by name robert",
@@ -128,7 +128,7 @@ public class ChatGovernanceInvocationTests : TestBase
         context.Actors.Add(actor);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var routingService = ServiceProvider.GetRequiredService<IChatMessageRoutingService>();
+        var routingService = ServiceProvider.GetRequiredService<IChatMessageRouter>();
         var response = await routingService.ResolveReplyAsync(
             Guid.NewGuid(),
             "please list actors",
@@ -152,7 +152,7 @@ public class ChatGovernanceInvocationTests : TestBase
         context.Actors.Add(actor);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var routingService = ServiceProvider.GetRequiredService<IChatMessageRoutingService>();
+        var routingService = ServiceProvider.GetRequiredService<IChatMessageRouter>();
         var response = await routingService.ResolveReplyAsync(
             Guid.NewGuid(),
             "list my actors",

@@ -15,9 +15,9 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 /// <summary>
 /// Resolves chat replies through deterministic intent routing, forced-tool inference, and finally
 /// the normal open agent turn. All AI and chat-presentation behavior stays here so application
-/// handlers depend only on <see cref="IChatMessageRoutingService"/>.
+/// handlers depend only on <see cref="IChatMessageRouter"/>.
 /// </summary>
-public sealed class ChatMessageRoutingService(
+public sealed class ChatMessageIntentRouter(
     AIAgent agent,
     ISender sender,
     IAgentFrameworkContext context,
@@ -25,7 +25,7 @@ public sealed class ChatMessageRoutingService(
     IRlsContext rlsContext,
     IWebSearchProvider webSearchProvider,
     IIntentClassifier intentClassifier,
-    ILogger<ChatMessageRoutingService> logger) : IChatMessageRoutingService, IIntentRouter
+    ILogger<ChatMessageIntentRouter> logger) : IChatMessageRouter, IIntentRouter
 {
     private readonly AIAgent _agent = agent;
     private readonly ISender _sender = sender;
@@ -34,7 +34,7 @@ public sealed class ChatMessageRoutingService(
     private readonly IRlsContext _rlsContext = rlsContext;
     private readonly IWebSearchProvider _webSearchProvider = webSearchProvider;
     private readonly IIntentClassifier _intentClassifier = intentClassifier;
-    private readonly ILogger<ChatMessageRoutingService> _logger = logger;
+    private readonly ILogger<ChatMessageIntentRouter> _logger = logger;
     private static readonly Action<ILogger, Exception?> LogForcedToolInferenceFailure = LoggerMessage.Define(
         LogLevel.Warning,
         new EventId(1, nameof(LogForcedToolInferenceFailure)),

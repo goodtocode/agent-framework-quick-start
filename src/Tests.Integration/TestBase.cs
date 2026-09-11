@@ -73,9 +73,9 @@ public abstract class TestBase : IDisposable
         services.AddSingleton<IIntentClassifier, RuleIntentClassifier>();
         services.AddScoped<IWebSearchProvider, NoOpWebSearchProvider>();
         services.AddScoped<ChatGovernanceGate>();
-        services.AddScoped<ChatMessageRoutingService>();
-        services.AddScoped<IChatMessageRoutingService>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
-        services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageRoutingService>());
+        services.AddScoped<ChatMessageIntentRouter>();
+        services.AddScoped<IChatMessageRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
+        services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
 
         services.AddDbContext<AgentFrameworkContext>(options =>
             options.UseInMemoryDatabase($"AgentFrameworkContext-{Guid.NewGuid()}")

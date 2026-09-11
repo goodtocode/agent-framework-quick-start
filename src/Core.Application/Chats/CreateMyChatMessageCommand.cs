@@ -11,10 +11,10 @@ public class CreateMyChatMessageCommand : UserScopedRequest, IRequest<CommandRes
 
 }
 
-public class CreateChatMessageCommandHandler(IAgentFrameworkContext context, IChatMessageRoutingService routingService) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
+public class CreateChatMessageCommandHandler(IAgentFrameworkContext context, IChatMessageRouter routingService) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
 {
     private readonly IAgentFrameworkContext _context = context;
-    private readonly IChatMessageRoutingService _routingService = routingService;
+    private readonly IChatMessageRouter _routingService = routingService;
 
     public async Task<CommandResult<ChatMessageDto>> Handle(CreateMyChatMessageCommand request, CancellationToken cancellationToken)
     {
