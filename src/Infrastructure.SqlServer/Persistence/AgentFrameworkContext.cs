@@ -14,6 +14,7 @@ public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
 
     public DbSet<ChatMessageEntity> ChatMessages => Set<ChatMessageEntity>();
     public DbSet<ChatSessionEntity> ChatSessions => Set<ChatSessionEntity>();
+    public DbSet<ChatRequestIdempotencyEntity> ChatRequestIdempotency => Set<ChatRequestIdempotencyEntity>();
     public DbSet<ActorEntity> Actors => Set<ActorEntity>();
     public DbSet<ChatGovernanceEntity> ChatGovernance => Set<ChatGovernanceEntity>();
     public DbSet<IntentEmbeddingEntity> IntentEmbeddings => Set<IntentEmbeddingEntity>();

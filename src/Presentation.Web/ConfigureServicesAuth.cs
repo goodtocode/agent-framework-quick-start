@@ -161,6 +161,32 @@ public static class ConfigureServicesAuth
         .AddHttpMessageHandler<TokenHandler>()
         .AddStandardResilienceHandler(resilienceOptions =>
         {
+            resilienceOptions.Retry.ShouldHandle = args =>
+            {
+                var method = args.Outcome.Result?.RequestMessage?.Method;
+                if (method == HttpMethod.Post
+                    || method == HttpMethod.Put
+                    || method == HttpMethod.Patch
+                    || method == HttpMethod.Delete)
+                {
+                    return ValueTask.FromResult(false);
+                }
+
+                if (args.Outcome.Exception is HttpRequestException or TaskCanceledException)
+                {
+                    return ValueTask.FromResult(true);
+                }
+
+                var statusCode = args.Outcome.Result?.StatusCode;
+                if (!statusCode.HasValue)
+                {
+                    return ValueTask.FromResult(false);
+                }
+
+                var code = (int)statusCode.Value;
+                return ValueTask.FromResult(code == 408 || code == 429 || code >= 500);
+            };
+
             resilienceOptions.Retry.UseJitter = true;
             resilienceOptions.Retry.MaxRetryAttempts = options.MaxRetry;
         });

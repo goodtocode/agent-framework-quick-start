@@ -93,6 +93,12 @@ public static class MyChatSessionEndpoints
 
     private static async Task<IResult> Post(HttpContext httpContext, ISender sender, CreateMyChatSessionCommand command)
     {
+        if (string.IsNullOrWhiteSpace(command.IdempotencyKey)
+            && httpContext.Request.Headers.TryGetValue(ChatIdempotency.HeaderName, out var idempotencyKeyHeader))
+        {
+            command.IdempotencyKey = idempotencyKeyHeader.ToString();
+        }
+
         var response = await sender.Send(command);
         var version = httpContext.Request.RouteValues["version"]?.ToString() ?? "1.0";
 

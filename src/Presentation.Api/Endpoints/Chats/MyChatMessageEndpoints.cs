@@ -65,6 +65,12 @@ public static class MyChatMessageEndpoints
 
     private static async Task<IResult> Post(HttpContext httpContext, ISender sender, CreateMyChatMessageCommand command)
     {
+        if (string.IsNullOrWhiteSpace(command.IdempotencyKey)
+            && httpContext.Request.Headers.TryGetValue(ChatIdempotency.HeaderName, out var idempotencyKeyHeader))
+        {
+            command.IdempotencyKey = idempotencyKeyHeader.ToString();
+        }
+
         var response = await sender.Send(command);
         if (response.IsNotFound || response.Value is null)
         {

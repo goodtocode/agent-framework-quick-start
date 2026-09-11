@@ -9,6 +9,7 @@ public interface IAgentFrameworkContext
 {
     DbSet<ChatMessageEntity> ChatMessages { get; }
     DbSet<ChatSessionEntity> ChatSessions { get; }
+    DbSet<ChatRequestIdempotencyEntity> ChatRequestIdempotency { get; }
     DbSet<ActorEntity> Actors { get; }
     DbSet<ChatGovernanceEntity> ChatGovernance { get; }
 
