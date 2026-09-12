@@ -38,29 +38,34 @@ public sealed class IntentEmbeddingInitializationService(
 
             foreach (var intent in catalog.Intents)
             {
-            var examples = intent.Examples
-                .Where(example => !string.IsNullOrWhiteSpace(example))
-                .Distinct(StringComparer.Ordinal)
-                .ToArray();
+                if (intent.Captures is { Count: > 0 })
+                {
+                    continue;
+                }
+
+                var examples = intent.Examples
+                    .Where(example => !string.IsNullOrWhiteSpace(example))
+                    .Distinct(StringComparer.Ordinal)
+                    .ToArray();
                 if (examples.Length == 0)
                 {
                     continue;
                 }
 
                 var vectors = await generator.GenerateBatchAsync(examples, cancellationToken);
-            var embeddings = examples
-                .Where(vectors.ContainsKey)
-                .Select(example => new Embedding
-                {
-                    Id = Guid.NewGuid(),
-                    IntentName = intent.Name,
-                    Source = EmbeddingSource.Example,
-                    SourceText = example,
-                    Vector = vectors[example],
-                    Weight = 1f,
-                    CreatedAtUtc = DateTime.UtcNow,
-                    UpdatedAtUtc = DateTime.UtcNow
-                });
+                var embeddings = examples
+                    .Where(vectors.ContainsKey)
+                    .Select(example => new Embedding
+                    {
+                        Id = Guid.NewGuid(),
+                        IntentName = intent.Name,
+                        Source = EmbeddingSource.Example,
+                        SourceText = example,
+                        Vector = vectors[example],
+                        Weight = 1f,
+                        CreatedAtUtc = DateTime.UtcNow,
+                        UpdatedAtUtc = DateTime.UtcNow
+                    });
 
                 await store.UpsertIntentEmbeddingsAsync(intent.Name, embeddings, cancellationToken);
             }

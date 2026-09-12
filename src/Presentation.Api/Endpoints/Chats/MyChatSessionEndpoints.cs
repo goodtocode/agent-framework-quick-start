@@ -1,4 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Chats;
+using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
 
 namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints.Chat;
 
@@ -35,6 +37,13 @@ public static class MyChatSessionEndpoints
         group.MapGet("{id:guid}", Get)
             .WithName("GetMyChatSession")
             .Produces<ChatSessionDto>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status500InternalServerError);
+
+        group.MapGet("{id:guid}/journey-step", GetJourneyStep)
+            .WithName("GetMyChatSessionJourneyStep")
+            .Produces<ChatJourneyStepDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
@@ -80,8 +89,17 @@ public static class MyChatSessionEndpoints
         return ApiResponseMapper.SingleOrNotFound(session);
     }
 
+    private static async Task<ChatJourneyStepDto> GetJourneyStep(ISender sender, Guid id)
+        => await sender.Send(new GetChatJourneyStepQuery { ChatSessionId = id });
+
     private static async Task<IResult> Post(HttpContext httpContext, ISender sender, CreateMyChatSessionCommand command)
     {
+        if (string.IsNullOrWhiteSpace(command.IdempotencyKey)
+            && httpContext.Request.Headers.TryGetValue(IdempotencyDefaults.HeaderName, out var idempotencyKeyHeader))
+        {
+            command.IdempotencyKey = idempotencyKeyHeader.ToString();
+        }
+
         var response = await sender.Send(command);
         var version = httpContext.Request.RouteValues["version"]?.ToString() ?? "1.0";
 

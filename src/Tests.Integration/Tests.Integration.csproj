@@ -13,6 +13,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="PresentationApi\**" />
+	  <EmbeddedResource Remove="PresentationApi\**" />
+	  <None Remove="PresentationApi\**" />
+	  <ReqnrollFeatureFile Remove="PresentationApi\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="appsettings.test.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
@@ -35,7 +42,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="PresentationApi\" />
+	  <ReqnrollObsoleteCodeBehindFiles Remove="PresentationApi\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ReqnrollLegacyCodeBehindFiles Remove="PresentationApi\**" />
 	</ItemGroup>
 
 </Project>

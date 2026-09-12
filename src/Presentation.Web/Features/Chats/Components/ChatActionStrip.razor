@@ -17,6 +17,6 @@
 }
 
 @code {
-    [Parameter] public IReadOnlyList<ChatActionOption> Actions { get; set; } = [];
-    [Parameter] public EventCallback<ChatActionOption> OnActionClicked { get; set; }
+    [Parameter] public IReadOnlyList<ChatSelectionOption> Actions { get; set; } = [];
+    [Parameter] public EventCallback<ChatSelectionOption> OnActionClicked { get; set; }
 }

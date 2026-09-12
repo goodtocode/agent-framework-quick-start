@@ -29,7 +29,7 @@
 
 
 @code {
-    private static readonly Regex ActionToken = new(@"\[action\|(?<label>[^|\]]+)\|(?<prompt>[^\]]+)\]", RegexOptions.Compiled);
+    private static readonly Regex SelectionToken = new(@"\[selection\|(?<kind>[^|\]]+)\|(?<id>[^|\]]+)\|(?<value>[^|\]]*)\|(?<label>[^\]]*)\]", RegexOptions.Compiled);
 
     [Parameter]
     public IEnumerable<ChatMessageModel> Messages { get; set; } = new List<ChatMessageModel>();
@@ -41,8 +41,8 @@
         message?.Role?.ToLowerInvariant() == "user";
 
     private string FormatAssistantMessage(ChatMessageModel message)
-        => ChatMessageFormatter.FormatAssistantMessageAsHtml(RemoveActionTokens(message.Content ?? string.Empty));
+        => ChatMessageFormatter.FormatAssistantMessageAsHtml(RemoveSelectionTokens(message.Content ?? string.Empty));
 
-    private static string RemoveActionTokens(string message)
-        => ActionToken.Replace(message, string.Empty).Trim();
+    private static string RemoveSelectionTokens(string message)
+        => SelectionToken.Replace(message, string.Empty).Trim();
 }

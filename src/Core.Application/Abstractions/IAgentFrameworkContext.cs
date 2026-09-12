@@ -1,5 +1,6 @@
 ﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
 using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentFramework.Core.Domain.Common;
 using Goodtocode.AgentFramework.Core.Domain.Governance;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -9,6 +10,7 @@ public interface IAgentFrameworkContext
 {
     DbSet<ChatMessageEntity> ChatMessages { get; }
     DbSet<ChatSessionEntity> ChatSessions { get; }
+    DbSet<RequestIdempotencyEntity> RequestIdempotency { get; }
     DbSet<ActorEntity> Actors { get; }
     DbSet<ChatGovernanceEntity> ChatGovernance { get; }
 

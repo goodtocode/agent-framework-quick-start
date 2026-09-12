@@ -8,11 +8,16 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 public static class IntentNames
 {
     public const string QueryChatSessionsList = nameof(QueryChatSessionsList);
+    public const string QueryMyChatMessagesForCurrentChatSession = nameof(QueryMyChatMessagesForCurrentChatSession);
     public const string QueryChatMessagesList = nameof(QueryChatMessagesList);
     public const string QueryChatMessagesForSession = nameof(QueryChatMessagesForSession);
     public const string QueryActorById = nameof(QueryActorById);
     public const string QueryActorsByName = nameof(QueryActorsByName);
     public const string QueryActorsList = nameof(QueryActorsList);
     public const string QueryMyActorsList = nameof(QueryMyActorsList);
+    public const string SelectActor = nameof(SelectActor);
+    public const string SelectChatSession = nameof(SelectChatSession);
+    public const string QueryChatSessionsForSelectedActor = nameof(QueryChatSessionsForSelectedActor);
+    public const string QueryChatMessagesForSelectedChatSession = nameof(QueryChatMessagesForSelectedChatSession);
     public const string SearchWeb = nameof(SearchWeb);
 }

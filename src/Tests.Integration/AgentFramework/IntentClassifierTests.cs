@@ -66,6 +66,29 @@ public sealed class IntentClassifierTests
     }
 
     [TestMethod]
+    public async Task SemanticClassifierSearchesOnlyNonParameterizedIntents()
+    {
+        var store = new FakeEmbeddingStore(null);
+        var classifier = new SemanticIntentClassifier(
+            new IntentCatalog(
+            [
+                new IntentDefinition("list-actors", ["list actors"]),
+                new IntentDefinition("find-actor", ["find an actor by name"],
+                    [new PhraseCapture("find an actor by name ", "name", CaptureKind.Rest)])
+            ]),
+            new FakeEmbeddingGenerator(),
+            store,
+            Options.Create(new IntentClassificationOptions { EnableSemantic = true }),
+            NullLogger<SemanticIntentClassifier>.Instance);
+
+        await classifier.ClassifyAsync("show me the people", cancellationToken: CancellationToken.None);
+
+        Assert.IsNotNull(store.EligibleIntentNames);
+        CollectionAssert.Contains(store.EligibleIntentNames.ToList(), "list-actors");
+        CollectionAssert.DoesNotContain(store.EligibleIntentNames.ToList(), "find-actor");
+    }
+
+    [TestMethod]
     public async Task DefaultCatalogRoutesPerSessionMessagePromptsWithSessionCapture()
     {
         var sessionId = Guid.NewGuid();
@@ -82,6 +105,44 @@ public sealed class IntentClassifierTests
             Assert.IsNotNull(result);
             Assert.AreEqual(IntentNames.QueryChatMessagesForSession, result!.Intent.Name);
             Assert.AreEqual(sessionId.ToString("D"), result.Captures!["sessionId"]);
+        }
+    }
+
+    [TestMethod]
+    public async Task DefaultCatalogRoutesMidChainMyChatSessionsEntryPoint()
+    {
+        var classifier = new RuleIntentClassifier(DefaultIntentCatalogFactory.Create());
+
+        foreach (var prompt in new[]
+        {
+            "List my chat sessions",
+            "Please list my recent chat sessions",
+            "Show my conversations"
+        })
+        {
+            var result = await classifier.ClassifyAsync(prompt);
+
+            Assert.IsNotNull(result, $"Expected a deterministic match for '{prompt}'.");
+            Assert.AreEqual(IntentNames.QueryChatSessionsList, result!.Intent.Name);
+        }
+    }
+
+    [TestMethod]
+    public async Task DefaultCatalogRoutesMidChainMyMessagesForCurrentChatSessionEntryPoint()
+    {
+        var classifier = new RuleIntentClassifier(DefaultIntentCatalogFactory.Create());
+
+        foreach (var prompt in new[]
+        {
+            "List my messages for this chat session",
+            "Show my messages for this chat session",
+            "List messages for this chat session"
+        })
+        {
+            var result = await classifier.ClassifyAsync(prompt);
+
+            Assert.IsNotNull(result, $"Expected a deterministic match for '{prompt}'.");
+            Assert.AreEqual(IntentNames.QueryMyChatMessagesForCurrentChatSession, result!.Intent.Name);
         }
     }
 
@@ -106,9 +167,15 @@ public sealed class IntentClassifierTests
 
     private sealed class FakeEmbeddingStore(EmbeddingMatch? match) : IIntentEmbeddingStore
     {
+        public IReadOnlySet<string>? EligibleIntentNames { get; private set; }
+
         public Task UpsertIntentEmbeddingsAsync(string intentName, IEnumerable<Embedding> embeddings, CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task<IReadOnlyList<EmbeddingMatch>> SearchAsync(float[] queryVector, CancellationToken cancellationToken, int topK = 5, float similarityThreshold = 0.75f) =>
-            Task.FromResult<IReadOnlyList<EmbeddingMatch>>(match is null ? [] : [match]);
+        public Task<IReadOnlyList<EmbeddingMatch>> SearchAsync(float[] queryVector, CancellationToken cancellationToken, int topK = 5, float similarityThreshold = 0.75f, IReadOnlySet<string>? eligibleIntentNames = null)
+        {
+            EligibleIntentNames = eligibleIntentNames;
+            return Task.FromResult<IReadOnlyList<EmbeddingMatch>>(match is null ? [] : [match]);
+        }
+
         public Task DeleteIntentEmbeddingsAsync(string intentName, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task<bool> IsReadyAsync(CancellationToken cancellationToken) => Task.FromResult(true);
     }

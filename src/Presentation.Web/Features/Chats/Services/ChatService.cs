@@ -11,6 +11,7 @@ public interface IChatService
     Task<ChatSessionModel> CreateSessionAsync(string firstMessage);
     Task RenameSessionAsync(Guid chatSessionId, string newTitle);
     Task<ChatMessageModel> SendMessageAsync(Guid chatSessionId, string newMessage);
+    Task<ChatJourneyStepModel> GetJourneyStepAsync(Guid chatSessionId);
 }
 
 public class ChatService(BackendApiClient client, IClaimsReader userInfo) : ApiService, IChatService
@@ -40,10 +41,13 @@ public class ChatService(BackendApiClient client, IClaimsReader userInfo) : ApiS
 
     public async Task<ChatSessionModel> CreateSessionAsync(string firstMessage)
     {
+        var idempotencyKey = Guid.NewGuid().ToString("N");
         var command = new CreateMyChatSessionCommand
         {
             Message = firstMessage
         };
+
+        using var _ = _apiClient.UseIdempotencyKey(idempotencyKey);
         var response = await HandleApiException(() => _apiClient.CreateMyChatSessionAsync(command));
 
         return ChatSessionModel.Create(response);
@@ -51,18 +55,30 @@ public class ChatService(BackendApiClient client, IClaimsReader userInfo) : ApiS
 
     public async Task RenameSessionAsync(Guid chatSessionId, string newTitle)
     {
+        using var _ = _apiClient.UseIdempotencyKey(Guid.NewGuid().ToString("N"));
         await HandleApiExceptionIgnoreNotFound(() => _apiClient.PatchMyChatSessionAsync(chatSessionId, new PatchMyChatSessionCommand { Id = chatSessionId, Title = newTitle }));
     }
 
     public async Task<ChatMessageModel> SendMessageAsync(Guid chatSessionId, string newMessage)
     {
-        var response = await HandleApiException(() => _apiClient.CreateMyChatMessageAsync(
-            new CreateMyChatMessageCommand
-            {
-                ChatSessionId = chatSessionId,
-                Message = newMessage
-            }));
+        var idempotencyKey = Guid.NewGuid().ToString("N");
+        var command = new CreateMyChatMessageCommand
+        {
+            ChatSessionId = chatSessionId,
+            Message = newMessage
+        };
+
+        using var _ = _apiClient.UseIdempotencyKey(idempotencyKey);
+        var response = await HandleApiException(() => _apiClient.CreateMyChatMessageAsync(command));
 
         return ChatMessageModel.Create(response);
+    }
+
+    public async Task<ChatJourneyStepModel> GetJourneyStepAsync(Guid chatSessionId)
+    {
+        var response = await HandleApiExceptionOrDefault(() => _apiClient.GetMyChatSessionJourneyStepAsync(
+            chatSessionId));
+
+        return ChatJourneyStepModel.Create(response);
     }
 }

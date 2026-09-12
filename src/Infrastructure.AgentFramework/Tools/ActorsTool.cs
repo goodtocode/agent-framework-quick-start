@@ -12,8 +12,10 @@ public class ActorResponse : IActorResponse
 }
 
 
-public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTool(serviceProvider), IActorsTool
+public sealed class ActorsTool(IServiceProvider serviceProvider, IAgentChatContextAccessor chatContextAccessor) : ScopedAgentTool(serviceProvider), IActorsTool
 {
+    private readonly IAgentChatContextAccessor _chatContextAccessor = chatContextAccessor;
+
     public static string ToolName => "ActorsTool";
     public string FunctionName => _currentFunctionName;
     public Dictionary<string, object> Parameters => _currentParameters;
@@ -83,6 +85,8 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
             return null;
         }
 
+        UpsertContext(context => context with { ActorId = actorId });
+
         return new ActorResponse
         {
             ActorId = actorId,
@@ -148,5 +152,16 @@ public sealed class ActorsTool(IServiceProvider serviceProvider) : ScopedAgentTo
                 ? "Actor exists but name is not yet linked to Entra External ID."
                 : "Actor found."
         };
+    }
+
+    private void UpsertContext(Func<ChatToolSessionContext, ChatToolSessionContext> update)
+    {
+        var chatSessionId = _chatContextAccessor.CurrentChatSessionId;
+        if (!chatSessionId.HasValue)
+        {
+            return;
+        }
+
+        _chatContextAccessor.UpsertContext(chatSessionId.Value, update);
     }
 }

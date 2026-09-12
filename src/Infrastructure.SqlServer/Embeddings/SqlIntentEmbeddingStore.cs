@@ -99,7 +99,8 @@ public sealed class SqlIntentEmbeddingStore : IIntentEmbeddingStore
         float[] queryVector,
         CancellationToken cancellationToken,
         int topK = 5,
-        float similarityThreshold = 0.75f)
+        float similarityThreshold = 0.75f,
+        IReadOnlySet<string>? eligibleIntentNames = null)
     {
         if (queryVector == null || queryVector.Length == 0)
             throw new ArgumentException("Query vector cannot be null or empty", nameof(queryVector));
@@ -112,10 +113,20 @@ public sealed class SqlIntentEmbeddingStore : IIntentEmbeddingStore
 
         try
         {
+            if (eligibleIntentNames is { Count: 0 })
+            {
+                return Array.Empty<EmbeddingMatch>();
+            }
+
+            var eligibleNames = eligibleIntentNames?.ToArray();
             // Load all embeddings (brute-force acceptable for ~2500 embeddings)
-            var allEmbeddings = await _context.IntentEmbeddings
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+            var embeddingsQuery = _context.IntentEmbeddings.AsNoTracking();
+            if (eligibleNames is not null)
+            {
+                embeddingsQuery = embeddingsQuery.Where(embedding => eligibleNames.Contains(embedding.IntentName));
+            }
+
+            var allEmbeddings = await embeddingsQuery.ToListAsync(cancellationToken);
 
             if (allEmbeddings.Count == 0)
             {

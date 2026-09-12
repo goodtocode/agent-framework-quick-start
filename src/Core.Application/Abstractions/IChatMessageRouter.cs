@@ -4,7 +4,7 @@ namespace Goodtocode.AgentFramework.Core.Application.Abstractions;
 /// Resolves an assistant reply while keeping chat presentation, intent routing, and AI integration
 /// outside application command and query handlers.
 /// </summary>
-public interface IChatMessageRoutingService
+public interface IChatMessageRouter
 {
     /// <summary>
     /// Resolves the reply for <paramref name="message"/> in the specified chat session.

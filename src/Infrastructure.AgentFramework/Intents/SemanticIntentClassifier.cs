@@ -26,11 +26,16 @@ public sealed class SemanticIntentClassifier(
         }
 
         var queryVector = await embeddingGenerator.GenerateAsync(message, cancellationToken);
+        var eligibleIntentNames = catalog.Intents
+            .Where(intent => intent.Captures is not { Count: > 0 })
+            .Select(intent => intent.Name)
+            .ToHashSet(StringComparer.Ordinal);
         var matches = await embeddingStore.SearchAsync(
             queryVector,
             cancellationToken,
             options.Value.TopKResults,
-            options.Value.SemanticThreshold);
+            options.Value.SemanticThreshold,
+            eligibleIntentNames);
 
         foreach (var match in matches)
         {
