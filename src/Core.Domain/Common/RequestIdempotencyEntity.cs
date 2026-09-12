@@ -1,16 +1,19 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Chats;
+namespace Goodtocode.AgentFramework.Core.Domain.Common;
 
-public class ChatRequestIdempotencyEntity : SecuredEntity<ChatRequestIdempotencyEntity>
+public class RequestIdempotencyEntity : SecuredEntity<RequestIdempotencyEntity>
 {
-    public string Operation { get; private set; } = string.Empty;
+    public string OperationKey { get; private set; } = string.Empty;
     public string IdempotencyKey { get; private set; } = string.Empty;
     public string RequestHash { get; private set; } = string.Empty;
+    public string ResponseType { get; private set; } = string.Empty;
+    public string ResponsePayload { get; private set; } = string.Empty;
+    public string? ResourceType { get; private set; }
     public Guid? ResourceId { get; private set; }
-    public Guid? ChatSessionId { get; private set; }
+    public Guid? ScopeId { get; private set; }
 
-    protected ChatRequestIdempotencyEntity() : base() { }
+    protected RequestIdempotencyEntity() : base() { }
 
-    private ChatRequestIdempotencyEntity(
+    private RequestIdempotencyEntity(
         Guid id,
         string canonicalKey,
         Guid ownerId,
@@ -18,32 +21,41 @@ public class ChatRequestIdempotencyEntity : SecuredEntity<ChatRequestIdempotency
         Guid createdBy,
         DateTime createdOn,
         DateTimeOffset timestamp,
-        string operation,
+        string operationKey,
         string idempotencyKey,
         string requestHash,
+        string responseType,
+        string responsePayload,
+        string? resourceType,
         Guid? resourceId,
-        Guid? chatSessionId)
+        Guid? scopeId)
         : base(id: id, partitionKey: tenantId.ToString(), rowKey: canonicalKey,
                ownerId: ownerId, tenantId: tenantId, createdBy: createdBy,
                createdOn: createdOn, timestamp: timestamp)
     {
-        Operation = operation;
+        OperationKey = operationKey;
         IdempotencyKey = idempotencyKey;
         RequestHash = requestHash;
+        ResponseType = responseType;
+        ResponsePayload = responsePayload;
+        ResourceType = resourceType;
         ResourceId = resourceId;
-        ChatSessionId = chatSessionId;
+        ScopeId = scopeId;
     }
 
-    public static ChatRequestIdempotencyEntity Create(
+    public static RequestIdempotencyEntity Create(
         Guid ownerId,
         Guid tenantId,
-        string operation,
+        string operationKey,
         string idempotencyKey,
         string requestHash,
+        string responseType,
+        string responsePayload,
+        string? resourceType,
         Guid? resourceId,
-        Guid? chatSessionId)
+        Guid? scopeId)
     {
-        return new ChatRequestIdempotencyEntity(
+        return new RequestIdempotencyEntity(
             id: Guid.NewGuid(),
             canonicalKey: Guid.NewGuid().ToString(),
             ownerId: ownerId,
@@ -51,10 +63,13 @@ public class ChatRequestIdempotencyEntity : SecuredEntity<ChatRequestIdempotency
             createdBy: ownerId,
             createdOn: DateTime.UtcNow,
             timestamp: DateTimeOffset.UtcNow,
-            operation: operation,
+            operationKey: operationKey,
             idempotencyKey: idempotencyKey,
             requestHash: requestHash,
+            responseType: responseType,
+            responsePayload: responsePayload,
+            resourceType: resourceType,
             resourceId: resourceId,
-            chatSessionId: chatSessionId);
+            scopeId: scopeId);
     }
 }

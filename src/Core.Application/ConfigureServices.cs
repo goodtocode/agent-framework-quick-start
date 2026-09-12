@@ -1,5 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
 using Goodtocode.AgentFramework.Core.Application.Common.Behaviors;
+using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
 using Goodtocode.AgentFramework.Core.Application.Governance;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,8 +16,10 @@ public static class ConfigureServices
         services.AddTransient(typeof(IPipelineBehavior<>), typeof(CustomPerformanceBehavior<>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CustomUnhandledExceptionBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CustomValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(IdempotencyBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CustomPerformanceBehavior<,>));
         services.AddValidationServices();
+        services.AddSingleton<IIdempotencyDuplicateWindowPolicy, IdempotencyDuplicateWindowPolicy>();
         services.AddSingleton<ChatGovernanceGate>();
         services.AddSingleton<IChatSelectionTokenParser, ChatSelectionTokenParser>();
 

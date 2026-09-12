@@ -6,6 +6,7 @@ namespace Goodtocode.AgentFramework.Api.Clients;
 
 public partial class BackendApiClient
 {
+    private const string IdempotencyHeaderName = "Idempotency-Key";
     private static readonly AsyncLocal<string?> CurrentIdempotencyKey = new();
 
     public IDisposable UseIdempotencyKey(string key)
@@ -32,12 +33,12 @@ public partial class BackendApiClient
 
         var key = CurrentIdempotencyKey.Value;
         if (string.IsNullOrWhiteSpace(key)
-            || request.Headers.Contains("Idempotency-Key"))
+            || request.Headers.Contains(IdempotencyHeaderName))
         {
             return;
         }
 
-        request.Headers.Add("Idempotency-Key", key);
+        request.Headers.Add(IdempotencyHeaderName, key);
     }
 
     private sealed class RestoreIdempotencyKeyScope(string? prior) : IDisposable

@@ -1,4 +1,5 @@
 using Goodtocode.AgentFramework.Core.Application.Chats;
+using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
 
 namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints.Chat;
 
@@ -66,7 +67,7 @@ public static class MyChatMessageEndpoints
     private static async Task<IResult> Post(HttpContext httpContext, ISender sender, CreateMyChatMessageCommand command)
     {
         if (string.IsNullOrWhiteSpace(command.IdempotencyKey)
-            && httpContext.Request.Headers.TryGetValue(ChatIdempotency.HeaderName, out var idempotencyKeyHeader))
+            && httpContext.Request.Headers.TryGetValue(IdempotencyDefaults.HeaderName, out var idempotencyKeyHeader))
         {
             command.IdempotencyKey = idempotencyKeyHeader.ToString();
         }

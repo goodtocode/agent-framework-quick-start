@@ -1,20 +1,33 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Chats;
-using Goodtocode.AgentFramework.Core.Application.Abstractions;
+﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
+using Goodtocode.AgentFramework.Core.Domain.Chats;
 
 namespace Goodtocode.AgentFramework.Core.Application.Chats;
 
-public class CreateMyChatMessageCommand : UserScopedRequest, IRequest<CommandResult<ChatMessageDto>>
+public class CreateMyChatMessageCommand : IdempotentUserScopedRequest, IRequest<CommandResult<ChatMessageDto>>, IIdempotencyRequestMetadata
 {
     public Guid ChatSessionId { get; set; }
     public string? Message { get; set; }
     public ChatRoutingMode RoutingMode { get; set; } = ChatRoutingMode.Routed;
-    public string? IdempotencyKey { get; set; }
+    public Guid? ScopeId => ChatSessionId;
+    public TimeSpan? DuplicateWindow => TimeSpan.FromSeconds(5);
+
+    public string BuildRequestHash()
+    {
+        var normalizedMessage = IdempotencyData.NormalizeText(Message);
+        var routingMode = RoutingMode.ToString();
+        return IdempotencyData.Sha256($"{OperationKey}|{ChatSessionId:D}|{routingMode}|{normalizedMessage}");
+    }
 }
 
-public class CreateChatMessageCommandHandler(IAgentFrameworkContext context, IChatMessageRouter routingService) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
+public class CreateChatMessageCommandHandler(
+    IAgentFrameworkContext context,
+    IChatMessageRouter routingService,
+    IIdempotencyDuplicateWindowPolicy duplicateWindowPolicy) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
 {
     private readonly IAgentFrameworkContext _context = context;
     private readonly IChatMessageRouter _routingService = routingService;
+    private readonly IIdempotencyDuplicateWindowPolicy _duplicateWindowPolicy = duplicateWindowPolicy;
 
     public async Task<CommandResult<ChatMessageDto>> Handle(CreateMyChatMessageCommand request, CancellationToken cancellationToken)
     {
@@ -30,11 +43,10 @@ public class CreateChatMessageCommandHandler(IAgentFrameworkContext context, ICh
 
         ChatGuard.GuardAgainstUnauthorized(chatSession, request.UserContext!);
 
-        var requestHash = BuildRequestHash(request);
-        var duplicateMessage = await TryResolveDuplicateMessageAsync(request, requestHash, cancellationToken);
-        if (duplicateMessage is not null)
+        var duplicateResponse = await TryResolveDuplicateMessageAsync(request, cancellationToken);
+        if (duplicateResponse is not null)
         {
-            return CommandResult<ChatMessageDto>.Success(ChatMessageDto.CreateFrom(duplicateMessage));
+            return duplicateResponse;
         }
 
         var agentReply = await _routingService.ResolveReplyAsync(
@@ -63,83 +75,38 @@ public class CreateChatMessageCommandHandler(IAgentFrameworkContext context, ICh
         chatSession.Messages.Add(chatMessageResponse);
         _context.ChatMessages.Add(chatMessageResponse);
 
-        _context.ChatRequestIdempotency.Add(ChatRequestIdempotencyEntity.Create(
-            ownerId: request.UserContext.OwnerId,
-            tenantId: request.UserContext.TenantId,
-            operation: ChatIdempotency.CreateMessageOperation,
-            idempotencyKey: string.IsNullOrWhiteSpace(request.IdempotencyKey) ? Guid.NewGuid().ToString("N") : request.IdempotencyKey.Trim(),
-            requestHash: requestHash,
-            resourceId: chatMessage.Id,
-            chatSessionId: chatSession.Id));
-
         await _context.SaveChangesAsync(cancellationToken);
 
         return CommandResult<ChatMessageDto>.Success(ChatMessageDto.CreateFrom(chatMessage));
     }
 
-    private async Task<ChatMessageEntity?> TryResolveDuplicateMessageAsync(
+    private async Task<CommandResult<ChatMessageDto>?> TryResolveDuplicateMessageAsync(
         CreateMyChatMessageCommand request,
-        string requestHash,
         CancellationToken cancellationToken)
     {
         var ownerId = request.UserContext!.OwnerId;
         var tenantId = request.UserContext.TenantId;
-        var now = DateTimeOffset.UtcNow;
-
-        if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
+        var requestHash = request.BuildRequestHash();
+        var duplicateWindow = _duplicateWindowPolicy.ResolveWindow(request);
+        if (duplicateWindow <= TimeSpan.Zero)
         {
-            var existingByKey = await _context.ChatRequestIdempotency
-                .Where(x => x.OwnerId == ownerId
-                    && x.TenantId == tenantId
-                    && x.Operation == ChatIdempotency.CreateMessageOperation
-                    && x.ChatSessionId == request.ChatSessionId
-                    && x.IdempotencyKey == request.IdempotencyKey)
-                .OrderByDescending(x => x.Timestamp)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            var byKeyMessage = await TryLoadMessageAsync(existingByKey?.ResourceId, ownerId, tenantId, cancellationToken);
-            if (byKeyMessage is not null)
-            {
-                return byKeyMessage;
-            }
+            return null;
         }
 
-        var cutoff = now - ChatIdempotency.DuplicateWindow;
-        var existingByHash = await _context.ChatRequestIdempotency
+        var cutoff = DateTimeOffset.UtcNow - duplicateWindow;
+
+        var existingByHash = await _context.RequestIdempotency
             .Where(x => x.OwnerId == ownerId
                 && x.TenantId == tenantId
-                && x.Operation == ChatIdempotency.CreateMessageOperation
-                && x.ChatSessionId == request.ChatSessionId
+                && x.OperationKey == request.OperationKey
+                && x.ScopeId == request.ChatSessionId
                 && x.RequestHash == requestHash
                 && x.Timestamp >= cutoff)
             .OrderByDescending(x => x.Timestamp)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return await TryLoadMessageAsync(existingByHash?.ResourceId, ownerId, tenantId, cancellationToken);
-    }
-
-    private async Task<ChatMessageEntity?> TryLoadMessageAsync(
-        Guid? chatMessageId,
-        Guid ownerId,
-        Guid tenantId,
-        CancellationToken cancellationToken)
-    {
-        if (!chatMessageId.HasValue)
-        {
-            return null;
-        }
-
-        return await _context.ChatMessages
-            .FirstOrDefaultAsync(x => x.Id == chatMessageId.Value
-                && x.OwnerId == ownerId
-                && x.TenantId == tenantId
-                && x.Role == ChatMessageRole.user, cancellationToken);
-    }
-
-    private static string BuildRequestHash(CreateMyChatMessageCommand request)
-    {
-        var normalizedMessage = ChatIdempotency.NormalizeMessage(request.Message);
-        var routingMode = request.RoutingMode.ToString();
-        return ChatIdempotency.Sha256($"{request.ChatSessionId:D}|{routingMode}|{normalizedMessage}");
+        return existingByHash is null
+            ? null
+            : IdempotencyData.Deserialize<CommandResult<ChatMessageDto>>(existingByHash.ResponsePayload);
     }
 }
