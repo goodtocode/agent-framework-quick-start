@@ -128,6 +128,37 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RequestIdempotency",
+                schema: "Chat",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OperationKey = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    IdempotencyKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    RequestHash = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ResponseType = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ResponsePayload = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResourceType = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ResourceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ScopeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    RowKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestIdempotency", x => x.Id)
+                        .Annotation("SqlServer:Clustered", false);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChatMessages",
                 schema: "Chat",
                 columns: table => new
@@ -222,6 +253,27 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                 schema: "Chat",
                 table: "IntentEmbeddings",
                 columns: new[] { "IntentName", "Source" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestIdempotency_DuplicateWindowLookup",
+                schema: "Chat",
+                table: "RequestIdempotency",
+                columns: new[] { "TenantId", "OwnerId", "OperationKey", "ScopeId", "RequestHash", "Timestamp" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestIdempotency_TenantOwnerOperationKey",
+                schema: "Chat",
+                table: "RequestIdempotency",
+                columns: new[] { "TenantId", "OwnerId", "OperationKey", "IdempotencyKey" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestIdempotency_Timestamp",
+                schema: "Chat",
+                table: "RequestIdempotency",
+                column: "Timestamp",
+                unique: true)
+                .Annotation("SqlServer:Clustered", true);
         }
 
         /// <inheritdoc />
@@ -241,6 +293,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "IntentEmbeddings",
+                schema: "Chat");
+
+            migrationBuilder.DropTable(
+                name: "RequestIdempotency",
                 schema: "Chat");
 
             migrationBuilder.DropTable(

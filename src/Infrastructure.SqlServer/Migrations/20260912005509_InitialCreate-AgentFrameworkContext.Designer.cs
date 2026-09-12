@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 {
     [DbContext(typeof(AgentFrameworkContext))]
-    [Migration("20260911213611_InitialCreate-AgentFrameworkContext")]
+    [Migration("20260912005509_InitialCreate-AgentFrameworkContext")]
     partial class InitialCreateAgentFrameworkContext
     {
         /// <inheritdoc />
@@ -210,6 +210,96 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Timestamp"));
 
                     b.ToTable("ChatSessions", "Chat");
+                });
+
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Common.RequestIdempotencyEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OperationKey")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RequestHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid?>("ResourceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ResourceType")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ResponsePayload")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponseType")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RowKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ScopeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
+                    b.HasIndex("Timestamp")
+                        .IsUnique();
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Timestamp"));
+
+                    b.HasIndex("TenantId", "OwnerId", "OperationKey", "IdempotencyKey")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RequestIdempotency_TenantOwnerOperationKey");
+
+                    b.HasIndex("TenantId", "OwnerId", "OperationKey", "ScopeId", "RequestHash", "Timestamp")
+                        .HasDatabaseName("IX_RequestIdempotency_DuplicateWindowLookup");
+
+                    b.ToTable("RequestIdempotency", "Chat");
                 });
 
             modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Governance.ChatGovernanceEntity", b =>

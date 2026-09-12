@@ -1522,6 +1522,12 @@ namespace Goodtocode.AgentFramework.Api.Clients
         [System.Text.Json.Serialization.JsonPropertyName("userContext")]
         public IUserContext UserContext { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("idempotencyKey")]
+        public string IdempotencyKey { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("operationKey")]
+        public string OperationKey { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("chatSessionId")]
         public System.Guid ChatSessionId { get; set; }
 
@@ -1531,6 +1537,12 @@ namespace Goodtocode.AgentFramework.Api.Clients
         [System.Text.Json.Serialization.JsonPropertyName("routingMode")]
         public ChatRoutingMode RoutingMode { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("scopeId")]
+        public System.Guid? ScopeId { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("duplicateWindow")]
+        public string DuplicateWindow { get; set; }
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -1539,6 +1551,12 @@ namespace Goodtocode.AgentFramework.Api.Clients
 
         [System.Text.Json.Serialization.JsonPropertyName("userContext")]
         public IUserContext UserContext { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("idempotencyKey")]
+        public string IdempotencyKey { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("operationKey")]
+        public string OperationKey { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
         public string Title { get; set; }
@@ -1551,6 +1569,12 @@ namespace Goodtocode.AgentFramework.Api.Clients
 
         [System.Text.Json.Serialization.JsonPropertyName("personaVersion")]
         public int? PersonaVersion { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("scopeId")]
+        public System.Guid? ScopeId { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("duplicateWindow")]
+        public string DuplicateWindow { get; set; }
 
     }
 
