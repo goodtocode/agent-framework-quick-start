@@ -7,6 +7,8 @@ updates:
       day: "monday"
       time: "06:00"
     open-pull-requests-limit: 10
+    assignees:
+      - "goodtocode"
     groups:
       microsoft-packages:
         patterns:
@@ -26,3 +28,5 @@ updates:
       day: "monday"
       time: "06:30"
     open-pull-requests-limit: 10
+    assignees:
+      - "goodtocode"
