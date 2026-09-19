@@ -10,7 +10,7 @@ for a given solution) belongs in that solution's own product documentation — r
 product-specific journey document alongside this one, not instead of it.
 
 This document assumes familiarity with
-`docs/governance/design-Intent-classification-and-routing.md`. That document governs how a
+`docs/governance/architecture-intent-classification-and-routing.md`. That document governs how a
 free-form message resolves to a tool call; this document governs what a tool call **returns** and
 how the chat surface turns that return value into the next step of a guided journey.
 

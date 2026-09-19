@@ -146,6 +146,55 @@ public sealed class IntentClassifierTests
         }
     }
 
+    [TestMethod]
+    public async Task TokenRulesMatchReorderedActorAndChatWording()
+    {
+        var classifier = new RuleIntentClassifier(DefaultIntentCatalogFactory.Create());
+
+        var actorResult = await classifier.ClassifyAsync("Could you find this actor by name of Ada Lovelace?");
+        var chatResult = await classifier.ClassifyAsync("Please, for my recent chat sessions, show the history.");
+
+        Assert.IsNotNull(actorResult);
+        Assert.AreEqual(IntentNames.QueryActorsByName, actorResult!.Intent.Name);
+        Assert.AreEqual("Ada Lovelace?", actorResult.Captures!["name"]);
+        Assert.IsNotNull(chatResult);
+        Assert.AreEqual(IntentNames.QueryChatSessionsList, chatResult!.Intent.Name);
+    }
+
+    [TestMethod]
+    public async Task TokenRulesPreferMoreSpecificIntentAndRejectBlockers()
+    {
+        var classifier = new RuleIntentClassifier(new IntentCatalog(
+        [
+            new IntentDefinition("broad", [], TokenRule: new IntentTokenRule(["actor"], [["show"]])),
+            new IntentDefinition("specific", [], TokenRule: new IntentTokenRule(["actor", "my"], [["show"]]))
+        ]));
+
+        var specific = await classifier.ClassifyAsync("show my actors");
+        var blocked = await new RuleIntentClassifier(new IntentCatalog(
+        [
+            new IntentDefinition("messages", [], TokenRule: new IntentTokenRule(["actor"], [["show"]], ["message"]))
+        ])).ClassifyAsync("show actor messages");
+
+        Assert.IsNotNull(specific);
+        Assert.AreEqual("specific", specific!.Intent.Name);
+        Assert.IsNull(blocked);
+    }
+
+    [TestMethod]
+    public async Task AmbiguousEqualSpecificityTokenRulesFallThrough()
+    {
+        var classifier = new RuleIntentClassifier(new IntentCatalog(
+        [
+            new IntentDefinition("first", [], TokenRule: new IntentTokenRule(["actor"], [["find"]])),
+            new IntentDefinition("second", [], TokenRule: new IntentTokenRule(["actor"], [["find"]]))
+        ]));
+
+        var result = await classifier.ClassifyAsync("find actor");
+
+        Assert.IsNull(result);
+    }
+
     private static SemanticIntentClassifier CreateSemanticClassifier(EmbeddingMatch? match)
     {
         var catalog = new IntentCatalog([new IntentDefinition("list-actors", ["show actors"])]);

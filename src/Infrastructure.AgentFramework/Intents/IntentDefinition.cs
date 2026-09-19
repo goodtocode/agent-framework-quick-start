@@ -17,8 +17,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 /// A successful match contributes its value to <see cref="IntentMatch.Captures"/> under
 /// <see cref="PhraseCapture.CaptureName"/>. Prefer this over hand-written regex for readability.
 /// </param>
+/// <param name="TokenRule">Optional normalized token criteria evaluated after captures and before examples.</param>
 public sealed record IntentDefinition(
     string Name,
     IReadOnlyList<string> Examples,
     IReadOnlyList<PhraseCapture>? Captures = null,
-    IReadOnlyList<string>? FollowUpExamples = null);
+    IReadOnlyList<string>? FollowUpExamples = null,
+    IntentTokenRule? TokenRule = null);
