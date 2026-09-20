@@ -1,7 +1,7 @@
 using Goodtocode.AgentFramework.Core.Application.Chats;
 using Goodtocode.AgentFramework.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Chat;
+namespace Goodtocode.AgentFramework.Tests.Integration.Chats;
 
 [Binding]
 [Scope(Tag = "getChatSessionsPaginatedQuery")]

@@ -3,10 +3,9 @@ using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
 
 /// <summary>
-/// Tier 1a suggested-prompt resolution: a deterministic catalog lookup by resolved journey level
-/// and optional scope code, with no AI or embedding call. Tier 1b (embedding similarity) and
-/// Tier 2 (agent-generated prompts) are deliberate follow-ups, mirroring
-/// <c>SemanticIntentClassifier</c>/<c>HybridIntentClassifier</c>.
+/// Deterministic suggested-prompt resolution by resolved journey level and optional scope code.
+/// AI- or embedding-generated prompts are separate future extensions and do not alter this
+/// catalog lookup contract.
 /// </summary>
 public sealed class RuleChatJourneyProvider : IChatJourneyProvider
 {

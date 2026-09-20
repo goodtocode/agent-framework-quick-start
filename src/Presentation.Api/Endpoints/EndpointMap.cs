@@ -1,5 +1,5 @@
-using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Actor;
-using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Chat;
+using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Actors;
+using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Chats;
 
 namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints;
 

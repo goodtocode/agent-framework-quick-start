@@ -40,7 +40,7 @@ public sealed class ChatMessageIntentRouter(
     private static readonly Action<ILogger, Exception?> LogForcedToolInferenceFailure = LoggerMessage.Define(
         LogLevel.Warning,
         new EventId(1, nameof(LogForcedToolInferenceFailure)),
-        "Forced-tool inference (tier 2) failed; falling back to an open agent turn.");
+        "Level 3 forced-tool inference failed; falling back to the Level 3 open agent turn.");
 
     /// <inheritdoc />
     public async Task<string> ResolveReplyAsync(

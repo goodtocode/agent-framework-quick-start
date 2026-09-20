@@ -46,7 +46,15 @@ public static class DefaultIntentCatalogFactory
             "show my messages in this conversation",
             "what have i said in this chat session",
             "show this chat session's messages"
-        ]),
+        ],
+        TokenRule: new IntentTokenRule(
+            AllOf: ["chat", "session", "message"],
+            AnyOfGroups:
+            [
+                ["list", "show", "what"],
+                ["my", "this", "conversation"]
+            ])
+        ),
 
         // Level 4 deterministic routing for actor-by-id lookup: guarantee this known-good
         // phrasing never falls through to the LLM's own tool-selection. Matches "actor {guid}"
@@ -64,7 +72,20 @@ public static class DefaultIntentCatalogFactory
                 new PhraseCapture("look up a user called ", "name", CaptureKind.Rest),
                 new PhraseCapture("who is actor ", "name", CaptureKind.Rest)
             ],
-            FollowUpExamples: ["find an actor by name"]),
+            FollowUpExamples: ["find an actor by name"],
+            TokenRule: new IntentTokenRule(
+                AllOf: ["actor"],
+                AnyOfGroups:
+                [
+                    ["find", "lookup", "search", "who"],
+                    ["name"]
+                ],
+                Captures:
+                [
+                    new PhraseCapture("actor named ", "name", CaptureKind.Rest),
+                    new PhraseCapture("name of ", "name", CaptureKind.Rest),
+                    new PhraseCapture("by name ", "name", CaptureKind.Rest)
+                ])),
 
         new IntentDefinition(IntentNames.QueryActorsList,
         [
@@ -74,7 +95,11 @@ public static class DefaultIntentCatalogFactory
             "list all actors",
             "show all actors",
             "what actors do we have"
-        ]),
+        ],
+        TokenRule: new IntentTokenRule(
+            AllOf: ["actor"],
+            AnyOfGroups: [["list", "show", "what"]])
+        ),
 
         new IntentDefinition(IntentNames.QueryMyActorsList,
         [
@@ -82,7 +107,11 @@ public static class DefaultIntentCatalogFactory
             "list my actors",
             "show my actors",
             "what actors do i have"
-        ]),
+        ],
+        TokenRule: new IntentTokenRule(
+            AllOf: ["actor", "my"],
+            AnyOfGroups: [["list", "show", "what"]])
+        ),
 
         new IntentDefinition(IntentNames.QueryChatSessionsList,
         [
@@ -101,7 +130,12 @@ public static class DefaultIntentCatalogFactory
             "list any chat sessions",
             "what have we talked about",
             "what have i asked you before"
-        ]),
+        ],
+        TokenRule: new IntentTokenRule(
+            AllOf: ["chat", "session"],
+            AnyOfGroups: [["list", "show", "what", "history", "conversation"]],
+            NoneOf: ["message"])
+        ),
 
         new IntentDefinition(IntentNames.QueryChatMessagesList,
         [
@@ -109,7 +143,12 @@ public static class DefaultIntentCatalogFactory
             "show recent messages across all my chat sessions",
             "what have i said recently",
             "show my message history"
-        ]),
+        ],
+        TokenRule: new IntentTokenRule(
+            AllOf: ["message"],
+            AnyOfGroups: [["list", "show", "what", "history"]],
+            NoneOf: ["session"])
+        ),
 
         new IntentDefinition(IntentNames.QueryChatMessagesForSession, Examples: [],
             Captures:

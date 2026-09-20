@@ -1,5 +1,3 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Models;
-
 namespace Goodtocode.AgentFramework.Presentation.Api.Common;
 
 /// <summary>

@@ -1,6 +1,4 @@
-﻿using Goodtocode.AgentFramework.Core.Application.Common.Models;
-
-namespace Goodtocode.AgentFramework.Core.Application.Common.Mappings;
+﻿namespace Goodtocode.AgentFramework.Core.Application.Common.Mappings;
 
 public static class MappingExtensions
 {
