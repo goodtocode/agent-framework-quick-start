@@ -1,6 +1,4 @@
-using System.Net.Http;
 using System.Text;
-using System.Threading;
 
 namespace Goodtocode.AgentFramework.Api.Clients;
 

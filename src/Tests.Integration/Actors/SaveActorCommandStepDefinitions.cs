@@ -1,7 +1,7 @@
 using Goodtocode.AgentFramework.Core.Application.Actors;
 using Goodtocode.AgentFramework.Core.Domain.Actors;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Actor;
+namespace Goodtocode.AgentFramework.Tests.Integration.Actors;
 
 [Binding]
 [Scope(Tag = "saveActorCommand")]

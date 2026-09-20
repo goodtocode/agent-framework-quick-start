@@ -1,6 +1,5 @@
 using Goodtocode.AgentFramework.Core.Application.Abstractions;
 using Microsoft.Agents.AI;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
 

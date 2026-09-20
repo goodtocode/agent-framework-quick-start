@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;

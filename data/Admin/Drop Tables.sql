@@ -12,6 +12,10 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[Inte
 DROP TABLE [Chat].[IntentEmbeddings]
 GO
 
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[RequestIdempotency]') AND type in (N'U'))
+DROP TABLE [Chat].[RequestIdempotency]
+GO
+
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[ChatGovernance]') AND type in (N'U'))
 DROP TABLE [Chat].[ChatGovernance]
 GO

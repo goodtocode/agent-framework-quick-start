@@ -1,7 +1,6 @@
 using System.Net;
 using System.Text;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;

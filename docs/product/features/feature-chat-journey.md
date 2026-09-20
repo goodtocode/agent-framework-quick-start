@@ -10,7 +10,7 @@ two universal governance patterns and should be read alongside them, not instead
   (selection tokens, context accumulation, suggested prompts).
 - `docs/governance/design-ux-progressive-selection-UI.md` — the page/layout pattern that hosts the
   chat surface.
-- `docs/governance/design-Intent-classification-and-routing.md` — how a typed/clicked phrase
+- `docs/governance/architecture-intent-classification-and-routing.md` — how a typed/clicked phrase
   resolves to the correct tool call in the first place.
 
 This journey is intentionally documented as it exists today: a static, level-by-level guided
@@ -159,8 +159,8 @@ the journey supports both entry points equally.
   `src/Infrastructure.AgentFramework/Tools/MyChatSessionsTool.cs`,
   `src/Infrastructure.AgentFramework/Tools/MyChatMessagesTool.cs`,
   `src/Infrastructure.AgentFramework/ChatMessageIntentRouter.cs`,
-  `src/Infrastructure.AgentFramework/Journeys/DefaultChatJourneyCatalogContributor.cs` (Tier 1a
-  suggested-prompt catalog, including the actor-scoped session jumps above).
+  `src/Infrastructure.AgentFramework/Journeys/DefaultChatJourneyCatalogContributor.cs`
+  (deterministic suggested-prompt catalog, including the actor-scoped session jumps above).
 - Chat sessions/messages queries: `src/Core.Application/Chats/GetMyChatSessionsQuery.cs`,
   `src/Core.Application/Chats/GetMyChatSessionMessagesQuery.cs`.
 - Page/UI shell: `src/Presentation.Web/Features/Chats/ChatPage.razor`, with supporting components

@@ -1,9 +1,6 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Auth;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Embeddings;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.Infrastructure;
