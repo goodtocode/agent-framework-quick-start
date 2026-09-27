@@ -1,1 +1,4 @@
 ﻿global using Goodtocode.AgentFramework.Core.Application.Abstractions;
+global using ICollectStepTool = Goodtocode.Agents.Playbook.Steps.ICollectStepTool<Goodtocode.AgentFramework.Core.Application.Playbooks.ReviewRequest, Goodtocode.AgentFramework.Core.Application.Playbooks.ReviewEvidence>;
+global using IEvaluateStepTool = Goodtocode.Agents.Playbook.Steps.IEvaluateStepTool<Goodtocode.AgentFramework.Core.Application.Playbooks.ReviewEvidence, Goodtocode.AgentFramework.Core.Application.Playbooks.ReviewFinding>;
+global using IRecordStepTool = Goodtocode.Agents.Playbook.Steps.IRecordStepTool<Goodtocode.AgentFramework.Core.Application.Playbooks.ReviewFinding, Goodtocode.AgentFramework.Core.Application.Playbooks.ReviewRecord>;
