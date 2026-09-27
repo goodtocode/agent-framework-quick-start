@@ -4,6 +4,7 @@ using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
 using Goodtocode.AgentFramework.Core.Application.Governance;
@@ -99,6 +100,8 @@ public static class ConfigureServices
         services.AddSingleton<ActorsTool>();
         services.AddSingleton<MyChatMessagesTool>();
         services.AddSingleton<WebSearchTool>();
+
+        services.AddDocumentReviewPlaybookTools();
 
         services.AddSingleton(provider =>
         {

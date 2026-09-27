@@ -20,6 +20,8 @@
 		<PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.12" />
 		<PackageReference Include="Microsoft.Agents.AI" Version="1.22.0" />
 		<PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.22.0" />
+		<!-- Full wiring preparation only; no MAF workflow graph is executed by this project yet. -->
+		<PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.22.0" />
 	</ItemGroup>
 
 	<ItemGroup>
