@@ -34,8 +34,6 @@
             <VerticalSpacer />
           }
           @Body
-          <FluentMenuProvider />
-          <FluentDialogProvider />
         </ChildContent>
         <ErrorContent Context="ex">
           <FluentDialog Modal="true">
@@ -47,7 +45,7 @@
                 @ex.Message
               </PLabel>
               <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
-                <FluentButton Appearance="Appearance.Accent" OnClick="@(() => OnRecoverAndNavigate(ex))">
+                <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@(() => OnRecoverAndNavigate(ex))">
                   Go Home
                 </FluentButton>
               </FluentStack>
@@ -64,6 +62,8 @@
     </FluentNavLink>
   </NavMenuContent>
 </FluentMainLayout>
+
+<FluentProviders />
 
 @code {
   private ErrorBoundary? errorBoundaryRef;
