@@ -8,7 +8,7 @@
                  Style="width:100%; margin-bottom:8px; gap:8px;">
         @foreach (var action in Actions)
         {
-            <FluentButton Appearance="Appearance.Stealth"
+            <FluentButton Appearance="ButtonAppearance.Subtle"
                           OnClick="() => OnActionClicked.InvokeAsync(action)">
                 @action.Label
             </FluentButton>

@@ -3,11 +3,12 @@
 
 <EditForm FormName="ChatSessionEdit" EditContext="editContext" OnValidSubmit="HandleValidSubmit">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Left" HorizontalGap="0">
-        <FluentTextField @bind-Value="editModel.Title"
+        <FluentTextInput Value="@editModel.Title"
+                         ValueChanged="OnTitleChanged"
                          Label=""
                          Required="true"
                          Autofocus="true" />
-        <SubmittingButton IsSubmitting="@isSubmitting" Appearance="Appearance.Lightweight">
+        <SubmittingButton IsSubmitting="@isSubmitting" Appearance="ButtonAppearance.Subtle">
             <FluentIcon Value="(new Icons.Regular.Size24.Save())" />
         </SubmittingButton>
         <FluentButton Type="ButtonType.Button" IconStart="new Icons.Regular.Size24.Dismiss()" OnClick="() => OnCancel.InvokeAsync(null)"></FluentButton>
@@ -28,6 +29,11 @@
     {
         editModel = new EditSessionModel { Title = Title };
         editContext = new EditContext(editModel);
+    }
+
+    private void OnTitleChanged(string value)
+    {
+        editModel.Title = value;
     }
 
     private async Task HandleValidSubmit()

@@ -12,58 +12,71 @@
 @inject NavigationManager Navigation
 @inject IUserSyncService UserSyncService
 
-<FluentMainLayout NavMenuTitle="Navigation Menu">
-  <Header>
-    <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Left" Wrap="false">
-      <FluentNavLink Href="/">
-        <img src="img/logo.png" alt="GoodToCode" style="max-height:70px; background:rgba(255,255,255,0.03);" />
-      </FluentNavLink>
-      <FluentNavLink Href="/">
-        Quick-start for Microsoft Agent Framework
-      </FluentNavLink>
+<FluentLayout Height="100dvh">
+  <FluentLayoutItem Area="@LayoutArea.Header" Sticky="true">
+    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="width:100%; padding: 0.5rem 1rem;">
+      <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="8">
+        <FluentLayoutHamburger />
+        <FluentLink Href="/" Style="display:flex; align-items:center;">
+          <img src="img/logo.png" alt="GoodToCode" style="max-height:40px; background:rgba(255,255,255,0.03);" />
+        </FluentLink>
+        <FluentLink Href="/">
+          Quick-start for Microsoft Agent Framework
+        </FluentLink>
+      </FluentStack>
+      <UserProfile />
     </FluentStack>
-    <UserProfile />
-  </Header>
-  <Body>
-    <FluentBodyContent Style="padding: 1.5rem 2rem;">
-      <ErrorBoundary @ref="errorBoundaryRef">
-        <ChildContent>
-          @if (ActivePlatformNavigation is not null)
-          {
-            <WorkspaceNavigation Model="ActivePlatformNavigation" />
-            <VerticalSpacer />
-          }
-          @Body
-          <FluentMenuProvider />
-          <FluentDialogProvider />
-        </ChildContent>
-        <ErrorContent Context="ex">
-          <FluentDialog Modal="true">
-            <FluentCard>
-              <H3Label>
-                Oops! Something went wrong.
-              </H3Label>
-              <PLabel>
-                @ex.Message
-              </PLabel>
-              <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
-                <FluentButton Appearance="Appearance.Accent" OnClick="@(() => OnRecoverAndNavigate(ex))">
-                  Go Home
-                </FluentButton>
-              </FluentStack>
-            </FluentCard>
-          </FluentDialog>
-        </ErrorContent>
-      </ErrorBoundary>
-    </FluentBodyContent>
-  </Body>
-  <NavMenuContent>
-    <FluentNavLink Href="/" Icon="@(new Icons.Regular.Size24.Home())">Home</FluentNavLink>
-    <FluentNavLink Href="chat" Icon="@(new Icons.Regular.Size24.Chat())" Match="NavLinkMatch.All">
-      Chat Session
-    </FluentNavLink>
-  </NavMenuContent>
-</FluentMainLayout>
+  </FluentLayoutItem>
+
+  <FluentLayoutItem Area="@LayoutArea.Navigation" Width="260px">
+    <FluentNav Padding="@Padding.All2" Style="height: 100%;">
+      <FluentNavItem Href="/" Match="NavLinkMatch.All" IconRest="@(new Icons.Regular.Size20.Home())">
+        Home
+      </FluentNavItem>
+      <FluentNavItem Href="/chat" IconRest="@(new Icons.Regular.Size20.Chat())">
+        Chat Session
+      </FluentNavItem>
+    </FluentNav>
+  </FluentLayoutItem>
+
+  <FluentLayoutItem Area="@LayoutArea.Content" Padding="@Padding.All3">
+    <ErrorBoundary @ref="errorBoundaryRef">
+      <ChildContent>
+        @if (ActivePlatformNavigation is not null)
+        {
+          <WorkspaceNavigation Model="ActivePlatformNavigation" />
+          <VerticalSpacer />
+        }
+        @Body
+        <FluentMenuProvider />
+        <FluentDialogProvider />
+      </ChildContent>
+      <ErrorContent Context="ex">
+        <FluentDialog Modal="true">
+          <FluentCard>
+            <H3Label>
+              Oops! Something went wrong.
+            </H3Label>
+            <PLabel>
+              @ex.Message
+            </PLabel>
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
+              <FluentButton OnClick="@(() => OnRecoverAndNavigate(ex))">
+                Go Home
+              </FluentButton>
+            </FluentStack>
+          </FluentCard>
+        </FluentDialog>
+      </ErrorContent>
+    </ErrorBoundary>
+  </FluentLayoutItem>
+
+  <FluentLayoutItem Area="@LayoutArea.Footer" Sticky="true" Padding="@Padding.All2">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
+      © @DateTime.Now.Year Goodtocode
+    </FluentStack>
+  </FluentLayoutItem>
+</FluentLayout>
 
 @code {
   private ErrorBoundary? errorBoundaryRef;
