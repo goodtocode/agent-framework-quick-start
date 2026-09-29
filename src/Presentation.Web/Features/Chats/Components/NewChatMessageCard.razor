@@ -7,7 +7,7 @@
 <FluentCard Height="@Height" Width="@Width">
     <EditForm FormName="ChatMessageCardSubmit" Model="messageModel" OnSubmit="HandleFormSubmitAsync">
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Wrap="true">
-            <FluentTextInput Style="width:70%;" Value="@messageModel.NewMessage"
+            <FluentTextInput Width="70%" Value="@messageModel.NewMessage"
                              ValueChanged="OnMessageChanged"
                              Placeholder="Type your message here..."
                              AriaLabel="Type your message here..."
