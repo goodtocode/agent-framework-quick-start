@@ -37,8 +37,10 @@
                 </FluentStack>
             }
             else
-            {
-                @sessionItem.Text
+            {              
+                <FluentText Size="TextSize.Size400" Style="pointer-events:none;">
+                    @sessionItem.Text
+                </FluentText>
             }
         </ItemTemplate>
     </FluentTreeView>
