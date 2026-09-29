@@ -13,12 +13,12 @@
 @inject IUserSyncService UserSyncService
 
 <FluentLayout Height="100dvh">
-  <FluentLayoutItem Area="@LayoutArea.Header" Sticky="true">
-    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="width:100%; padding: 0.5rem 1rem;">
+  <FluentLayoutItem Area="@LayoutArea.Header" Sticky="true" Padding="@Padding.All2">
+    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
       <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="8">
         <FluentLayoutHamburger />
-        <FluentLink Href="/" Style="display:flex; align-items:center;">
-          <img src="img/logo.png" alt="GoodToCode" style="max-height:40px; background:rgba(255,255,255,0.03);" />
+        <FluentLink Href="/">
+          <img src="img/logo.png" alt="GoodToCode" height="40" />
         </FluentLink>
         <FluentLink Href="/">
           Quick-start for Microsoft Agent Framework
@@ -29,7 +29,7 @@
   </FluentLayoutItem>
 
   <FluentLayoutItem Area="@LayoutArea.Navigation" Width="260px">
-    <FluentNav Padding="@Padding.All2" Style="height: 100%;">
+    <FluentNav Padding="@Padding.All2">
       <FluentNavItem Href="/" Match="NavLinkMatch.All" IconRest="@(new Icons.Regular.Size20.Home())">
         Home
       </FluentNavItem>

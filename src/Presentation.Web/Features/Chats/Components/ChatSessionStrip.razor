@@ -6,11 +6,11 @@
 
 @if (Sessions?.Any() == true)
 {
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="8" Wrap="false" Style="width:100%;">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="8" Wrap="false">
         <FluentHorizontalScroll Style="width:80%;">
             @foreach (var session in SessionItems)
             {
-                <FluentCard @onclick="() => SelectSession(session)" Style="@(selectedSession?.Id == session.Id ? "border: 2px solid #0078D4; min-width:160px; width:46%; max-width:220px;" : "border: none; min-width:160px; width:46%; max-width:220px;")">
+                <FluentCard Width="220px" @onclick="() => SelectSession(session)" Style="@(GetSessionCardStyle(session))">
                     @if (editingSessionId == session.Id)
                     {
                         <ChatSessionEditForm Title="@session.Title"
@@ -19,13 +19,17 @@
                     }
                     else
                     {
-                        <FluentStack Orientation="Orientation.Horizontal" Style="width:100%; align-items:center; justify-content:space-between; min-width:0;">
-                            <FluentLabel Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width:0; flex:1 1 auto;">
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center" Style="min-width:0;">
+                            <FluentText Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width:0; flex:1 1 auto;">
                                 @session.Title
-                            </FluentLabel>
-                            <FluentIcon Value="(new Icons.Regular.Size24.MoreVertical())"
-                                        Style="@((selectedSession?.Id == session.Id) ? "visibility:visible; flex:0 0 auto; cursor:pointer;" : "visibility:hidden; flex:0 0 auto;")"
-                                        OnClick="() => StartEditing(session)" />
+                            </FluentText>
+                            @if (selectedSession?.Id == session.Id)
+                            {
+                                <FluentButton Appearance="ButtonAppearance.Subtle"
+                                              IconStart="@(new Icons.Regular.Size20.MoreVertical())"
+                                              OnClick="() => StartEditing(session)">
+                                </FluentButton>
+                            }
                         </FluentStack>
                     }
                 </FluentCard>
@@ -72,6 +76,11 @@ else
     }
 
     private void CancelEditing() => editingSessionId = null;
+
+    private string GetSessionCardStyle(ChatSessionModel session)
+        => selectedSession?.Id == session.Id
+            ? "border: 2px solid var(--accent-stroke-control-rest); min-width:160px;"
+            : "min-width:160px;";
 
     public void ClearSelection()
     {

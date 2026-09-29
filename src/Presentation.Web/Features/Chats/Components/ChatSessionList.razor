@@ -26,13 +26,14 @@
             }
             else if (isSelected)
             {
-                <FluentStack Orientation="Orientation.Horizontal" Style="width:100%; min-width:0; align-items:center;">
-                    <FluentLabel Style="flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="width:100%; min-width:0;">
+                    <FluentText Style="flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                         @sessionItem.Text
-                    </FluentLabel>
-                    <FluentIcon Value="(new Icons.Regular.Size24.MoreVertical())"
-                                Style="flex:0 0 auto; cursor:pointer;"
-                                OnClick="() => StartEditing(session)" />
+                    </FluentText>
+                    <FluentButton Appearance="ButtonAppearance.Subtle"
+                                  IconStart="@(new Icons.Regular.Size20.MoreVertical())"
+                                  OnClick="() => StartEditing(session)">
+                    </FluentButton>
                 </FluentStack>
             }
             else

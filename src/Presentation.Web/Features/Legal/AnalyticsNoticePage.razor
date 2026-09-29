@@ -20,31 +20,31 @@
 <main>
     <article>
         <header>
-            <FluentLabel Typo="Typography.H1">Analytics Notice</FluentLabel>
-            <FluentLabel>Last updated: @DateTime.UtcNow.ToString("yyyy-MM-dd")</FluentLabel>
+            <H1Label>Analytics Notice</H1Label>
+            <PLabel>Last updated: @DateTime.UtcNow.ToString("yyyy-MM-dd")</PLabel>
         </header>
 
         <section>
-            <FluentLabel Typo="Typography.H3">Provider</FluentLabel>
+            <H3Label>Provider</H3Label>
             <p>This application uses Microsoft Clarity for analytics and usability insights.</p>
         </section>
 
         <section>
-            <FluentLabel Typo="Typography.H3">Data categories</FluentLabel>
+            <H3Label>Data categories</H3Label>
             <p>Interaction and usage telemetry may include page views, clicks, scroll behavior, and device/browser context.</p>
         </section>
 
         <section>
-            <FluentLabel Typo="Typography.H3">Purpose</FluentLabel>
+            <H3Label>Purpose</H3Label>
             <p>Analytics helps monitor performance and improve user experience and content quality.</p>
         </section>
 
         <section>
-            <FluentLabel Typo="Typography.H3">Consent controls</FluentLabel>
+            <H3Label>Consent controls</H3Label>
             <p>Clarity is only loaded after explicit consent.</p>
             <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8">
                 <FluentButton Appearance="ButtonAppearance.Outline" OnClick="ResetConsentAsync">Reset analytics preference</FluentButton>
-                <FluentAnchor Href="/privacy">Privacy Policy</FluentAnchor>
+                <FluentLink Href="/privacy">Privacy Policy</FluentLink>
             </FluentStack>
         </section>
 

@@ -18,11 +18,12 @@
 
 <PageTitle>Chat Session</PageTitle>
 
-<FluentGrid Spacing="0" Justify="JustifyContent.FlexStart" Style="width:100%; padding-top:8px;" OnBreakpointEnter="OnBreakpointEnterHandler">
+<VerticalSpacer Height="8px" />
+<FluentGrid Spacing="0" Justify="JustifyContent.FlexStart" OnBreakpointEnter="OnBreakpointEnterHandler">
   @if (isMobileLayout)
   {
     <FluentGridItem xs="3">
-      <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="width:100%;" />
+      <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" />
     </FluentGridItem>
     <FluentGridItem xs="1">
     </FluentGridItem>
@@ -57,7 +58,7 @@
   else
   {
     <FluentGridItem xs="2" md="2">
-      <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="width:100%;" />
+      <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" />
     </FluentGridItem>
     <FluentGridItem xs="1" md="1"></FluentGridItem>
     <FluentGridItem xs="8" md="8">

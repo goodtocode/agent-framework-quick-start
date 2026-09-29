@@ -1,10 +1,10 @@
 <FluentCard>
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
-        <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H3">Version History</FluentLabel>
+        <H3Label>Version History</H3Label>
 
         @if (!Items.Any())
         {
-            <FluentLabel>No version history available.</FluentLabel>
+            <PLabel>No version history available.</PLabel>
         }
         else
         {
@@ -13,8 +13,8 @@
                 <FluentButton Appearance="@(item.Version == SelectedVersion ? ButtonAppearance.Outline : ButtonAppearance.Subtle)"
                               OnClick="@(() => OnSelectVersion.InvokeAsync(item.Version))">
                     <FluentStack Orientation="Orientation.Vertical" VerticalGap="4">
-                        <FluentLabel>@($"v{item.Version} {item.Status}")</FluentLabel>
-                        <FluentLabel>@(item.CreatedUtc?.ToUniversalTime().ToString("u") ?? "-")</FluentLabel>
+                        <FluentText>@($"v{item.Version} {item.Status}")</FluentText>
+                        <FluentText>@(item.CreatedUtc?.ToUniversalTime().ToString("u") ?? "-")</FluentText>
                     </FluentStack>
                 </FluentButton>
             }
