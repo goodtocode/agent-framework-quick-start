@@ -1,4 +1,20 @@
+.chat-session-list {
+    width: 100%;
+    min-width: 0;
+}
+
 .chat-session-card {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.chat-session-card-selected {
+    border: 2px solid var(--accent-stroke-control-rest);
+}
+
+.chat-session-row {
+    width: 100%;
     min-width: 0;
     overflow: hidden;
 }

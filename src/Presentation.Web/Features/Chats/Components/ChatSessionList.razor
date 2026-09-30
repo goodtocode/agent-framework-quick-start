@@ -6,10 +6,12 @@
 
 @if (Sessions?.Any() == true)
 {
-    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="6" Style="width:100%; min-width:0;">
+    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="6" Class="chat-session-list">
         @foreach (var session in SessionItems)
         {
-            <FluentCard Width="100%" Class="chat-session-card" @onclick="() => SelectSession(session)" Style="@GetSessionCardStyle(session)">
+            <FluentCard Width="100%"
+                        Class="@(selectedSession?.Id == session.Id ? "chat-session-card chat-session-card-selected" : "chat-session-card")"
+                        @onclick="() => SelectSession(session)">
                 @if (editingSessionId == session.Id)
                 {
                     <ChatSessionEditForm Title="@session.Title"
@@ -18,7 +20,10 @@
                 }
                 else
                 {
-                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="width:100%; min-width:0; overflow:hidden;">
+                    <FluentStack Orientation="Orientation.Horizontal"
+                                 VerticalAlignment="VerticalAlignment.Center"
+                                 HorizontalAlignment="HorizontalAlignment.SpaceBetween"
+                                 Class="chat-session-row">
                         <FluentLabel Class="chat-session-title" Title="@GetSessionTitle(session)">
                             @GetSessionTitle(session)
                         </FluentLabel>
@@ -78,11 +83,6 @@ else
 
     private static string GetSessionTitle(ChatSessionModel session)
         => string.IsNullOrWhiteSpace(session.Title) ? "Untitled Session" : session.Title;
-
-    private string GetSessionCardStyle(ChatSessionModel session)
-        => selectedSession?.Id == session.Id
-            ? "width:100%; min-width:0; border: 2px solid var(--accent-stroke-control-rest);"
-            : "width:100%; min-width:0;";
 
     public class EditSessionModel
     {
