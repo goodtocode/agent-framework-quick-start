@@ -17,14 +17,19 @@
     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
       <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="8">
         <FluentLayoutHamburger />
-        <FluentLink Href="/">
-          <img src="img/logo.png" alt="GoodToCode" height="40" />
-        </FluentLink>
-        <FluentText Size="TextSize.Size500" Weight="TextWeight.Semibold">
-          <FluentLink Href="/" Tooltip="Go to home page">
-            Quick-start for Microsoft Agent Framework
-          </FluentLink>
-        </FluentText>
+                <FluentAnchorButton Href="/"
+                            Appearance="ButtonAppearance.Primary"
+                            Shape="ButtonShape.Rounded"
+                            Size="ButtonSize.Small"
+                            Title="Go to home page">
+            <img src="img/logo.png" alt="GoodToCode" height="40" />
+        </FluentAnchorButton>
+        <FluentAnchorButton Href="/"
+                            Appearance="ButtonAppearance.Transparent"
+                            Size="ButtonSize.Large"
+                            Title="Go to home page">
+          Quick-start for Microsoft Agent Framework
+        </FluentAnchorButton>
       </FluentStack>
       <UserProfile />
     </FluentStack>
