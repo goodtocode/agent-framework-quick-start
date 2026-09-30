@@ -11,6 +11,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 @inject IUserSyncService UserSyncService
+@inject ILogger<MainLayout> Logger
 
 <FluentLayout Height="100dvh">
   <FluentLayoutItem Area="@LayoutArea.Header" Sticky="true" Padding="@Padding.All2">
@@ -131,6 +132,28 @@
     catch (MicrosoftIdentityWebChallengeUserException)
     {
       Navigation.NavigateTo(RouteConstants.SignIn, forceLoad: true);
+    }
+    catch (Exception ex) when (IsTransientUserSyncStartupFailure(ex))
+    {
+      Logger.LogWarning(ex, "Initial user sync failed during startup; continuing and allowing retry on subsequent requests.");
+    }
+  }
+
+  private static bool IsTransientUserSyncStartupFailure(Exception ex)
+  {
+    return EnumerateExceptions(ex).Any(e =>
+        e is TaskCanceledException
+        || e is OperationCanceledException
+        || e is HttpRequestException
+        || e is IOException
+        || string.Equals(e.GetType().Name, "TimeoutRejectedException", StringComparison.Ordinal));
+  }
+
+  private static IEnumerable<Exception> EnumerateExceptions(Exception ex)
+  {
+    for (Exception? current = ex; current is not null; current = current.InnerException)
+    {
+      yield return current;
     }
   }
 }
