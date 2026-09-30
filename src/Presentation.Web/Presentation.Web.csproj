@@ -26,4 +26,8 @@
 		<PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.15.0" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />		
 	</ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
+  </ItemGroup>
 </Project>
