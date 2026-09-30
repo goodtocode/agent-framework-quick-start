@@ -9,7 +9,7 @@
     <FluentStack Orientation="Orientation.Vertical" HorizontalGap="6" Style="width:100%; min-width:0;">
         @foreach (var session in SessionItems)
         {
-            <FluentCard Width="100%" @onclick="() => SelectSession(session)" Style="@GetSessionCardStyle(session)">
+            <FluentCard Width="100%" Class="chat-session-card" @onclick="() => SelectSession(session)" Style="@GetSessionCardStyle(session)">
                 @if (editingSessionId == session.Id)
                 {
                     <ChatSessionEditForm Title="@session.Title"
@@ -18,10 +18,10 @@
                 }
                 else
                 {
-                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="width:100%; min-width:0;">
-                        <FluentText Size="TextSize.Size400" Class="chat-session-title" Style="flex:1 1 auto; min-width:0;">
+                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="width:100%; min-width:0; overflow:hidden;">
+                        <FluentLabel Class="chat-session-title" Title="@GetSessionTitle(session)">
                             @GetSessionTitle(session)
-                        </FluentText>
+                        </FluentLabel>
                         @if (selectedSession?.Id == session.Id)
                         {
                             <FluentButton Appearance="ButtonAppearance.Subtle"

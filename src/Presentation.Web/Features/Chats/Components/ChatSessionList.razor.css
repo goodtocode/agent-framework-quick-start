@@ -1,7 +1,13 @@
+.chat-session-card {
+    min-width: 0;
+    overflow: hidden;
+}
+
 .chat-session-title {
     display: block;
-    width: 100%;
+    flex: 1 1 0;
     min-width: 0;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
