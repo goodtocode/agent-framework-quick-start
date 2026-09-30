@@ -6,19 +6,23 @@
 
 <AuthorizeView>
     <Authorized>
-        <FluentAvatar Id="user-profile-trigger"
-                      Image="@GetUserImageUrl()"
-                      Initials="@(GetInitials(UserDisplayName))"
-                      Name="@UserDisplayName"
-                      Size="AvatarSize.Size40"
-                      Active="true"
-                      ActiveAppearance="AvatarActiveAppearance.Ring"
-                      Style="cursor:pointer;" />
+        <FluentButton Id="user-profile-trigger"
+                      Appearance="ButtonAppearance.Transparent"
+                      Style="padding:0; min-width:auto;">
+            <FluentAvatar Image="@GetUserImageUrl()"
+                          Initials="@(GetInitials(UserDisplayName))"
+                          Name="@UserDisplayName"
+                          Size="AvatarSize.Size40"
+                          Active="true"
+                          ActiveAppearance="AvatarActiveAppearance.Ring"
+                          Style="cursor:pointer;" />
+        </FluentButton>
 
         <FluentMenu Trigger="user-profile-trigger">
-            <FluentMenuItem Disabled="true" Label="@UserDisplayName" />
-            <FluentMenuItem OnClick="@ViewAccount" IconStart="@(new Icons.Regular.Size20.Settings())" Label="Account" />
-            <FluentMenuItem OnClick="@SignOut" IconStart="@(new Icons.Regular.Size20.SignOut())" Label="Sign out" />
+            <FluentMenuList>
+                <FluentMenuItem Disabled="true" Label="@UserDisplayName" />
+                <FluentMenuItem OnClick="@SignOut" IconStart="@(new Icons.Regular.Size20.SignOut())" Label="Sign out" />
+            </FluentMenuList>
         </FluentMenu>
     </Authorized>
     <NotAuthorized>
