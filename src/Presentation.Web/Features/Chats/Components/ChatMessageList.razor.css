@@ -33,6 +33,7 @@
 
 ::deep .chat-markdown-container {
     width: 100%;
+    overflow-x: auto;
 }
 
 ::deep .chat-markdown-content {
@@ -67,4 +68,30 @@
 
 ::deep .chat-markdown-content a {
     color: var(--accent-foreground-rest);
+}
+
+::deep .chat-markdown-content table {
+    width: max-content;
+    min-width: 100%;
+    max-width: 120rem;
+    table-layout: auto;
+    border-collapse: collapse;
+}
+
+::deep .chat-markdown-content th,
+::deep .chat-markdown-content td {
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+    vertical-align: top;
+    padding: 0.35rem 0.5rem;
+}
+
+::deep .chat-markdown-content th:last-child,
+::deep .chat-markdown-content td:last-child {
+    white-space: normal;
+    min-width: 20rem;
+    max-width: 42rem;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
