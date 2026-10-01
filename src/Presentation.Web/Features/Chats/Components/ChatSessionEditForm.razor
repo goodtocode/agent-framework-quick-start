@@ -2,18 +2,29 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 <EditForm FormName="ChatSessionEdit" EditContext="editContext" OnValidSubmit="HandleValidSubmit">
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Left" HorizontalGap="0">
+    <FluentStack Orientation="Orientation.Horizontal"
+                 HorizontalAlignment="HorizontalAlignment.Left"
+                 VerticalAlignment="VerticalAlignment.Center"
+                 HorizontalGap="0"
+                 Wrap="false">
         <FluentTextInput Value="@editModel.Title"
                          ValueChanged="OnTitleChanged"
+                         Width="100%"
                          Label=""
                          Required="true"
                          Autofocus="true" />
-        <SubmittingButton IsSubmitting="@isSubmitting" Appearance="ButtonAppearance.Subtle">
+        <SubmittingButton IsSubmitting="@isSubmitting"
+                         Appearance="ButtonAppearance.Subtle"
+                         Size="ButtonSize.Small">
             <FluentIcon Value="(new Icons.Regular.Size24.Save())" />
         </SubmittingButton>
-        <FluentButton Type="ButtonType.Button" IconStart="new Icons.Regular.Size24.Dismiss()" OnClick="() => OnCancel.InvokeAsync(null)"></FluentButton>
+        <FluentButton Type="ButtonType.Button"
+                      Appearance="ButtonAppearance.Subtle"
+                      Size="ButtonSize.Small"
+                      IconStart="new Icons.Regular.Size24.Dismiss()"
+                      OnClick="() => OnCancel.InvokeAsync(null)"></FluentButton>
     </FluentStack>
-    <ValidationSummary/>
+    <ValidationSummary />
 </EditForm>
 
 @code {
