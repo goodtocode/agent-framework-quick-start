@@ -10,8 +10,10 @@
 }
 
 ::deep .chat-message-card-user {
-    background: var(--accent-fill-rest) !important;
-    color: var(--fill-color) !important;
+    --fill-color: var(--accent-fill-rest);
+    --color: var(--foreground-on-accent-rest);
+    background-color: var(--accent-fill-rest) !important;
+    color: var(--foreground-on-accent-rest) !important;
     width: 70% !important;
     margin-left: auto !important;
 }
