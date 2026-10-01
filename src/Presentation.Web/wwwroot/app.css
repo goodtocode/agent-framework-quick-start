@@ -1,3 +1,19 @@
 [hidden] {
     display: none !important;
 }
+
+.chat-message-item {
+    width: 100%;
+    min-width: 0;
+}
+
+.chat-message-item .chat-message-card-user {
+    width: 70% !important;
+    margin-left: auto !important;
+    background: var(--accent-fill-rest) !important;
+    color: var(--fill-color) !important;
+}
+
+.chat-message-item .chat-message-card-assistant {
+    width: 100% !important;
+}

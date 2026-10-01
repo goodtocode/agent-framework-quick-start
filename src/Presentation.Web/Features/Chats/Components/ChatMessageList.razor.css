@@ -1,59 +1,59 @@
-.chat-message-list {
+::deep .chat-message-list {
     width: var(--chat-message-list-width, 100%);
     max-width: 100%;
     margin-inline: auto;
 }
 
-.chat-message-item {
+::deep .chat-message-item {
     width: 100%;
     min-width: 0;
 }
 
-.chat-message-card-user {
+::deep .chat-message-card-user {
     background: var(--accent-fill-rest);
     color: var(--fill-color);
     width: 70%;
     margin-left: auto;
 }
 
-.chat-message-card-assistant {
+::deep .chat-message-card-assistant {
     width: 100%;
 }
 
-.chat-markdown-container {
+::deep .chat-markdown-container {
     width: 100%;
 }
 
-.chat-markdown-content {
+::deep .chat-markdown-content {
     line-height: 1.5;
     word-break: break-word;
 }
 
-.chat-markdown-content p {
+::deep .chat-markdown-content p {
     margin: 0 0 0.5rem 0;
 }
 
-.chat-markdown-content p:last-child {
+::deep .chat-markdown-content p:last-child {
     margin-bottom: 0;
 }
 
-.chat-markdown-content pre {
+::deep .chat-markdown-content pre {
     overflow-x: auto;
     padding: 0.75rem;
     border-radius: 6px;
     background: var(--neutral-layer-2);
 }
 
-.chat-markdown-content code {
+::deep .chat-markdown-content code {
     font-family: Consolas, "Courier New", monospace;
 }
 
-.chat-markdown-content ul,
-.chat-markdown-content ol {
+::deep .chat-markdown-content ul,
+::deep .chat-markdown-content ol {
     margin: 0.5rem 0;
     padding-left: 1.25rem;
 }
 
-.chat-markdown-content a {
+::deep .chat-markdown-content a {
     color: var(--accent-foreground-rest);
 }
