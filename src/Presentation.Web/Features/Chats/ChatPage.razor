@@ -40,9 +40,9 @@
     </FluentGridItem>
 
     <FluentGridItem xs="12">
-      <FluentStack id="@ChatMessagesContainerId" Class="chat-messages-container" Orientation="Orientation.Vertical">
+      <div id="@ChatMessagesContainerId" class="chat-messages-container">
         <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
-      </FluentStack>
+      </div>
     </FluentGridItem>
 
     <FluentGridItem xs="12">
@@ -69,15 +69,17 @@
     <FluentGridItem xs="1" md="1"></FluentGridItem>
 
     <FluentGridItem xs="2" md="2">
-      <ChatSessionList @ref="chatSessionListRef"
-                       Sessions="chatSessions"
-                       OnSessionSelected="HandleSessionSelected" />
+      <div class="chat-session-list-container">
+        <ChatSessionList @ref="chatSessionListRef"
+                         Sessions="chatSessions"
+                         OnSessionSelected="HandleSessionSelected" />
+      </div>
     </FluentGridItem>
     <FluentGridItem xs="1" md="1"></FluentGridItem>
     <FluentGridItem xs="8" md="8">
-      <FluentStack id="@ChatMessagesContainerId" Class="chat-messages-container" Orientation="Orientation.Vertical">
+      <div id="@ChatMessagesContainerId" class="chat-messages-container">
         <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
-      </FluentStack>
+      </div>
     </FluentGridItem>
     <FluentGridItem xs="1" md="1"></FluentGridItem>
 
