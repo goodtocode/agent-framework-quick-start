@@ -5,31 +5,33 @@
 
 @inject IChatMessageFormatter ChatMessageFormatter
 
-<FluentStack Orientation="Orientation.Vertical"
-             VerticalAlignment="VerticalAlignment.Top"
-             VerticalGap="8"
-             Class="chat-message-list"
-             Style="@($"--chat-message-list-width:{Width};")">
-    @foreach (var message in Messages ?? Enumerable.Empty<ChatMessageModel>())
-    {
-        var isUser = IsUserMessage(message);
-        <FluentStack HorizontalAlignment="@(isUser ? HorizontalAlignment.End : HorizontalAlignment.Start)" Class="chat-message-item">
-            <FluentCard Appearance="CardAppearance.Filled" Class="@(isUser ? "chat-message-card-user" : "chat-message-card-assistant")">
-                @if (isUser)
-                {
-                    @message.Content
-                }
-                else
-                {
-                    <FluentStack Orientation="Orientation.Vertical" Class="chat-markdown-content chat-markdown-container">
-                        @((MarkupString)FormatAssistantMessage(message))
-                    </FluentStack>
-                }
-            </FluentCard>
+<div class="chat-message-list-host">
+    <FluentStack Orientation="Orientation.Vertical"
+                 VerticalAlignment="VerticalAlignment.Top"
+                 VerticalGap="8"
+                 Class="chat-message-list"
+                 Style="@($"--chat-message-list-width:{Width};")">
+        @foreach (var message in Messages ?? Enumerable.Empty<ChatMessageModel>())
+        {
+            var isUser = IsUserMessage(message);
+            <FluentStack HorizontalAlignment="@(isUser ? HorizontalAlignment.End : HorizontalAlignment.Start)" Class="chat-message-item">
+                <FluentCard Appearance="CardAppearance.Filled" Class="@(isUser ? "chat-message-card-user" : "chat-message-card-assistant")">
+                    @if (isUser)
+                    {
+                        @message.Content
+                    }
+                    else
+                    {
+                        <FluentStack Orientation="Orientation.Vertical" Class="chat-markdown-content chat-markdown-container">
+                            @((MarkupString)FormatAssistantMessage(message))
+                        </FluentStack>
+                    }
+                </FluentCard>
 
-        </FluentStack>
-    }
-</FluentStack>
+            </FluentStack>
+        }
+    </FluentStack>
+</div>
 
 
 @code {

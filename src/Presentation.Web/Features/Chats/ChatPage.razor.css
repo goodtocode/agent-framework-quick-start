@@ -1,6 +1,6 @@
 .chat-messages-container {
-    height: clamp(220px, calc(100dvh - 360px), 65vh);
-    max-height: 65vh;
+    height: 70vh;
+    max-height: 70vh;
     overflow-y: auto;
     min-height: 0;
     padding-bottom: 10px;

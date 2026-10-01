@@ -10,14 +10,25 @@
 }
 
 ::deep .chat-message-card-user {
-    background: var(--accent-fill-rest);
-    color: var(--fill-color);
-    width: 70%;
-    margin-left: auto;
+    background: var(--accent-fill-rest) !important;
+    color: var(--fill-color) !important;
+    width: 70% !important;
+    margin-left: auto !important;
 }
 
 ::deep .chat-message-card-assistant {
-    width: 100%;
+    width: 100% !important;
+}
+
+.chat-message-list-host ::deep .chat-message-item .chat-message-card-user {
+    width: 70% !important;
+    margin-left: auto !important;
+    background: var(--accent-fill-rest) !important;
+    color: var(--fill-color) !important;
+}
+
+.chat-message-list-host ::deep .chat-message-item .chat-message-card-assistant {
+    width: 100% !important;
 }
 
 ::deep .chat-markdown-container {
