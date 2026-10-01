@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Goodtocode.AgentFramework.Presentation.Web.Library.Analytics
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [AllowAnonymous]
@@ -44,15 +43,6 @@
         </FluentCard>
     </FluentStack>
 </FluentStack>
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="8" HorizontalAlignment="HorizontalAlignment.Center" Class="home-page-footer-links">
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12" Wrap="true" HorizontalAlignment="HorizontalAlignment.Center">
-        <FluentLink Href="/privacy">Privacy Policy</FluentLink>
-        <FluentLink Href="/terms">Terms of Use</FluentLink>
-        <FluentLink Href="/analytics-notice">Analytics Notice</FluentLink>
-    </FluentStack>
-</FluentStack>
-<AnalyticsConsentBanner />
-
 @code {
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
