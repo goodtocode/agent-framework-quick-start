@@ -1,0 +1,13 @@
+.home-page-main {
+    max-width: 90%;
+}
+
+.home-page-steps-card {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+}
+
+.home-page-footer-links {
+    padding-top: 1rem;
+}

@@ -5,14 +5,18 @@
 @inject IChatService chatService
 
 <EditForm FormName="ChatMessageInputSubmit" Model="messageModel" OnSubmit="HandleFormSubmitAsync">
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Wrap="true" Style="max-width:90%;">
+    <FluentStack Orientation="Orientation.Horizontal"
+                 HorizontalAlignment="HorizontalAlignment.Center"
+                 VerticalAlignment="VerticalAlignment.Center"
+                 Wrap="true"
+                 Class="new-chat-message-input-row">
         <FluentTextInput Width="70%" Value="@messageModel.NewMessage"
                          ValueChanged="OnMessageChanged"
                          Placeholder="Type your message here..."
                          AriaLabel="Type your message here..."
                          Disabled="@isSubmitting"
                          @onkeyup="HandleTextFieldKeyUpAsync" />
-        <SubmittingButton Style="width:20%;" IsSubmitting="@isSubmitting" Label="Send" />
+        <SubmittingButton Class="new-chat-message-input-submit" IsSubmitting="@isSubmitting" Label="Send" />
     </FluentStack>
     <DataAnnotationsValidator />
     <ValidationSummary />

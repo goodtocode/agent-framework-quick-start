@@ -7,10 +7,12 @@
 @if (Sessions?.Any() == true)
 {
     <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="8" Wrap="false">
-        <FluentHorizontalScroll Style="width:80%;">
+        <FluentHorizontalScroll Class="chat-session-strip-scroll">
             @foreach (var session in SessionItems)
             {
-                <FluentCard Width="220px" @onclick="() => SelectSession(session)" Style="@(GetSessionCardStyle(session))">
+                <FluentCard Width="220px"
+                            Class="@(selectedSession?.Id == session.Id ? "chat-session-strip-card chat-session-strip-card-selected" : "chat-session-strip-card")"
+                            @onclick="() => SelectSession(session)">
                     @if (editingSessionId == session.Id)
                     {
                         <ChatSessionEditForm Title="@session.Title"
@@ -19,10 +21,13 @@
                     }
                     else
                     {
-                        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center" Style="min-width:0;">
-                            <FluentText Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width:0; flex:1 1 auto;">
-                                @session.Title
-                            </FluentText>
+                        <FluentStack Orientation="Orientation.Horizontal"
+                                     HorizontalAlignment="HorizontalAlignment.SpaceBetween"
+                                     VerticalAlignment="VerticalAlignment.Center"
+                                     Class="chat-session-strip-row">
+                            <FluentLabel Class="chat-session-strip-title" Title="@GetSessionTitle(session)">
+                                @GetSessionTitle(session)
+                            </FluentLabel>
                             @if (selectedSession?.Id == session.Id)
                             {
                                 <FluentButton Appearance="ButtonAppearance.Subtle"
@@ -77,10 +82,8 @@ else
 
     private void CancelEditing() => editingSessionId = null;
 
-    private string GetSessionCardStyle(ChatSessionModel session)
-        => selectedSession?.Id == session.Id
-            ? "border: 2px solid var(--accent-stroke-control-rest); min-width:160px;"
-            : "min-width:160px;";
+    private static string GetSessionTitle(ChatSessionModel session)
+        => string.IsNullOrWhiteSpace(session.Title) ? "Untitled Session" : session.Title;
 
     public void ClearSelection()
     {

@@ -2,15 +2,6 @@
     @ChildContent
 </FluentText>
 
-<style>
-    .p-label {
-        font-weight: normal;
-        line-height: 1.1;
-        margin-top: 0.05em !important;
-        margin-bottom: 0.1em !important;
-    }
-</style>
-
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public string? Class { get; set; } = "p-label";

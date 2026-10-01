@@ -13,7 +13,7 @@
                              AriaLabel="Type your message here..."
                              Disabled="@isSubmitting"
                              @onkeyup="HandleTextFieldKeyUpAsync" />
-            <SubmittingButton Style="width:20%;" IsSubmitting="@isSubmitting" Label="Send" />
+            <SubmittingButton Class="new-chat-message-card-submit" IsSubmitting="@isSubmitting" Label="Send" />
         </FluentStack>
         <DataAnnotationsValidator />
         <ValidationSummary />

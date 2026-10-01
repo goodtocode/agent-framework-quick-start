@@ -8,14 +8,14 @@
     <Authorized>
         <FluentButton Id="user-profile-trigger"
                       Appearance="ButtonAppearance.Transparent"
-                      Style="padding:0; min-width:auto;">
+                      Class="user-profile-trigger-button">
             <FluentAvatar Image="@GetUserImageUrl()"
                           Initials="@(GetInitials(UserDisplayName))"
                           Name="@UserDisplayName"
                           Size="AvatarSize.Size40"
                           Active="true"
                           ActiveAppearance="AvatarActiveAppearance.Ring"
-                          Style="cursor:pointer;" />
+                          Class="user-profile-avatar" />
         </FluentButton>
 
         <FluentMenu Trigger="user-profile-trigger">

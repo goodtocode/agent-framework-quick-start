@@ -1,3 +1,23 @@
+.chat-message-list {
+    width: var(--chat-message-list-width, 100%);
+    max-width: 100%;
+    margin-inline: auto;
+}
+
+.chat-message-item {
+    max-width: 90%;
+}
+
+.chat-message-card-user {
+    background: var(--accent-fill-rest);
+    color: var(--fill-color);
+    width: 70%;
+}
+
+.chat-markdown-container {
+    width: 100%;
+}
+
 .chat-markdown-content {
     line-height: 1.5;
     word-break: break-word;
