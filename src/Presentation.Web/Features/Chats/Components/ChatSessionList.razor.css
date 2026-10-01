@@ -28,3 +28,14 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.chat-session-menu-button {
+    visibility: hidden;
+    pointer-events: none;
+    flex: 0 0 auto;
+}
+
+.chat-session-menu-button-visible {
+    visibility: visible;
+    pointer-events: auto;
+}

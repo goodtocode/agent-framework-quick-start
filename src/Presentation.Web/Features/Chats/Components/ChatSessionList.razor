@@ -30,6 +30,7 @@
                         @if (selectedSession?.Id == session.Id)
                         {
                             <FluentButton Appearance="ButtonAppearance.Subtle"
+                                          Class="@(selectedSession?.Id == session.Id ? "chat-session-menu-button chat-session-menu-button-visible" : "chat-session-menu-button")"
                                           IconStart="@(new Icons.Regular.Size20.MoreVertical())"
                                           OnClick="() => StartEditing(session)">
                             </FluentButton>

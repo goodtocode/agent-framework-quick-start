@@ -5,13 +5,19 @@
 }
 
 .chat-message-item {
-    max-width: 90%;
+    width: 100%;
+    min-width: 0;
 }
 
 .chat-message-card-user {
     background: var(--accent-fill-rest);
     color: var(--fill-color);
     width: 70%;
+    margin-left: auto;
+}
+
+.chat-message-card-assistant {
+    width: 100%;
 }
 
 .chat-markdown-container {
