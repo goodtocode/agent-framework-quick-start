@@ -9,9 +9,15 @@ using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.AgentFramework.Tests.Integration.Mocks;
 using Microsoft.Agents.AI;
 
@@ -43,6 +49,7 @@ public abstract class TestBase : IDisposable
 
     internal MockAIAgent agent = new();
     internal OpenAIOptions optionsOpenAi = new();
+    internal FakeSqlDatabaseStatisticsProvider sqlDatabaseStatisticsProvider = new();
 
     protected IServiceProvider ServiceProvider { get; private set; } = default!;
     protected ISender Sender { get; private set; } = default!;
@@ -86,6 +93,12 @@ public abstract class TestBase : IDisposable
         services.AddScoped<IChatMessageRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
         services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
         services.AddDocumentReviewPlaybookTools();
+        services.AddSqlStatisticsPlaybookTools();
+        services.AddSingleton<ISqlDatabaseStatisticsProvider>(provider => sqlDatabaseStatisticsProvider);
+        services.AddTaxonomyPlaybookTools();
+        services.AddScoped<ITaxonomyClassificationRunner, TaxonomyClassificationRunner>();
+        services.AddEssayPlaybookTools();
+        services.AddScoped<IEssayEvaluationRunner, EssayEvaluationRunner>();
 
         services.AddDbContext<AgentFrameworkContext>(options =>
             options.UseInMemoryDatabase($"AgentFrameworkContext-{Guid.NewGuid()}")
