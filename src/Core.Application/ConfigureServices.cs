@@ -3,6 +3,9 @@ using Goodtocode.AgentFramework.Core.Application.Common.Behaviors;
 using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
 using Goodtocode.AgentFramework.Core.Application.Governance;
 using Goodtocode.AgentFramework.Core.Application.Playbooks;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Execution;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +33,18 @@ public static class ConfigureServices
         services.AddScoped<PlaybookGovernanceActivityRecorder>();
         services.AddScoped<DocumentReviewPlaybookDefinition>();
         services.AddSingleton<PlaybookExecutor<ReviewRequest, ReviewEvidence, ReviewFinding, ReviewRecord>>();
+
+        services.AddScoped<SqlStatisticsGovernanceActivityRecorder>();
+        services.AddScoped<SqlStatisticsPlaybookDefinition>();
+        services.AddSingleton(SqlStatisticsKnowledgeHolder.V1);
+        services.AddSingleton<PlaybookExecutor<string, SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding, SqlDatabaseSizeMaterialization>>();
+        services.AddScoped<ISqlStatisticsClassificationRunner, SqlStatisticsClassificationRunner>();
+
+        services.AddScoped<TaxonomyGovernanceActivityRecorder>();
+        services.AddSingleton(TaxonomyKnowledgeHolder.V1);
+
+        services.AddScoped<EssayGovernanceActivityRecorder>();
+        services.AddSingleton(EssayKnowledgeHolder.V1);
 
         return services;
     }

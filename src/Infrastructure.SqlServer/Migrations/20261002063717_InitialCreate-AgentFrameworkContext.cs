@@ -128,6 +128,34 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlaybookMaterializations",
+                schema: "Chat",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PlaybookKey = table.Column<string>(type: "NVARCHAR(200)", nullable: false),
+                    PlaybookVersion = table.Column<string>(type: "NVARCHAR(100)", nullable: false),
+                    WorkflowType = table.Column<string>(type: "NVARCHAR(100)", nullable: false),
+                    SummaryText = table.Column<string>(type: "NVARCHAR(1000)", nullable: false),
+                    PayloadSnapshot = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
+                    RowKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false),
+                    TenantId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlaybookMaterializations", x => x.Id)
+                        .Annotation("SqlServer:Clustered", false);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RequestIdempotency",
                 schema: "Chat",
                 columns: table => new
@@ -255,6 +283,20 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                 columns: new[] { "IntentName", "Source" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlaybookMaterializations_TenantId_OwnerId_PlaybookKey",
+                schema: "Chat",
+                table: "PlaybookMaterializations",
+                columns: new[] { "TenantId", "OwnerId", "PlaybookKey" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlaybookMaterializations_Timestamp",
+                schema: "Chat",
+                table: "PlaybookMaterializations",
+                column: "Timestamp",
+                unique: true)
+                .Annotation("SqlServer:Clustered", true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RequestIdempotency_DuplicateWindowLookup",
                 schema: "Chat",
                 table: "RequestIdempotency",
@@ -293,6 +335,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "IntentEmbeddings",
+                schema: "Chat");
+
+            migrationBuilder.DropTable(
+                name: "PlaybookMaterializations",
                 schema: "Chat");
 
             migrationBuilder.DropTable(

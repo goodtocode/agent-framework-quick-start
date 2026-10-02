@@ -2,6 +2,7 @@
 using Goodtocode.AgentFramework.Core.Domain.Chats;
 using Goodtocode.AgentFramework.Core.Domain.Common;
 using Goodtocode.AgentFramework.Core.Domain.Governance;
+using Goodtocode.AgentFramework.Core.Domain.Playbooks;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Goodtocode.AgentFramework.Core.Application.Abstractions;
@@ -13,6 +14,7 @@ public interface IAgentFrameworkContext
     DbSet<RequestIdempotencyEntity> RequestIdempotency { get; }
     DbSet<ActorEntity> Actors { get; }
     DbSet<ChatGovernanceEntity> ChatGovernance { get; }
+    DbSet<PlaybookMaterializationEntity> PlaybookMaterializations { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 #pragma warning disable CA1716 // Identifiers should not match keywords

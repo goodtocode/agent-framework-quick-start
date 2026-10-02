@@ -1,6 +1,8 @@
 ﻿using Goodtocode.AgentFramework.Core.Application.Abstractions;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
+using Goodtocode.AgentFramework.Infrastructure.SqlServer.Playbooks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +23,7 @@ public static class ConfigureServices
         services.AddScoped<IEmbeddingGenerator>(provider =>
             provider.GetRequiredService<AzureOpenAiEmbeddingGenerator>());
         services.AddScoped<IIntentEmbeddingStore, Embeddings.SqlIntentEmbeddingStore>();
+        services.AddScoped<ISqlDatabaseStatisticsProvider, SqlServerDatabaseStatisticsProvider>();
 
         return services;
     }

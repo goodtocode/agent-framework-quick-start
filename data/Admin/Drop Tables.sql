@@ -31,3 +31,7 @@ GO
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[Actors]') AND type in (N'U'))
 DROP TABLE [Chat].[Actors]
 GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[PlaybookMaterializations]') AND type in (N'U'))
+DROP TABLE [Chat].[PlaybookMaterializations]
+GO
