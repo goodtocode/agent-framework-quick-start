@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Presentation.Web.Library;
+﻿namespace Goodtocode.AgentFramework.Presentation.Web.Library.Form;
 
 public enum FormChangeType
 {

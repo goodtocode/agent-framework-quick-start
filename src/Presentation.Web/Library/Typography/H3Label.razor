@@ -1,14 +1,6 @@
-﻿<FluentLabel Typo="Typography.H3" Class="@Class" Style="@Style">
+﻿<FluentText Size="TextSize.Size600" Weight="TextWeight.Semibold" Class="@Class" Style="@Style">
     @ChildContent
-</FluentLabel>
-
-<style>
-    .h3-label {
-        line-height: 1.15;
-        margin-top: 0.1em !important;
-        margin-bottom: 0.25em !important;
-    }
-</style>
+</FluentText>
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }

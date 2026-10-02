@@ -4,7 +4,7 @@
 <PageTitle>Error</PageTitle>
 
 <FluentCard Class="error-card">
-    <FluentStack Horizontal="false" Style="align-items:center;">
+    <FluentStack Horizontal="false" Class="error-stack">
         <H1Label>Error.</H1Label>
         <H2Label>An error occurred while processing your request.</H2Label>
 
@@ -19,7 +19,7 @@
         <PLabel>
             Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
         </PLabel>
-        <FluentMessageBar Severity="Severity.Warning" Style="margin-bottom:0;">
+        <FluentMessageBar Severity="Severity.Warning" Class="error-warning-bar">
             <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
             It can result in displaying sensitive information from exceptions to end users.<br />
             For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>

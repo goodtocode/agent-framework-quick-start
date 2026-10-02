@@ -1,0 +1,99 @@
+::deep .chat-message-list {
+    width: var(--chat-message-list-width, 100%);
+    max-width: 100%;
+    margin-inline: auto;
+}
+
+::deep .chat-message-item {
+    width: 100%;
+    min-width: 0;
+}
+
+::deep .chat-message-card-user {
+    --fill-color: var(--accent-fill-rest);
+    --color: var(--foreground-on-accent-rest);
+    background-color: var(--accent-fill-rest) !important;
+    color: var(--foreground-on-accent-rest) !important;
+    width: 70% !important;
+    margin-left: auto !important;
+}
+
+::deep .chat-message-card-assistant {
+    width: 100% !important;
+}
+
+.chat-message-list-host ::deep .chat-message-item .chat-message-card-user {
+    width: 70% !important;
+    margin-left: auto !important;
+    background: var(--accent-fill-rest) !important;
+    color: var(--fill-color) !important;
+}
+
+.chat-message-list-host ::deep .chat-message-item .chat-message-card-assistant {
+    width: 100% !important;
+}
+
+::deep .chat-markdown-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+::deep .chat-markdown-content {
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+::deep .chat-markdown-content p {
+    margin: 0 0 0.5rem 0;
+}
+
+::deep .chat-markdown-content p:last-child {
+    margin-bottom: 0;
+}
+
+::deep .chat-markdown-content pre {
+    overflow-x: auto;
+    padding: 0.75rem;
+    border-radius: 6px;
+    background: var(--neutral-layer-2);
+}
+
+::deep .chat-markdown-content code {
+    font-family: Consolas, "Courier New", monospace;
+}
+
+::deep .chat-markdown-content ul,
+::deep .chat-markdown-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
+}
+
+::deep .chat-markdown-content a {
+    color: var(--accent-foreground-rest);
+}
+
+::deep .chat-markdown-content table {
+    width: max-content;
+    min-width: 100%;
+    max-width: 120rem;
+    table-layout: auto;
+    border-collapse: collapse;
+}
+
+::deep .chat-markdown-content th,
+::deep .chat-markdown-content td {
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+    vertical-align: top;
+    padding: 0.35rem 0.5rem;
+}
+
+::deep .chat-markdown-content th:last-child,
+::deep .chat-markdown-content td:last-child {
+    white-space: normal;
+    min-width: 20rem;
+    max-width: 42rem;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}

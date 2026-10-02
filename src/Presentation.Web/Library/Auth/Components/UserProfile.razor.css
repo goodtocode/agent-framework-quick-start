@@ -1,0 +1,8 @@
+.user-profile-trigger-button {
+    padding: 0;
+    min-width: auto;
+}
+
+.user-profile-avatar {
+    cursor: pointer;
+}

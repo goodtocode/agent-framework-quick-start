@@ -2,17 +2,37 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 <EditForm FormName="ChatSessionEdit" EditContext="editContext" OnValidSubmit="HandleValidSubmit">
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Left" HorizontalGap="0">
-        <FluentTextField @bind-Value="editModel.Title"
-                         Label=""
-                         Required="true"
-                         Autofocus="true" />
-        <SubmittingButton IsSubmitting="@isSubmitting" Appearance="Appearance.Lightweight">
-            <FluentIcon Value="(new Icons.Regular.Size24.Save())" />
-        </SubmittingButton>
-        <FluentButton Type="ButtonType.Button" IconStart="new Icons.Regular.Size24.Dismiss()" OnClick="() => OnCancel.InvokeAsync(null)"></FluentButton>
-    </FluentStack>
-    <ValidationSummary/>
+    <FluentGrid Spacing="0" Justify="JustifyContent.FlexStart">
+        <FluentGridItem xs="10">
+            <FluentTextInput Value="@editModel.Title"
+                             ValueChanged="OnTitleChanged"
+                             Width="100%"
+                             Label=""
+                             Required="true"
+                             Autofocus="true" />
+        </FluentGridItem>
+        <FluentGridItem xs="1">
+            <FluentButton Type="ButtonType.Submit"
+                          Appearance="ButtonAppearance.Subtle"
+                          Size="ButtonSize.Medium"
+                          IconOnly="true"
+                          Disabled="@isSubmitting"
+                          IconStart="new Icons.Regular.Size20.Save()"
+                          Title="Save title"
+                          AriaLabel="Save title"></FluentButton>
+        </FluentGridItem>
+        <FluentGridItem xs="1">
+            <FluentButton Type="ButtonType.Button"
+                          Appearance="ButtonAppearance.Subtle"
+                          Size="ButtonSize.Medium"
+                          IconOnly="true"
+                          IconStart="new Icons.Regular.Size20.Dismiss()"
+                          Title="Cancel edit"
+                          AriaLabel="Cancel edit"
+                          OnClick="() => OnCancel.InvokeAsync(null)"></FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+    <ValidationSummary />
 </EditForm>
 
 @code {
@@ -28,6 +48,11 @@
     {
         editModel = new EditSessionModel { Title = Title };
         editContext = new EditContext(editModel);
+    }
+
+    private void OnTitleChanged(string value)
+    {
+        editModel.Title = value;
     }
 
     private async Task HandleValidSubmit()

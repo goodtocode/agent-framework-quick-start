@@ -1,15 +1,6 @@
-﻿<FluentLabel Typo="Typography.Body" Class="@Class" Style="@Style">
+﻿<FluentText Size="TextSize.Size300" Weight="TextWeight.Regular" Class="@Class" Style="@Style">
     @ChildContent
-</FluentLabel>
-
-<style>
-    .p-label {
-        font-weight: normal;
-        line-height: 1.1;
-        margin-top: 0.05em !important;
-        margin-bottom: 0.1em !important;
-    }
-</style>
+</FluentText>
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }

@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Goodtocode.AgentFramework.Presentation.Web.Library.Analytics
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [AllowAnonymous]
@@ -7,54 +6,43 @@
 <PageTitle>Quick-start for Microsoft Agent Framework</PageTitle>
 
 <FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" VerticalGap="24">
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="max-width: 90%;">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Class="home-page-main">
         <FluentSpacer />
 
         <FluentCard>
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
-                <FluentLabel Typo="Typography.H1" Alignment="HorizontalAlignment.Center">
-                    Quick-start for Microsoft Agent Framework
-                </FluentLabel>
+                <H1Label>Quick-start for Microsoft Agent Framework</H1Label>
 
-                <FluentLabel Typo="Typography.Body" Alignment="HorizontalAlignment.Center">
+                <PLabel>
                     Build and test AI-assisted chat workflows quickly with a focused, minimal starter experience.
-                </FluentLabel>
+                </PLabel>
 
                 <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
-                    <FluentBadge Appearance="Appearance.Neutral">Fast setup</FluentBadge>
-                    <FluentBadge Appearance="Appearance.Neutral">Secure sign-in</FluentBadge>
-                    <FluentBadge Appearance="Appearance.Neutral">Chat-first workflow</FluentBadge>
+                    <FluentBadge Content="Fast setup" />
+                    <FluentBadge Content="Secure sign-in" />
+                    <FluentBadge Content="Chat-first workflow" />
                 </FluentStack>
 
-                <FluentCard Style="width: 100%; max-width: 760px; margin-inline: auto;">
+                <FluentCard Class="home-page-steps-card">
                     <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
-                        <FluentLabel Typo="Typography.H4">Recommended first steps</FluentLabel>
-                        <FluentLabel>1. Sign in to create your user context.</FluentLabel>
-                        <FluentLabel>2. Open Chat Session to start a new conversation.</FluentLabel>
-                        <FluentLabel>3. Ask a focused prompt and iterate from the response.</FluentLabel>
+                        <H3Label>Recommended first steps</H3Label>
+                        <PLabel>1. Sign in to create your user context.</PLabel>
+                        <PLabel>2. Open Chat Session to start a new conversation.</PLabel>
+                        <PLabel>3. Ask a focused prompt and iterate from the response.</PLabel>
                     </FluentStack>
                 </FluentCard>
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="6" HorizontalAlignment="HorizontalAlignment.Center">
-                    <FluentButton Appearance="Appearance.Accent" OnClick="OpenChatSession">
+                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="OpenChatSession">
                         Open Chat Session
                     </FluentButton>
-                    <FluentLabel Typo="Typography.Body" Alignment="HorizontalAlignment.Center">
+                    <PLabel>
                         Tip: Start with a concrete task (for example, “Generate a summary and next actions”).
-                    </FluentLabel>
+                    </PLabel>
                 </FluentStack>
             </FluentStack>
         </FluentCard>
     </FluentStack>
 </FluentStack>
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="8" HorizontalAlignment="HorizontalAlignment.Center" Style="padding-top: 1rem;">
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12" Wrap="true" HorizontalAlignment="HorizontalAlignment.Center">
-        <FluentAnchor Href="/privacy">Privacy Policy</FluentAnchor>
-        <FluentAnchor Href="/terms">Terms of Use</FluentAnchor>
-        <FluentAnchor Href="/analytics-notice">Analytics Notice</FluentAnchor>
-    </FluentStack>
-</FluentStack>
-<AnalyticsConsentBanner />
-
 @code {
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 

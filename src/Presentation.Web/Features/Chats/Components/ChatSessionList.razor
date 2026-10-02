@@ -6,41 +6,40 @@
 
 @if (Sessions?.Any() == true)
 {
-    <FluentTreeView Items="SessionTreeItems"
-                    SelectedItemChanged="OnTreeSessionSelected"
-                    SelectedItem="@selectedTreeItem"
-                    Style="width:100%; min-width:30%;">
-        <ItemTemplate Context="item">
-            @{
-                var sessionItem = (ChatSessionTreeViewItem)item;
-                var session = sessionItem.Session;
-                var isSelected = (selectedTreeItem is ChatSessionTreeViewItem selected)
-                && (item is ChatSessionTreeViewItem current)
-                && selected.Session.Id == current.Session.Id;
-            }
-            @if (editingSessionId == session.Id)
-            {
-                <ChatSessionEditForm Title="@session.Title"
-                                     OnSave="(title) => EditSessionTitleAsync(session, title)"
-                                     OnCancel="CancelEditing" />
-            }
-            else if (isSelected)
-            {
-                <FluentStack Orientation="Orientation.Horizontal" Style="width:100%; min-width:0; align-items:center;">
-                    <FluentLabel Style="flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        @sessionItem.Text
-                    </FluentLabel>
-                    <FluentIcon Value="(new Icons.Regular.Size24.MoreVertical())"
-                                Style="flex:0 0 auto; cursor:pointer;"
-                                OnClick="() => StartEditing(session)" />
-                </FluentStack>
-            }
-            else
-            {
-                @sessionItem.Text
-            }
-        </ItemTemplate>
-    </FluentTreeView>
+    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="6" Class="chat-session-list">
+        @foreach (var session in SessionItems)
+        {
+            <FluentCard Width="100%"
+                        Class="@(selectedSession?.Id == session.Id ? "chat-session-card chat-session-card-selected" : "chat-session-card")"
+                        @onclick="() => SelectSession(session)">
+                @if (editingSessionId == session.Id)
+                {
+                    <ChatSessionEditForm Title="@session.Title"
+                                         OnSave="(title) => EditSessionTitleAsync(session, title)"
+                                         OnCancel="CancelEditing" />
+                }
+                else
+                {
+                    <FluentStack Orientation="Orientation.Horizontal"
+                                 VerticalAlignment="VerticalAlignment.Center"
+                                 HorizontalAlignment="HorizontalAlignment.SpaceBetween"
+                                 Class="chat-session-row">
+                        <FluentLabel Class="chat-session-title" Title="@GetSessionTitle(session)">
+                            @GetSessionTitle(session)
+                        </FluentLabel>
+                        @if (selectedSession?.Id == session.Id)
+                        {
+                            <FluentButton Appearance="ButtonAppearance.Subtle"
+                                          Class="@(selectedSession?.Id == session.Id ? "chat-session-menu-button chat-session-menu-button-visible" : "chat-session-menu-button")"
+                                          IconStart="@(new Icons.Regular.Size20.MoreVertical())"
+                                          OnClick="() => StartEditing(session)">
+                            </FluentButton>
+                        }
+                    </FluentStack>
+                }
+            </FluentCard>
+        }
+    </FluentStack>
 }
 else
 {
@@ -52,31 +51,19 @@ else
     [Parameter] public EventCallback<ChatSessionModel> OnSessionSelected { get; set; }
     [Parameter] public EventCallback<ChatSessionModel> OnRenameSession { get; set; }
 
-    private IEnumerable<ITreeViewItem>? _sessionTreeItemsCache;
-
-    private IEnumerable<ITreeViewItem> SessionTreeItems
-        => _sessionTreeItemsCache ??= Sessions?.Select(ChatSessionTreeViewItem.CreateFrom).Cast<ITreeViewItem>().ToList()
-           ?? Enumerable.Empty<ITreeViewItem>();
-
     private Guid? editingSessionId;
-    private EditSessionModel editModel = new();
-    private EditContext? editContext;
-    private ITreeViewItem? selectedTreeItem;
+    private ChatSessionModel? selectedSession;
+    private IReadOnlyList<ChatSessionModel> SessionItems => Sessions?.ToList() ?? [];
 
-    private async Task OnTreeSessionSelected(object? selectedItem)
+    private async Task SelectSession(ChatSessionModel session)
     {
-        selectedTreeItem = selectedItem as ITreeViewItem;
-        if (selectedTreeItem is ChatSessionTreeViewItem item)
-        {
-            await OnSessionSelected.InvokeAsync(item.Session);
-        }
+        selectedSession = session;
+        await OnSessionSelected.InvokeAsync(session);
     }
 
     private void StartEditing(ChatSessionModel session)
     {
         editingSessionId = session.Id;
-        editModel = new EditSessionModel { Title = session.Title };
-        editContext = new EditContext(editModel);
     }
 
     private async Task EditSessionTitleAsync(ChatSessionModel session, string title)
@@ -91,11 +78,12 @@ else
 
     public void ClearSelection()
     {
-        selectedTreeItem = null;
+        selectedSession = null;
         StateHasChanged();
     }
 
-    protected override void OnParametersSet() => _sessionTreeItemsCache = null;
+    private static string GetSessionTitle(ChatSessionModel session)
+        => string.IsNullOrWhiteSpace(session.Title) ? "Untitled Session" : session.Title;
 
     public class EditSessionModel
     {

@@ -6,36 +6,36 @@
 
 <AuthorizeView>
     <Authorized>
-        <FluentProfileMenu Image="@GetUserImageUrl()"
-                           Status="@PresenceStatus.Available"
-                           HeaderLabel="@UserDisplayName"
-                           Initials="@(GetInitials(UserDisplayName))"
-                           FullName="@UserDisplayName"
-                           PopoverStyle="min-width: 330px;">
-            <HeaderTemplate>
-                <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="max-width:90%;">
-                    <FluentMenuItem OnClick="@ViewAccount" Style="background: transparent !important;">
-                        <FluentIcon Value="@(new Icons.Regular.Size24.Settings())" />
-                    </FluentMenuItem>
-                    <FluentMenuItem OnClick="@SignOut">
-                        SignOut
-                    </FluentMenuItem>
-                </FluentStack>
-            </HeaderTemplate>
-            <FooterTemplate />
-        </FluentProfileMenu>
+        <FluentButton Id="user-profile-trigger"
+                      Appearance="ButtonAppearance.Transparent"
+                      Class="user-profile-trigger-button">
+            <FluentAvatar Image="@GetUserImageUrl()"
+                          Initials="@(GetInitials(UserDisplayName))"
+                          Name="@UserDisplayName"
+                          Size="AvatarSize.Size40"
+                          Active="true"
+                          ActiveAppearance="AvatarActiveAppearance.Ring"
+                          Class="user-profile-avatar" />
+        </FluentButton>
+
+        <FluentMenu Trigger="user-profile-trigger">
+            <FluentMenuList>
+                <FluentMenuItem Disabled="true" Label="@UserDisplayName" />
+                <FluentMenuItem OnClick="@SignOut" IconStart="@(new Icons.Regular.Size20.SignOut())" Label="Sign out" />
+            </FluentMenuList>
+        </FluentMenu>
     </Authorized>
     <NotAuthorized>
-        <FluentNavLink Href="@RouteConstants.SignIn">
+        <FluentLink Href="@RouteConstants.SignIn" ForceLoad="true">
             SignIn
-        </FluentNavLink>
+        </FluentLink>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
     private string? UserDisplayName;
     private string? UserImageUrl;
-    private const string DefaultImageUrl = "img/logo.png";
+    private const string DefaultImageUrl = "";
 
     protected override async Task OnInitializedAsync()
     {

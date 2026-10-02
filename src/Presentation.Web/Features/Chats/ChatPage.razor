@@ -18,225 +18,232 @@
 
 <PageTitle>Chat Session</PageTitle>
 
-<FluentGrid Spacing="0" Justify="JustifyContent.FlexStart" Style="width:100%; padding-top:8px;" OnBreakpointEnter="OnBreakpointEnterHandler">
-  @if (isMobileLayout)
-  {
-    <FluentGridItem xs="3">
-      <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="width:100%;" />
-    </FluentGridItem>
-    <FluentGridItem xs="1">
-    </FluentGridItem>
-    <FluentGridItem xs="8">
-      <ChatSessionStrip @ref="chatSessionStripRef"
-                        Sessions="chatSessions"
-                        OnSessionSelected="HandleSessionSelected" />
-    </FluentGridItem>
+<VerticalSpacer Height="8px" />
+<FluentGrid Spacing="0" Justify="JustifyContent.FlexStart" OnBreakpointEnter="OnBreakpointEnterHandler">
+    @if (isMobileLayout)
+    {
+        <FluentGridItem xs="3">
+            <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" />
+        </FluentGridItem>
+        <FluentGridItem xs="1">
+        </FluentGridItem>
+        <FluentGridItem xs="8">
+            <ChatSessionStrip @ref="chatSessionStripRef"
+                              Sessions="chatSessions"
+                              OnSessionSelected="HandleSessionSelected" />
+        </FluentGridItem>
 
-    <FluentGridItem xs="12">
-      <FluentStack HorizontalAlignment="HorizontalAlignment.Center">
-        <H1Label>What can I help you with?</H1Label>
+        <FluentGridItem xs="12">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.Center">
+                <H1Label>What can I help you with?</H1Label>
+            </FluentStack>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            <div id="@ChatMessagesContainerId" class="chat-messages-container">
+                <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
+            </div>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+      <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+        <ChatActionStrip Actions="journeyStep.ActionOptions" OnActionClicked="HandleActionClickedAsync" />
+        <NewChatMessageInput Width="100%"
+                             @ref="chatMessageInputRef"
+                             Sessions="chatSessions"
+                             OnSessionCreated="HandleSessionCreated"
+                             OnMessageSubmitted="HandleMessageSubmitted" />
+        <SuggestedPromptsStrip Suggestions="GetSuggestedPrompts()" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
       </FluentStack>
-    </FluentGridItem>
+        </FluentGridItem>
+    }
+    else
+    {
+        <FluentGridItem xs="2" md="2">
+            <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" />
+        </FluentGridItem>
+        <FluentGridItem xs="1" md="1"></FluentGridItem>
+        <FluentGridItem xs="8" md="8">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.Center">
+                <H1Label>What can I help you with?</H1Label>
+            </FluentStack>
+        </FluentGridItem>
+        <FluentGridItem xs="1" md="1"></FluentGridItem>
 
-    <FluentGridItem xs="12">
-      <FluentStack id="@ChatMessagesContainerId" Style="max-height:65vh; overflow-y:auto; min-height:0; padding-bottom:10px;" Orientation="Orientation.Vertical">
-        <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
+        <FluentGridItem xs="2" md="2">
+            <div class="chat-session-list-container">
+                <ChatSessionList @ref="chatSessionListRef"
+                                 Sessions="chatSessions"
+                                 OnSessionSelected="HandleSessionSelected" />
+            </div>
+        </FluentGridItem>
+        <FluentGridItem xs="1" md="1"></FluentGridItem>
+        <FluentGridItem xs="8" md="8">
+            <div id="@ChatMessagesContainerId" class="chat-messages-container">
+                <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
+            </div>
+        </FluentGridItem>
+        <FluentGridItem xs="1" md="1"></FluentGridItem>
+
+        <FluentGridItem xs="0" md="2"></FluentGridItem>
+        <FluentGridItem xs="0" md="1"></FluentGridItem>
+        <FluentGridItem xs="12" md="8">
+      <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+        <ChatActionStrip Actions="journeyStep.ActionOptions" OnActionClicked="HandleActionClickedAsync" />
+        <NewChatMessageCard Width="100%"
+                            @ref="chatMessageCardRef"
+                            Sessions="chatSessions"
+                            OnSessionCreated="HandleSessionCreated"
+                            OnMessageSubmitted="HandleMessageSubmitted" />
+        <SuggestedPromptsStrip Suggestions="GetSuggestedPrompts()" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
       </FluentStack>
-    </FluentGridItem>
-
-    <FluentGridItem xs="12">
-      <ChatActionStrip Actions="journeyStep.ActionOptions" OnActionClicked="HandleActionClickedAsync" />
-      <NewChatMessageInput Width="100%"
-                           @ref="chatMessageInputRef"
-                           Sessions="chatSessions"
-                           OnSessionCreated="HandleSessionCreated"
-                           OnMessageSubmitted="HandleMessageSubmitted" />
-      <SuggestedPromptsStrip Suggestions="GetSuggestedPrompts()" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
-    </FluentGridItem>
-  }
-  else
-  {
-    <FluentGridItem xs="2" md="2">
-      <NewChatSessionButton OnNewSessionPressed="HandleNewSessionPressed" Style="width:100%;" />
-    </FluentGridItem>
-    <FluentGridItem xs="1" md="1"></FluentGridItem>
-    <FluentGridItem xs="8" md="8">
-      <FluentStack HorizontalAlignment="HorizontalAlignment.Center">
-        <H1Label>What can I help you with?</H1Label>
-      </FluentStack>
-    </FluentGridItem>
-    <FluentGridItem xs="1" md="1"></FluentGridItem>
-
-    <FluentGridItem xs="2" md="2">
-      <ChatSessionList @ref="chatSessionListRef"
-                       Sessions="chatSessions"
-                       OnSessionSelected="HandleSessionSelected" />
-    </FluentGridItem>
-    <FluentGridItem xs="1" md="1"></FluentGridItem>
-    <FluentGridItem xs="8" md="8">
-      <FluentStack id="@ChatMessagesContainerId" Style="max-height:65vh; overflow-y:auto; min-height:0; padding-bottom:10px;" Orientation="Orientation.Vertical">
-        <ChatMessageList Messages="chatSessions.ActiveSession?.Messages" />
-      </FluentStack>
-    </FluentGridItem>
-    <FluentGridItem xs="1" md="1"></FluentGridItem>
-
-    <FluentGridItem xs="0" md="2"></FluentGridItem>
-    <FluentGridItem xs="0" md="1"></FluentGridItem>
-    <FluentGridItem xs="12" md="8">
-      <ChatActionStrip Actions="journeyStep.ActionOptions" OnActionClicked="HandleActionClickedAsync" />
-      <NewChatMessageCard Width="100%"
-                          @ref="chatMessageCardRef"
-                          Sessions="chatSessions"
-                          OnSessionCreated="HandleSessionCreated"
-                          OnMessageSubmitted="HandleMessageSubmitted" />
-      <SuggestedPromptsStrip Suggestions="GetSuggestedPrompts()" OnPromptClicked="HandleSuggestedPromptClickedAsync" />
-    </FluentGridItem>
-    <FluentGridItem xs="0" md="1"></FluentGridItem>
-  }
+        </FluentGridItem>
+        <FluentGridItem xs="0" md="1"></FluentGridItem>
+    }
 </FluentGrid>
 
 @code {
-  private const string ChatMessagesContainerId = "chat-messages-container";
+    private const string ChatMessagesContainerId = "chat-messages-container";
 
-  private ChatSessionsModel chatSessions = new ChatSessionsModel();
-  private ChatSessionList? chatSessionListRef;
-  private ChatSessionStrip? chatSessionStripRef;
-  private NewChatMessageCard? chatMessageCardRef;
-  private NewChatMessageInput? chatMessageInputRef;
-  private bool isMobileLayout;
-  private bool shouldScrollToBottom;
-  private IJSObjectReference? chatPageJsModule;
-  private ChatJourneyStepModel journeyStep = ChatJourneyStepModel.Empty;
-  private static readonly IReadOnlyList<string> DefaultSuggestedPrompts =
-  [
-    "List my chat sessions",
+    private ChatSessionsModel chatSessions = new ChatSessionsModel();
+    private ChatSessionList? chatSessionListRef;
+    private ChatSessionStrip? chatSessionStripRef;
+    private NewChatMessageCard? chatMessageCardRef;
+    private NewChatMessageInput? chatMessageInputRef;
+    private bool isMobileLayout;
+    private bool shouldScrollToBottom;
+    private IJSObjectReference? chatPageJsModule;
+    private ChatJourneyStepModel journeyStep = ChatJourneyStepModel.Empty;
+    private static readonly IReadOnlyList<string> DefaultSuggestedPrompts =
+    [
+      "List my chat sessions",
     "List my messages for this chat session",
     "Find an actor by name",
     "Search the web for current information"
-  ];
+    ];
 
-  protected override async Task OnInitializedAsync()
-  {
-    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-    if (authState.User.Identity?.IsAuthenticated == true)
+    protected override async Task OnInitializedAsync()
     {
-      await UserSyncService.SyncUserAsync(authState.User);
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            await UserSyncService.SyncUserAsync(authState.User);
+        }
+
+        chatSessions = new ChatSessionsModel();
+        chatSessions.AddRange(await chatService.GetChatSessionsAsync());
+        StateHasChanged();
     }
 
-    chatSessions = new ChatSessionsModel();
-    chatSessions.AddRange(await chatService.GetChatSessionsAsync());
-    StateHasChanged();
-  }
-
-  private void HandleNewSessionPressed()
-  {
-    chatSessionListRef?.ClearSelection();
-    chatSessionStripRef?.ClearSelection();
-    chatSessions.ClearActive();
-    journeyStep = ChatJourneyStepModel.Empty;
-    StateHasChanged();
-  }
-
-  private async Task HandleSessionCreated(ChatSessionModel chatSession)
-  {
-    chatSessions.Add(chatSession);
-    chatSessions.SetActive(chatSession);
-    await RefreshJourneyStepAsync();
-    shouldScrollToBottom = true;
-    StateHasChanged();
-  }
-
-  private async Task HandleSessionSelected(ChatSessionModel chatSession)
-  {
-    chatSessions.ClearActive();
-    chatSessions.SetActive(chatSession);
-    await RefreshJourneyStepAsync();
-    shouldScrollToBottom = true;
-    StateHasChanged();
-  }
-
-  private async Task HandleMessageSubmitted()
-  {
-    var session = await chatService.GetChatSessionAsync(chatSessions?.ActiveSession?.Id ?? Guid.Empty);
-    if (session is not null)
+    private void HandleNewSessionPressed()
     {
-      chatSessions.RefreshItem(session);
+        chatSessionListRef?.ClearSelection();
+        chatSessionStripRef?.ClearSelection();
+        chatSessions.ClearActive();
+        journeyStep = ChatJourneyStepModel.Empty;
+        StateHasChanged();
     }
 
-    await RefreshJourneyStepAsync();
-    shouldScrollToBottom = true;
-    StateHasChanged();
-  }
-
-  private async Task RefreshJourneyStepAsync()
-  {
-    var activeSessionId = chatSessions.ActiveSession?.Id ?? Guid.Empty;
-    journeyStep = activeSessionId == Guid.Empty
-      ? ChatJourneyStepModel.Empty
-      : await chatService.GetJourneyStepAsync(activeSessionId);
-  }
-
-  private async Task HandleSuggestedPromptClickedAsync(string prompt)
-  {
-    await SubmitPromptAsync(prompt);
-  }
-
-  private async Task HandleActionClickedAsync(ChatSelectionOption selection)
-  {
-    journeyStep = journeyStep with { ActionOptions = [] };
-    await SubmitPromptAsync(selection.BuildSelectionPrompt());
-  }
-
-  private async Task SubmitPromptAsync(string prompt)
-  {
-    if (isMobileLayout && chatMessageInputRef is not null)
+    private async Task HandleSessionCreated(ChatSessionModel chatSession)
     {
-      await chatMessageInputRef.SubmitPresetMessageAsync(prompt);
-      return;
+        chatSessions.Add(chatSession);
+        chatSessions.SetActive(chatSession);
+        await RefreshJourneyStepAsync();
+        shouldScrollToBottom = true;
+        StateHasChanged();
     }
 
-    if (chatMessageCardRef is not null)
+    private async Task HandleSessionSelected(ChatSessionModel chatSession)
     {
-      await chatMessageCardRef.SubmitPresetMessageAsync(prompt);
-      return;
+        chatSessions.ClearActive();
+        chatSessions.SetActive(chatSession);
+        await RefreshJourneyStepAsync();
+        shouldScrollToBottom = true;
+        StateHasChanged();
     }
 
-    if (chatMessageInputRef is not null)
+    private async Task HandleMessageSubmitted()
     {
-      await chatMessageInputRef.SubmitPresetMessageAsync(prompt);
-    }
-  }
+        var session = await chatService.GetChatSessionAsync(chatSessions?.ActiveSession?.Id ?? Guid.Empty);
+        if (session is not null)
+        {
+            chatSessions.RefreshItem(session);
+        }
 
-  private IReadOnlyList<string> GetSuggestedPrompts()
-    => journeyStep.SuggestedPrompts.Count > 0 ? journeyStep.SuggestedPrompts : DefaultSuggestedPrompts;
-
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (firstRender)
-    {
-      chatPageJsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Features/Chats/ChatPage.razor.js");
-      shouldScrollToBottom = true;
+        await RefreshJourneyStepAsync();
+        shouldScrollToBottom = true;
+        StateHasChanged();
     }
 
-    if (shouldScrollToBottom && chatPageJsModule is not null)
+    private async Task RefreshJourneyStepAsync()
     {
-      shouldScrollToBottom = false;
-      await chatPageJsModule.InvokeVoidAsync("scrollToBottomById", ChatMessagesContainerId);
+        var activeSessionId = chatSessions.ActiveSession?.Id ?? Guid.Empty;
+        journeyStep = activeSessionId == Guid.Empty
+          ? ChatJourneyStepModel.Empty
+          : await chatService.GetJourneyStepAsync(activeSessionId);
     }
-  }
 
-  private void OnBreakpointEnterHandler(GridItemSize size)
-  {
-    isMobileLayout = size == GridItemSize.Xs || size == GridItemSize.Sm;
-    StateHasChanged();
-  }
-
-  public async ValueTask DisposeAsync()
-  {
-    if (chatPageJsModule is not null)
+    private async Task HandleSuggestedPromptClickedAsync(string prompt)
     {
-      await chatPageJsModule.DisposeAsync();
+        await SubmitPromptAsync(prompt);
     }
-  }
+
+    private async Task HandleActionClickedAsync(ChatSelectionOption selection)
+    {
+        journeyStep = journeyStep with { ActionOptions = [] };
+        await SubmitPromptAsync(selection.BuildSelectionPrompt());
+    }
+
+    private async Task SubmitPromptAsync(string prompt)
+    {
+        if (isMobileLayout && chatMessageInputRef is not null)
+        {
+            await chatMessageInputRef.SubmitPresetMessageAsync(prompt);
+            return;
+        }
+
+        if (chatMessageCardRef is not null)
+        {
+            await chatMessageCardRef.SubmitPresetMessageAsync(prompt);
+            return;
+        }
+
+        if (chatMessageInputRef is not null)
+        {
+            await chatMessageInputRef.SubmitPresetMessageAsync(prompt);
+        }
+    }
+
+    private IReadOnlyList<string> GetSuggestedPrompts()
+      => journeyStep.SuggestedPrompts.Count > 0 ? journeyStep.SuggestedPrompts : DefaultSuggestedPrompts;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            chatPageJsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Features/Chats/ChatPage.razor.js");
+            shouldScrollToBottom = true;
+        }
+
+        if (shouldScrollToBottom && chatPageJsModule is not null)
+        {
+            shouldScrollToBottom = false;
+            await chatPageJsModule.InvokeVoidAsync("scrollToBottomById", ChatMessagesContainerId);
+        }
+    }
+
+    private void OnBreakpointEnterHandler(GridItemSize size)
+    {
+        isMobileLayout = size == GridItemSize.Xs || size == GridItemSize.Sm;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (chatPageJsModule is not null)
+        {
+            await chatPageJsModule.DisposeAsync();
+        }
+    }
 
 }
