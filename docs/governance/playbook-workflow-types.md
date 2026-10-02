@@ -99,3 +99,46 @@ convention (`*.deterministic.*` vs `*.agentic.*`):
 All three workflows may optionally persist their typed materialization through a shared
 `SavePlaybookMaterializationCommand` (`Core.Application/Playbooks/Persistence`) backed by a
 single `PlaybookMaterializations` table, so no workflow needs a bespoke persistence schema.
+
+## Unified Collect / Evaluate / Record Shape
+
+All three example workflows deliberately follow one common input/criteria/output pattern, so a
+developer who understands one workflow immediately understands the other two:
+
+- **Collect input is always a plain `string`.** There is no workflow-specific request wrapper
+  type at the playbook boundary (`TCollectInput` is `string` in all three `IPlaybookSteps<...>`
+  definitions):
+  - SQL Statistics: the target database name.
+  - Taxonomy: the free-text prompt to extract taxonomy terms from.
+  - Essay: the essay text itself.
+
+  When the real-world source of that string is something richer (for example, an existing chat
+  message), that resolution happens **outside** the playbook boundary, in the request handler that
+  calls the runner (see `EvaluateEssayCommandHandler`), never inside a Collect-stage tool. This
+  keeps every Collect-stage tool a simple, directly testable `string -> TEvidence` function.
+
+- **Evaluation criteria are always supplied through the same type:** `Goodtocode.Agents.Playbook
+  .Execution.PlaybookKnowledge` (instruction text, optional supporting items, and an
+  `EvaluationRubric` made of weighted `EvaluationCriterion`s scored against either a
+  `ContinuousEvaluationScale` or `DiscreteEvaluationScale`). Each workflow exposes its versioned
+  criteria through a thin, per-workflow `IPlaybookKnowledgeHolder` singleton
+  (`SqlStatisticsKnowledgeHolder.V1`, `TaxonomyKnowledgeHolder.V1`, `EssayKnowledgeHolder.V1`) so
+  the holder type disambiguates DI registration while the underlying criteria payload type never
+  changes between workflows. Only the criteria *data* differs per workflow:
+  - SQL Statistics: a `ContinuousEvaluationScale` with Small/Medium/Large size bands (GB).
+  - Taxonomy: a `DiscreteEvaluationScale` with five named category levels.
+  - Essay: a single 0-1 `ContinuousEvaluationScale` applied to four independently weighted
+    criteria (thesis clarity, evidence and support, organization, grammar and mechanics).
+
+- **Record output is always reachable as a plain `string` summary**, in addition to whatever
+  richer typed materialization each workflow also produces. Every Record-stage materialization
+  implements the shared `IPlaybookMaterializationSummary` marker interface, so callers who just
+  want "what happened, in one line" can call the shared extension method
+  `result.Summary()` (`PlaybookExecutionResultExtensions.Summary<...>()`) instead of learning each
+  workflow's specific materialization shape.
+
+This is a deliberate low-complexity / high-transparency tradeoff for an open-source quick-start
+template: the Collect and Record stages of the CER contract are easy to reason about in `string`
+terms, while all genuinely structured work (tool calls, model prompts, rubric scoring,
+classification, persistence shaping) stays inside the `IEvaluateStepTool<,>`/`IRecordStepTool<,>`
+implementations, where it belongs.
