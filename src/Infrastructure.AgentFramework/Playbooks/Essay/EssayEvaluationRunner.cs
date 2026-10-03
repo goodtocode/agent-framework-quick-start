@@ -21,7 +21,9 @@ public sealed class EssayEvaluationRunner(
     private readonly EssayGovernanceActivityRecorder _recorder = recorder;
 
     public Task<PlaybookExecutionResult<EssayEvidence, EssayRubricFinding, EssayScorecardMaterialization>> EvaluateAsync(
-        string essayText, CancellationToken cancellationToken)
+        string essayText,
+        CancellationToken cancellationToken,
+        PlaybookReplayContext<EssayEvidence, EssayRubricFinding>? replayContext = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(essayText);
 
@@ -34,6 +36,7 @@ public sealed class EssayEvaluationRunner(
             _resolver.ResolveRecord(null),
             essayText,
             cancellationToken,
-            activityRecorder: _recorder);
+            activityRecorder: _recorder,
+            replayContext: replayContext);
     }
 }

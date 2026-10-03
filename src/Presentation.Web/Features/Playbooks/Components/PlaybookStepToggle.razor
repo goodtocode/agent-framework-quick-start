@@ -1,16 +1,25 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
 
-<FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Wrap="true">
-    <FluentButton Appearance="@AppearanceFor(PlaybookCerStep.Collect)" OnClick="@(() => SelectAsync(PlaybookCerStep.Collect))">
-        Collect
-    </FluentButton>
-    <FluentButton Appearance="@AppearanceFor(PlaybookCerStep.Evaluate)" OnClick="@(() => SelectAsync(PlaybookCerStep.Evaluate))">
-        Evaluate
-    </FluentButton>
-    <FluentButton Appearance="@AppearanceFor(PlaybookCerStep.Record)" OnClick="@(() => SelectAsync(PlaybookCerStep.Record))">
-        Record
-    </FluentButton>
-</FluentStack>
+<div class="step-toggle" role="tablist" aria-label="Playbook CER step">
+    @foreach (var step in Steps)
+    {
+        var isSelected = step == SelectedStep;
+        <div class="step-toggle-tab @(isSelected ? "step-toggle-tab-selected" : null)"
+             role="tab"
+             aria-selected="@(isSelected ? "true" : "false")">
+            <FluentButton Appearance="ButtonAppearance.Transparent" OnClick="@(() => SelectAsync(step))">
+                @if (isSelected)
+                {
+                    <strong>@step</strong>
+                }
+                else
+                {
+                    @step
+                }
+            </FluentButton>
+        </div>
+    }
+</div>
 
 @code {
     /// <summary>
@@ -20,8 +29,16 @@
     [Parameter] public PlaybookCerStep SelectedStep { get; set; } = PlaybookCerStep.Collect;
     [Parameter] public EventCallback<PlaybookCerStep> SelectedStepChanged { get; set; }
 
-    private ButtonAppearance AppearanceFor(PlaybookCerStep step) =>
-        step == SelectedStep ? ButtonAppearance.Primary : ButtonAppearance.Outline;
+    // Rendered as a tab strip (flat buttons under an accent-colored underline indicator) rather
+    // than filled/outlined buttons, so it reads as "select a view" rather than "run a command" -
+    // distinguishing it at a glance from the repeatability controls' Rerun/Recall/Replay buttons,
+    // which do execute a command.
+    private static readonly PlaybookCerStep[] Steps =
+    [
+        PlaybookCerStep.Collect,
+        PlaybookCerStep.Evaluate,
+        PlaybookCerStep.Record
+    ];
 
     private async Task SelectAsync(PlaybookCerStep step)
     {

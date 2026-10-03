@@ -34,7 +34,7 @@
 
     @if (result is not null)
     {
-        <PlaybookResultPanel Result="result" Catalog="catalog" />
+        <PlaybookResultPanel Result="result" Catalog="catalog" IsBusy="isBusy" OnReplay="ReplayAsync" />
     }
 </FluentStack>
 
@@ -44,6 +44,7 @@
     private PlaybookCatalogModel? catalog;
     private PlaybookExecutionResultModel? result;
     private string? errorMessage;
+    private bool isBusy;
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,6 +57,7 @@
     private async Task RunAsync(string essayText)
     {
         errorMessage = null;
+        isBusy = true;
         try
         {
             result = await PlaybookService.RunEssayAsync(essayText);
@@ -63,6 +65,33 @@
         catch (Exception ex)
         {
             errorMessage = $"The Essay Playbook could not be run: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task ReplayAsync(PlaybookReplayMode mode)
+    {
+        if (result is null)
+        {
+            return;
+        }
+
+        errorMessage = null;
+        isBusy = true;
+        try
+        {
+            result = await PlaybookService.RunEssayAsync(result.CollectInput, mode, result.ExecutionId);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"The Essay Playbook could not {mode.ToVerbPhrase()}: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
         }
     }
 }

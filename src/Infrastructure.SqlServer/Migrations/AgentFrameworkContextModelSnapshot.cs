@@ -515,6 +515,12 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                         .IsRequired()
                         .HasColumnType("NVARCHAR(MAX)");
 
+                    b.Property<string>("EvidenceJson")
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<string>("FindingJson")
+                        .HasColumnType("NVARCHAR(MAX)");
+
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
 

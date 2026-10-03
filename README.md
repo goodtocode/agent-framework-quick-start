@@ -409,6 +409,28 @@ The Playbook *concept* and a Playbook *run* are persisted as two separate kinds 
 See `docs/governance/playbook-workflow-types.md` ("Persistence: Playbook Catalog vs. Playbook
 Execution") for the full entity model.
 
+### Repeatability: Rerun / Recall / Replay
+
+Every `Run*PlaybookCommand` accepts a `PlaybookReplayMode` (from
+`Goodtocode.Agents.Playbook.Execution`) plus an optional `SourceExecutionId`:
+
+- **Rerun** (default) — a fresh execution: Collect, Evaluate, and Record all run against new
+  input. This is the only mode available on a Playbook's first execution.
+- **Recall** — re-renders the prior execution's Finding with no new Collect or Evaluate work at
+  all, even if the live data source has since changed. Only Record re-runs, against the recalled
+  Finding.
+- **Replay** — reuses the prior execution's Evidence (skips Collect) but re-runs Evaluate and
+  Record, to verify the governed result reproduces exactly from the same Evidence.
+
+Each `Rerun` persists the stage's typed Evidence/Finding as JSON
+(`PlaybookExecutionEntity.EvidenceJson`/`FindingJson`) so a later Recall/Replay request can
+reconstruct them. The 3 Blazor Playbook pages expose "Rerun", "Recall", and "Replay" controls
+(with inline explanations of what each does) next to the latest execution's result; selecting
+one re-renders the same result panel in place (no before/after comparison view) — see
+`docs/governance/playbook-workflow-types.md` ("Repeatability: Rerun / Recall / Replay") for the
+full mechanism, including how the SQL Statistics (`PlaybookExecutor`) and Taxonomy/Essay (MAF
+graph) workflows each implement it.
+
 These three Playbooks are exposed both as REST endpoints (`api/v{version}/my/playbooks/{sql-statistics,taxonomy,essay}`
 to run, `api/v{version}/playbooks` to manage the catalog) and as Blazor pages under `/playbooks/*`
 in Presentation.Web, in addition to being proven through `Tests.Integration` — see each feature

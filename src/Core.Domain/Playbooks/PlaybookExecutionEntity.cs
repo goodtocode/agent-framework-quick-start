@@ -20,6 +20,21 @@ public class PlaybookExecutionEntity : SecuredEntity<PlaybookExecutionEntity>
     public string CollectOutput { get; private set; } = string.Empty;
     public string EvaluateOutput { get; private set; } = string.Empty;
     public string RecordOutput { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// JSON-serialized Collect-stage typed evidence (the playbook's own <c>TEvidence</c>),
+    /// persisted alongside the human-readable <see cref="CollectOutput"/> summary so a later
+    /// execution can Replay (re-run Evaluate+Record) against this exact evidence.
+    /// </summary>
+    public string? EvidenceJson { get; private set; }
+
+    /// <summary>
+    /// JSON-serialized Evaluate-stage typed finding (the playbook's own <c>TFinding</c>),
+    /// persisted alongside the human-readable <see cref="EvaluateOutput"/> summary so a later
+    /// execution can Recall (re-run Record only) against this exact finding.
+    /// </summary>
+    public string? FindingJson { get; private set; }
+
     public DateTimeOffset StartedUtc { get; private set; }
     public DateTimeOffset CompletedUtc { get; private set; }
     public virtual PlaybookEntity? Playbook { get; private set; }
@@ -44,6 +59,8 @@ public class PlaybookExecutionEntity : SecuredEntity<PlaybookExecutionEntity>
         string collectOutput,
         string evaluateOutput,
         string recordOutput,
+        string? evidenceJson,
+        string? findingJson,
         DateTimeOffset startedUtc,
         DateTimeOffset completedUtc)
         : base(id: id, partitionKey: tenantId.ToString(), rowKey: canonicalKey,
@@ -60,6 +77,8 @@ public class PlaybookExecutionEntity : SecuredEntity<PlaybookExecutionEntity>
         CollectOutput = collectOutput;
         EvaluateOutput = evaluateOutput;
         RecordOutput = recordOutput;
+        EvidenceJson = evidenceJson;
+        FindingJson = findingJson;
         StartedUtc = startedUtc;
         CompletedUtc = completedUtc;
     }
@@ -77,6 +96,8 @@ public class PlaybookExecutionEntity : SecuredEntity<PlaybookExecutionEntity>
         string collectOutput,
         string evaluateOutput,
         string recordOutput,
+        string? evidenceJson,
+        string? findingJson,
         DateTimeOffset startedUtc,
         DateTimeOffset completedUtc)
     {
@@ -98,6 +119,8 @@ public class PlaybookExecutionEntity : SecuredEntity<PlaybookExecutionEntity>
             collectOutput: collectOutput,
             evaluateOutput: evaluateOutput,
             recordOutput: recordOutput,
+            evidenceJson: evidenceJson,
+            findingJson: findingJson,
             startedUtc: startedUtc,
             completedUtc: completedUtc);
     }

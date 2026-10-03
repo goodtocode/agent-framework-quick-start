@@ -4,8 +4,9 @@
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
         @if (Multiline)
         {
-            <FluentTextArea Rows="15"
-                            Style="width: 100%"
+            <FluentTextArea Width="100%"
+                            Height="@MultilineHeight"                            
+                            Resize="TextAreaResize.Both"
                             Value="@formModel.Input"
                             ValueChanged="OnInputChanged"
                             Placeholder="@Placeholder"
@@ -14,7 +15,7 @@
         }
         else
         {
-            <FluentTextInput Style="width: 100%"
+            <FluentTextInput Width="100%"
                              Value="@formModel.Input"
                              ValueChanged="OnInputChanged"
                              Placeholder="@Placeholder"
@@ -40,6 +41,7 @@
     [Parameter] public string Placeholder { get; set; } = string.Empty;
     [Parameter] public string ButtonLabel { get; set; } = "Run";
     [Parameter] public bool Multiline { get; set; }
+    [Parameter] public string MultilineHeight { get; set; } = "180px";
     [Parameter] public EventCallback<string> OnSubmit { get; set; }
 
     private sealed class PlaybookInputModel

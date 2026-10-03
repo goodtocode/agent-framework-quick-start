@@ -1,6 +1,7 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+    <PlaybookReplayControls Result="Result" IsBusy="IsBusy" OnReplay="OnReplay" />
     <PlaybookStepToggle @bind-SelectedStep="SelectedStep" />
     <PlaybookSummaryCard Result="Result" />
     <PlaybookStepDetail Result="Result" Step="SelectedStep" Catalog="Catalog" />
@@ -8,7 +9,8 @@
 
 @code {
     /// <summary>
-    /// Lays out one Playbook page's post-run section in the order the user requested: the 3
+    /// Lays out one Playbook page's post-run section in the order the user requested: the
+    /// repeatability controls (re-execute the latest run via Recall/Replay), then the 3
     /// Collect/Evaluate/Record toggle buttons, then the playbook summary (including the final
     /// Record-stage result), then the detail for whichever step is selected. Shared by every
     /// example playbook page so the layout never drifts between them.
@@ -20,6 +22,18 @@
     /// alongside the latest execution), supplying each CER step's real processing/action text.
     /// </summary>
     [Parameter] public PlaybookCatalogModel? Catalog { get; set; }
+
+    /// <summary>
+    /// True while a run or replay request is in flight, so the repeatability controls can disable
+    /// themselves to prevent duplicate submissions.
+    /// </summary>
+    [Parameter] public bool IsBusy { get; set; }
+
+    /// <summary>
+    /// Raised when the user picks Recall or Replay from <see cref="PlaybookReplayControls"/>; the
+    /// hosting page re-executes against <see cref="Result"/> with the chosen mode.
+    /// </summary>
+    [Parameter] public EventCallback<PlaybookReplayMode> OnReplay { get; set; }
 
     private PlaybookCerStep SelectedStep { get; set; } = PlaybookCerStep.Collect;
 }

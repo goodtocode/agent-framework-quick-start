@@ -169,14 +169,31 @@ current governance gap (every score is still captured, attributed, and auditable
 
 ## UI Changes
 The `EssayPlaybookPage` (`Presentation.Web/Features/Playbooks`) runs this Playbook from an essay
-text input, then renders the shared `PlaybookResultPanel`: a Collect/Evaluate/Record toggle, a
-summary card, and a step-detail panel. The step-detail panel fetches this Playbook's catalog
-entry (`GetPlaybookByKeyAsync("essay")`) to show each step's persisted `Description` and
+text input, then renders the shared `PlaybookResultPanel`: "Rerun"/"Recall"/"Replay"
+repeatability controls (`PlaybookReplayControls`, each with an inline explanation of what it
+does), a Collect/Evaluate/Record toggle, a summary card, and a
+step-detail panel. The step-detail panel fetches this Playbook's catalog entry
+(`GetPlaybookByKeyAsync("essay")`) to show each step's persisted `Description` and
 `ActionDefinition` (the rubric-scoring prompt) alongside that run's dynamic input/output.
+
+## Repeatability (Recall / Replay)
+Since Collect and Record are deterministic but Evaluate is agentic, Replay is the most useful
+mode here: it re-runs the rubric-scoring prompt against the exact same collected essay evidence,
+proving the Evaluate prompt reproduces an equivalent scorecard without needing the (free)
+deterministic Collect stage to run again. Recall skips both Collect and Evaluate, re-rendering
+the prior scorecard at zero cost. Like Taxonomy, `EssayEvaluationRunner` passes the
+`PlaybookReplayContext<EssayEvidence, EssayScorecardFinding>` through to the repo-owned
+`PlaybookWorkflowGraphExecutor<...>`, which bypasses the MAF 3-node graph for Recall/Replay and
+calls only the remaining stage tool(s) directly against the recalled Evidence/Finding, while
+still emitting the same governance activity-recorder calls the graph nodes would have made. See
+`docs/governance/playbook-workflow-types.md` ("Repeatability: Rerun / Recall / Replay") for the
+full mechanism shared across all three Playbooks.
 
 ## API Changes
 - `POST api/v{version}/my/playbooks/essay` (`RunMyEssayPlaybookCommand`) executes the Playbook
-  and persists a `PlaybookExecutionEntity` for the run.
+  and persists a `PlaybookExecutionEntity` for the run. Accepts an optional `ReplayMode`
+  (`Rerun`/`Recall`/`Replay`, default `Rerun`) and `SourceExecutionId` to recall or replay a prior
+  execution instead of collecting fresh input.
 - The catalog itself is queryable/creatable/updatable/deletable via the shared, unsecured
   `api/v{version}/playbooks` CRUD endpoints (`PlaybookCatalogEndpoints`): list, get by id, get by
   key, create, update general info, update one CER step, delete.

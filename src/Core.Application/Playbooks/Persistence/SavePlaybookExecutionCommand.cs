@@ -20,6 +20,8 @@ public sealed class SavePlaybookExecutionCommand : UserScopedRequest, IRequest<G
     public required string CollectOutput { get; init; }
     public required string EvaluateOutput { get; init; }
     public required string RecordOutput { get; init; }
+    public string? EvidenceJson { get; init; }
+    public string? FindingJson { get; init; }
     public required DateTimeOffset StartedUtc { get; init; }
     public required DateTimeOffset CompletedUtc { get; init; }
 }
@@ -48,6 +50,8 @@ public sealed class SavePlaybookExecutionCommandHandler(IAgentFrameworkContext c
             collectOutput: request.CollectOutput,
             evaluateOutput: request.EvaluateOutput,
             recordOutput: request.RecordOutput,
+            evidenceJson: request.EvidenceJson,
+            findingJson: request.FindingJson,
             startedUtc: request.StartedUtc,
             completedUtc: request.CompletedUtc);
 

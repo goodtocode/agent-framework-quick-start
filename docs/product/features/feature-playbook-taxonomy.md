@@ -151,15 +151,33 @@ already enforced; term-extraction *quality* is not yet separately evaluated).
 
 ## UI Changes
 The `TaxonomyPlaybookPage` (`Presentation.Web/Features/Playbooks`) runs this Playbook from a
-free-text input, then renders the shared `PlaybookResultPanel`: a Collect/Evaluate/Record toggle,
-a summary card, and a step-detail panel. The step-detail panel fetches this Playbook's catalog
-entry (`GetPlaybookByKeyAsync("taxonomy")`) to show each step's persisted `Description` and
+free-text input, then renders the shared `PlaybookResultPanel`: "Rerun"/"Recall"/"Replay"
+repeatability controls (`PlaybookReplayControls`, each with an inline explanation of what it
+does), a Collect/Evaluate/Record toggle, a summary card, and a
+step-detail panel. The step-detail panel fetches this Playbook's catalog entry
+(`GetPlaybookByKeyAsync("taxonomy")`) to show each step's persisted `Description` and
 `ActionDefinition` (the extraction/classification prompts) alongside that run's dynamic
 input/output.
 
+## Repeatability (Recall / Replay)
+Because every stage of this Playbook is agentic, Recall and Replay matter most here: Recall lets
+a user see the exact prior Finding without spending any tokens, and Replay proves the
+Evaluate/Record prompts reproduce the same classification from the same (recalled) extracted
+terms, without re-running the more token-heavy Collect stage. Unlike SQL Statistics, this
+Playbook's `TaxonomyClassificationRunner` does not call the package's `PlaybookExecutor`
+directly — it passes the `PlaybookReplayContext<TaxonomyEvidence, TaxonomyFinding>` through to the
+repo-owned `PlaybookWorkflowGraphExecutor<...>`, which bypasses the MAF 3-node graph entirely for
+Recall/Replay and instead calls only the remaining stage tool(s)
+(`IRecordStepTool<,>`/`IEvaluateStepTool<,>`, resolved to `TaxonomyRecordAgentTool`/
+`TaxonomyEvaluateAgentTool`) directly against the recalled Evidence/Finding, while still emitting
+the same governance activity-recorder calls the graph nodes would have made. See `docs/governance/playbook-workflow-types.md` ("Repeatability: Rerun / Recall / Replay") for
+the full mechanism shared across all three Playbooks.
+
 ## API Changes
 - `POST api/v{version}/my/playbooks/taxonomy` (`RunMyTaxonomyPlaybookCommand`) executes the
-  Playbook and persists a `PlaybookExecutionEntity` for the run.
+  Playbook and persists a `PlaybookExecutionEntity` for the run. Accepts an optional `ReplayMode`
+  (`Rerun`/`Recall`/`Replay`, default `Rerun`) and `SourceExecutionId` to recall or replay a prior
+  execution instead of collecting fresh input.
 - The catalog itself is queryable/creatable/updatable/deletable via the shared, unsecured
   `api/v{version}/playbooks` CRUD endpoints (`PlaybookCatalogEndpoints`): list, get by id, get by
   key, create, update general info, update one CER step, delete.

@@ -1,5 +1,7 @@
 using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models;
 using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http;
+using ClientReplayMode = Goodtocode.AgentFramework.Api.Clients.PlaybookReplayMode;
+using UiReplayMode = Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models.PlaybookReplayMode;
 
 namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services;
 
@@ -11,9 +13,21 @@ namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services
 /// </summary>
 public interface IPlaybookService
 {
-    Task<PlaybookExecutionResultModel> RunSqlStatisticsAsync(string databaseName);
-    Task<PlaybookExecutionResultModel> RunTaxonomyAsync(string sourceText);
-    Task<PlaybookExecutionResultModel> RunEssayAsync(string essayText);
+    /// <summary>
+    /// Runs the SQL Statistics playbook. <paramref name="replayMode"/> selects the repeatability
+    /// behavior (<see cref="UiReplayMode.Rerun"/> by default); for Recall/Replay,
+    /// <paramref name="databaseName"/> is ignored server-side in favor of the resolved prior
+    /// execution's own Collect-stage input, and <paramref name="sourceExecutionId"/> identifies
+    /// which prior execution to recall/replay (the user's latest, if omitted).
+    /// </summary>
+    Task<PlaybookExecutionResultModel> RunSqlStatisticsAsync(
+        string databaseName, UiReplayMode replayMode = UiReplayMode.Rerun, Guid? sourceExecutionId = null);
+
+    Task<PlaybookExecutionResultModel> RunTaxonomyAsync(
+        string sourceText, UiReplayMode replayMode = UiReplayMode.Rerun, Guid? sourceExecutionId = null);
+
+    Task<PlaybookExecutionResultModel> RunEssayAsync(
+        string essayText, UiReplayMode replayMode = UiReplayMode.Rerun, Guid? sourceExecutionId = null);
 
     /// <summary>
     /// Fetches the persisted catalog definition (Name, Description, and the 3 CER steps'
@@ -32,25 +46,43 @@ public class PlaybookService(BackendApiClient client) : ApiService, IPlaybookSer
 {
     private readonly BackendApiClient _apiClient = client;
 
-    public async Task<PlaybookExecutionResultModel> RunSqlStatisticsAsync(string databaseName)
+    public async Task<PlaybookExecutionResultModel> RunSqlStatisticsAsync(
+        string databaseName, UiReplayMode replayMode = UiReplayMode.Rerun, Guid? sourceExecutionId = null)
     {
-        var command = new RunSqlStatisticsPlaybookCommand { DatabaseName = databaseName };
+        var command = new RunSqlStatisticsPlaybookCommand
+        {
+            DatabaseName = databaseName,
+            ReplayMode = (ClientReplayMode)(int)replayMode,
+            SourceExecutionId = sourceExecutionId?.ToString()
+        };
         var response = await HandleApiException(() => _apiClient.RunMySqlStatisticsPlaybookAsync(command));
 
         return PlaybookExecutionResultModel.Create(response);
     }
 
-    public async Task<PlaybookExecutionResultModel> RunTaxonomyAsync(string sourceText)
+    public async Task<PlaybookExecutionResultModel> RunTaxonomyAsync(
+        string sourceText, UiReplayMode replayMode = UiReplayMode.Rerun, Guid? sourceExecutionId = null)
     {
-        var command = new RunTaxonomyPlaybookCommand { Text = sourceText };
+        var command = new RunTaxonomyPlaybookCommand
+        {
+            Text = sourceText,
+            ReplayMode = (ClientReplayMode)(int)replayMode,
+            SourceExecutionId = sourceExecutionId?.ToString()
+        };
         var response = await HandleApiException(() => _apiClient.RunMyTaxonomyPlaybookAsync(command));
 
         return PlaybookExecutionResultModel.Create(response);
     }
 
-    public async Task<PlaybookExecutionResultModel> RunEssayAsync(string essayText)
+    public async Task<PlaybookExecutionResultModel> RunEssayAsync(
+        string essayText, UiReplayMode replayMode = UiReplayMode.Rerun, Guid? sourceExecutionId = null)
     {
-        var command = new RunEssayPlaybookCommand { EssayText = essayText };
+        var command = new RunEssayPlaybookCommand
+        {
+            EssayText = essayText,
+            ReplayMode = (ClientReplayMode)(int)replayMode,
+            SourceExecutionId = sourceExecutionId?.ToString()
+        };
         var response = await HandleApiException(() => _apiClient.RunMyEssayPlaybookAsync(command));
 
         return PlaybookExecutionResultModel.Create(response);
