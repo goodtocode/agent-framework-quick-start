@@ -25,6 +25,7 @@ public static class EndpointMap
         endpoints.MapMyActorEndpoints(versionSet);
         endpoints.MapMyChatSessionEndpoints(versionSet);
         endpoints.MapMyPlaybookEndpoints(versionSet);
+        endpoints.MapPlaybookCatalogEndpoints(versionSet);
 
         return endpoints;
     }

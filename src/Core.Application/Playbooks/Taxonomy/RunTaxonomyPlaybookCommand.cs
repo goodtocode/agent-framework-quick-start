@@ -12,6 +12,7 @@ public sealed class RunTaxonomyPlaybookCommand : IRequest<PlaybookExecutionResul
 }
 
 public sealed class RunTaxonomyPlaybookCommandHandler(
+    ISender sender,
     ITaxonomyClassificationRunner runner,
     TaxonomyStageSummarySelector summarySelector)
     : IRequestHandler<RunTaxonomyPlaybookCommand, PlaybookExecutionResultDto>
@@ -21,6 +22,8 @@ public sealed class RunTaxonomyPlaybookCommandHandler(
         ArgumentNullException.ThrowIfNull(request);
 
         var result = await runner.ClassifyAsync(request.Text, cancellationToken);
-        return PlaybookExecutionResultDtoFactory.CreateFrom(request.Text, result, summarySelector);
+        var dto = PlaybookExecutionResultDtoFactory.CreateFrom(request.Text, result, summarySelector);
+        await Persistence.PlaybookExecutionPersister.SaveAsync(sender, dto, cancellationToken);
+        return dto;
     }
 }

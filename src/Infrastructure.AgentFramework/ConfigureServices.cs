@@ -91,6 +91,7 @@ public static class ConfigureServices
         services.AddScoped<SemanticIntentClassifier>();
         services.AddScoped<IIntentClassifier, HybridIntentClassifier>();
         services.AddHostedService<IntentEmbeddingInitializationService>();
+        services.AddHostedService<PlaybookCatalogSeedInitializationService>();
         services.AddSingleton<IAgentChatContextAccessor, AgentChatContextAccessor>();
         services.AddSingleton<IChatJourneyCatalogContributor, DefaultChatJourneyCatalogContributor>();
         services.AddSingleton<ChatJourneyCatalogFactory>();

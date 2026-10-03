@@ -20,7 +20,9 @@ public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
     public DbSet<ActorEntity> Actors => Set<ActorEntity>();
     public DbSet<ChatGovernanceEntity> ChatGovernance => Set<ChatGovernanceEntity>();
     public DbSet<IntentEmbeddingEntity> IntentEmbeddings => Set<IntentEmbeddingEntity>();
-    public DbSet<PlaybookMaterializationEntity> PlaybookMaterializations => Set<PlaybookMaterializationEntity>();
+    public DbSet<PlaybookEntity> Playbooks => Set<PlaybookEntity>();
+    public DbSet<PlaybookStepEntity> PlaybookSteps => Set<PlaybookStepEntity>();
+    public DbSet<PlaybookExecutionEntity> PlaybookExecutions => Set<PlaybookExecutionEntity>();
 
     protected AgentFrameworkContext() { }
 

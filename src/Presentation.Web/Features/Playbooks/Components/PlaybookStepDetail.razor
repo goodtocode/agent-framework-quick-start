@@ -10,7 +10,11 @@
                 <PLabel>@Result.CollectInput</PLabel>
 
                 <H4Label>Processing</H4Label>
-                <PLabel>Gather evidence from the submitted input using deterministic queries or tool calls.</PLabel>
+                <PLabel>@GetProcessingDescription(PlaybookCerStep.Collect, "Gather evidence from the submitted input using deterministic queries or tool calls.")</PLabel>
+                @if (GetActionDefinition(PlaybookCerStep.Collect) is { } collectAction)
+                {
+                    <FluentTextArea Rows="6" ReadOnly="true" Style="width:100%; font-family: monospace;" Value="@collectAction" />
+                }
 
                 <H4Label>Output</H4Label>
                 @foreach (var item in GetDisplayItems(Result.CollectSummary))
@@ -27,7 +31,11 @@
                 }
 
                 <H4Label>Processing</H4Label>
-                <PLabel>Apply a classification or scoring rubric to the collected evidence.</PLabel>
+                <PLabel>@GetProcessingDescription(PlaybookCerStep.Evaluate, "Apply a classification or scoring rubric to the collected evidence.")</PLabel>
+                @if (GetActionDefinition(PlaybookCerStep.Evaluate) is { } evaluateAction)
+                {
+                    <FluentTextArea Rows="6" ReadOnly="true" Style="width:100%; font-family: monospace;" Value="@evaluateAction" />
+                }
 
                 <H4Label>Output</H4Label>
                 @foreach (var item in GetDisplayItems(Result.EvaluateSummary))
@@ -44,7 +52,11 @@
                 }
 
                 <H4Label>Processing</H4Label>
-                <PLabel>Materialize the evaluated finding into a durable, human-readable outcome.</PLabel>
+                <PLabel>@GetProcessingDescription(PlaybookCerStep.Record, "Materialize the evaluated finding into a durable, human-readable outcome.")</PLabel>
+                @if (GetActionDefinition(PlaybookCerStep.Record) is { } recordAction)
+                {
+                    <FluentTextArea Rows="6" ReadOnly="true" Style="width:100%; font-family: monospace;" Value="@recordAction" />
+                }
 
                 <H4Label>Output</H4Label>
                 @foreach (var item in GetDisplayItems(Result.RecordSummary))
@@ -66,6 +78,23 @@
     /// Which CER step's detail to show, driven by <see cref="PlaybookStepToggle"/>.
     /// </summary>
     [Parameter] public PlaybookCerStep Step { get; set; } = PlaybookCerStep.Collect;
+
+    /// <summary>
+    /// The persisted catalog definition for this Playbook, supplying each CER step's real
+    /// Name/Description and processing/action text (query, rubric, or template). Optional: may
+    /// still be loading, in which case a generic processing description is shown instead.
+    /// </summary>
+    [Parameter] public PlaybookCatalogModel? Catalog { get; set; }
+
+    private string GetProcessingDescription(PlaybookCerStep step, string fallback) =>
+        Catalog?.Steps.TryGetValue(step, out var catalogStep) == true && !string.IsNullOrWhiteSpace(catalogStep.Description)
+            ? catalogStep.Description
+            : fallback;
+
+    private string? GetActionDefinition(PlaybookCerStep step) =>
+        Catalog?.Steps.TryGetValue(step, out var catalogStep) == true && !string.IsNullOrWhiteSpace(catalogStep.ActionDefinition)
+            ? catalogStep.ActionDefinition
+            : null;
 
     private static readonly string[] StructuredSummaryKeys =
     [

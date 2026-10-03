@@ -14,6 +14,12 @@ public interface IPlaybookService
     Task<PlaybookExecutionResultModel> RunSqlStatisticsAsync(string databaseName);
     Task<PlaybookExecutionResultModel> RunTaxonomyAsync(string sourceText);
     Task<PlaybookExecutionResultModel> RunEssayAsync(string essayText);
+
+    /// <summary>
+    /// Fetches the persisted catalog definition (Name, Description, and the 3 CER steps'
+    /// processing/action text) for the Playbook identified by <paramref name="key"/>.
+    /// </summary>
+    Task<PlaybookCatalogModel> GetCatalogAsync(string key);
 }
 
 public class PlaybookService(BackendApiClient client) : ApiService, IPlaybookService
@@ -42,5 +48,12 @@ public class PlaybookService(BackendApiClient client) : ApiService, IPlaybookSer
         var response = await HandleApiException(() => _apiClient.RunMyEssayPlaybookAsync(command));
 
         return PlaybookExecutionResultModel.Create(response);
+    }
+
+    public async Task<PlaybookCatalogModel> GetCatalogAsync(string key)
+    {
+        var response = await HandleApiException(() => _apiClient.GetPlaybookByKeyAsync(key));
+
+        return PlaybookCatalogModel.Create(response);
     }
 }

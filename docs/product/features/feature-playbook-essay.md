@@ -88,10 +88,14 @@ tests. See [API Changes](#api-changes) for what adding an endpoint would require
   deterministic function of the overall score.
 
 ## Domain Changes
-None. This Playbook does not introduce new `Core.Domain` entities; its optional persistence reuses
-the shared `PlaybookMaterializationEntity` (see [Data Requirements](#data-requirements)). The
-chat-integration path reads existing `ChatMessageEntity`/`ChatSessionEntity` data but does not
-modify it.
+This Playbook's catalog definition is persisted as a `PlaybookEntity` (`Key: essay`) with three
+`PlaybookStepEntity` children (`Collect`/`Evaluate`/`Record`), each carrying the step's
+`ActionFormat` and static `ActionDefinition` (the essay-intake definition, the rubric-scoring
+prompt, and the summary/record template, respectively). Every run is persisted as a
+`PlaybookExecutionEntity` — see [Data Requirements](#data-requirements) and
+`docs/governance/playbook-workflow-types.md` ("Persistence: Playbook Catalog vs. Playbook
+Execution") for the full entity model shared by all three example Playbooks. The chat-integration
+path reads existing `ChatMessageEntity`/`ChatSessionEntity` data but does not modify it.
 
 ## Application Changes
 All types live in `Core.Application/Playbooks/Essay/`:
@@ -164,19 +168,25 @@ independently evaluated — this is a noted opportunity for an evaluator/replay 
 current governance gap (every score is still captured, attributed, and auditable).
 
 ## UI Changes
-None. Not yet wired to a chat surface or page.
+The `EssayPlaybookPage` (`Presentation.Web/Features/Playbooks`) runs this Playbook from an essay
+text input, then renders the shared `PlaybookResultPanel`: a Collect/Evaluate/Record toggle, a
+summary card, and a step-detail panel. The step-detail panel fetches this Playbook's catalog
+entry (`GetPlaybookByKeyAsync("essay")`) to show each step's persisted `Description` and
+`ActionDefinition` (the rubric-scoring prompt) alongside that run's dynamic input/output.
 
 ## API Changes
-None today. To expose this Playbook over HTTP, add a minimal endpoint or controller in
-`Presentation.Api` that sends `EvaluateEssayCommand` through `ISender` (for the chat-message path)
-or resolves `IEssayEvaluationRunner` directly (for a raw-text path), following the same
-authorization/tenant-scoping conventions as other endpoints in that project.
+- `POST api/v{version}/my/playbooks/essay` (`RunMyEssayPlaybookCommand`) executes the Playbook
+  and persists a `PlaybookExecutionEntity` for the run.
+- The catalog itself is queryable/creatable/updatable/deletable via the shared, unsecured
+  `api/v{version}/playbooks` CRUD endpoints (`PlaybookCatalogEndpoints`): list, get by id, get by
+  key, create, update general info, update one CER step, delete.
 
 ## Data Requirements
-No dedicated schema beyond what already exists for chat messages. The Record-stage materialization
-can optionally be persisted through the shared `SavePlaybookMaterializationCommand`
-(`Core.Application/Playbooks/Persistence`) into the single `PlaybookMaterializations` table — no
-bespoke table or migration is required for this Playbook specifically.
+The catalog definition (`Playbooks` + `PlaybookSteps` tables) is seeded once at startup by
+`PlaybookCatalogSeedInitializationService` with `Key = "essay"`. Each run persists one row in
+`PlaybookExecutions` (owner/tenant-scoped) via `SavePlaybookExecutionCommand`, recording
+`CollectInput`, and the `CollectOutput`/`EvaluateOutput`/`RecordOutput` summary strings — no
+dedicated schema beyond this is required for the chat-message intake path.
 
 ## Security Requirements
 `EvaluateEssayCommand` is a `UserScopedRequest`-style flow through `GetMyChatMessageQuery`, so it

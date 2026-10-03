@@ -2,13 +2,13 @@ using Goodtocode.AgentFramework.Core.Domain.Playbooks;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
 
-public class PlaybookMaterializationsConfig : IEntityTypeConfiguration<PlaybookMaterializationEntity>
+public class PlaybookExecutionsConfig : IEntityTypeConfiguration<PlaybookExecutionEntity>
 {
-    public void Configure(EntityTypeBuilder<PlaybookMaterializationEntity> builder)
+    public void Configure(EntityTypeBuilder<PlaybookExecutionEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.ToTable("PlaybookMaterializations");
+        builder.ToTable("PlaybookExecutions");
 
         builder.HasKey(x => x.Id).IsClustered(false);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
@@ -27,11 +27,26 @@ public class PlaybookMaterializationsConfig : IEntityTypeConfiguration<PlaybookM
             .HasColumnType(ColumnTypes.Nvarchar100)
             .IsRequired();
 
-        builder.Property(x => x.SummaryText)
-            .HasColumnType(ColumnTypes.Nvarchar1000)
+        builder.Property(x => x.ReplayMode)
+            .HasColumnType(ColumnTypes.Nvarchar100)
             .IsRequired();
 
-        builder.Property(x => x.PayloadSnapshot)
+        builder.Property(x => x.SourceExecutionId)
+            .HasColumnType(ColumnTypes.Nvarchar200);
+
+        builder.Property(x => x.CollectInput)
+            .HasColumnType(ColumnTypes.NvarcharMax)
+            .IsRequired();
+
+        builder.Property(x => x.CollectOutput)
+            .HasColumnType(ColumnTypes.NvarcharMax)
+            .IsRequired();
+
+        builder.Property(x => x.EvaluateOutput)
+            .HasColumnType(ColumnTypes.NvarcharMax)
+            .IsRequired();
+
+        builder.Property(x => x.RecordOutput)
             .HasColumnType(ColumnTypes.NvarcharMax)
             .IsRequired();
 
@@ -42,6 +57,11 @@ public class PlaybookMaterializationsConfig : IEntityTypeConfiguration<PlaybookM
         builder.Property(x => x.TenantId)
             .HasColumnType(ColumnTypes.Uniqueidentifier)
             .IsRequired();
+
+        builder
+            .HasOne(execution => execution.Playbook)
+            .WithMany()
+            .HasForeignKey(execution => execution.PlaybookId);
 
         builder.HasIndex(x => new { x.TenantId, x.OwnerId, x.PlaybookKey });
     }

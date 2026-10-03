@@ -1,9 +1,12 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services
+
+@inject IPlaybookService PlaybookService
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
     <PlaybookStepToggle @bind-SelectedStep="SelectedStep" />
     <PlaybookSummaryCard Result="Result" />
-    <PlaybookStepDetail Result="Result" Step="SelectedStep" />
+    <PlaybookStepDetail Result="Result" Step="SelectedStep" Catalog="catalog" />
 </FluentStack>
 
 @code {
@@ -16,4 +19,17 @@
     [Parameter, EditorRequired] public PlaybookExecutionResultModel Result { get; set; } = null!;
 
     private PlaybookCerStep SelectedStep { get; set; } = PlaybookCerStep.Collect;
+    private PlaybookCatalogModel? catalog;
+    private string? loadedForKey;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Result is null || Result.PlaybookKey == loadedForKey)
+            return;
+
+        // The persisted catalog (Name/Description/CER action text) rarely changes, so it's
+        // fetched once per distinct Playbook key rather than on every render.
+        catalog = await PlaybookService.GetCatalogAsync(Result.PlaybookKey);
+        loadedForKey = Result.PlaybookKey;
+    }
 }
