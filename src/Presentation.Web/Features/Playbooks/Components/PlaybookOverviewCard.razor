@@ -2,13 +2,17 @@
 
 <FluentCard>
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
-        <H3Label>@Catalog.Name</H3Label>
+        <H3Label>Playbook Overview</H3Label>
+        <PLabel><strong>Name:</strong> @Catalog.Name</PLabel>
+        <PLabel><strong>Description:</strong> @Catalog.Description</PLabel>
+        <PLabel><strong>Type:</strong> @Catalog.WorkflowType</PLabel>
+        <PLabel><strong>Created:</strong> @Catalog.CreatedOn.ToLocalTime().ToString("g")</PLabel>
+        <PLabel><strong>Modified:</strong> @(Catalog.ModifiedOn.HasValue ? Catalog.ModifiedOn.Value.ToLocalTime().ToString("g") : "Not modified")</PLabel>
         <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="6">
             <FluentBadge Appearance="BadgeAppearance.Tint">@Catalog.WorkflowType</FluentBadge>
             <FluentBadge Appearance="BadgeAppearance.Outline">v@Catalog.Version</FluentBadge>
             <FluentBadge Appearance="BadgeAppearance.Outline">Key: @Catalog.Key</FluentBadge>
         </FluentStack>
-        <PLabel>@Catalog.Description</PLabel>
     </FluentStack>
 </FluentCard>
 

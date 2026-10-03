@@ -14,6 +14,8 @@ public class PlaybookCatalogModel
     public string Description { get; set; } = string.Empty;
     public string WorkflowType { get; set; } = string.Empty;
     public string Version { get; set; } = string.Empty;
+    public DateTimeOffset CreatedOn { get; set; }
+    public DateTimeOffset? ModifiedOn { get; set; }
     public IReadOnlyDictionary<PlaybookCerStep, PlaybookCatalogStepModel> Steps { get; set; } =
         new Dictionary<PlaybookCerStep, PlaybookCatalogStepModel>();
 
@@ -29,6 +31,8 @@ public class PlaybookCatalogModel
             Description = dto.Description,
             WorkflowType = dto.WorkflowType,
             Version = dto.Version,
+            CreatedOn = dto.CreatedOn,
+            ModifiedOn = dto.ModifiedOn,
             Steps = dto.Steps.ToDictionary(
                 step => (PlaybookCerStep)(int)step.StepType,
                 PlaybookCatalogStepModel.Create)
