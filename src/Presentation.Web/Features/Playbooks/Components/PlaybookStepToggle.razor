@@ -1,0 +1,36 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+
+<FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Wrap="true">
+    <FluentButton Appearance="@AppearanceFor(PlaybookCerStep.Collect)" OnClick="@(() => SelectAsync(PlaybookCerStep.Collect))">
+        Collect
+    </FluentButton>
+    <FluentButton Appearance="@AppearanceFor(PlaybookCerStep.Evaluate)" OnClick="@(() => SelectAsync(PlaybookCerStep.Evaluate))">
+        Evaluate
+    </FluentButton>
+    <FluentButton Appearance="@AppearanceFor(PlaybookCerStep.Record)" OnClick="@(() => SelectAsync(PlaybookCerStep.Record))">
+        Record
+    </FluentButton>
+</FluentStack>
+
+@code {
+    /// <summary>
+    /// The currently selected CER step. Supports two-way binding (<c>@@bind-SelectedStep</c>) so
+    /// the hosting page's step detail panel stays in sync without any route navigation.
+    /// </summary>
+    [Parameter] public PlaybookCerStep SelectedStep { get; set; } = PlaybookCerStep.Collect;
+    [Parameter] public EventCallback<PlaybookCerStep> SelectedStepChanged { get; set; }
+
+    private ButtonAppearance AppearanceFor(PlaybookCerStep step) =>
+        step == SelectedStep ? ButtonAppearance.Primary : ButtonAppearance.Outline;
+
+    private async Task SelectAsync(PlaybookCerStep step)
+    {
+        if (step == SelectedStep)
+        {
+            return;
+        }
+
+        SelectedStep = step;
+        await SelectedStepChanged.InvokeAsync(step);
+    }
+}

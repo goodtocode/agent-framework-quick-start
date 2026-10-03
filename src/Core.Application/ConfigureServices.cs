@@ -39,12 +39,15 @@ public static class ConfigureServices
         services.AddSingleton(SqlStatisticsKnowledgeHolder.V1);
         services.AddSingleton<PlaybookExecutor<string, SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding, SqlDatabaseSizeMaterialization>>();
         services.AddScoped<ISqlStatisticsClassificationRunner, SqlStatisticsClassificationRunner>();
+        services.AddSingleton<SqlStatisticsStageSummarySelector>();
 
         services.AddScoped<TaxonomyGovernanceActivityRecorder>();
         services.AddSingleton(TaxonomyKnowledgeHolder.V1);
+        services.AddSingleton<TaxonomyStageSummarySelector>();
 
         services.AddScoped<EssayGovernanceActivityRecorder>();
         services.AddSingleton(EssayKnowledgeHolder.V1);
+        services.AddSingleton<EssayStageSummarySelector>();
 
         return services;
     }

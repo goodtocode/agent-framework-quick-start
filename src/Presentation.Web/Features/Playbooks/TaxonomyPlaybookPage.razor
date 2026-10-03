@@ -1,0 +1,57 @@
+@page "/playbooks/taxonomy"
+
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Components
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+
+@inject IPlaybookService PlaybookService
+
+<PageTitle>Taxonomy Playbook</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
+    <H1Label>Taxonomy Extraction and Classification Playbook</H1Label>
+    <PLabel>
+        Fully agentic example Playbook: Collect extracts candidate terms from source text,
+        Evaluate classifies the text into one taxonomy category, and Record materializes the
+        classification. Enter source text to run it end to end.
+    </PLabel>
+
+    <FluentCard>
+        <PlaybookRunForm Label="Source text"
+                         Placeholder="Paste the text to classify..."
+                         ButtonLabel="Run Taxonomy Playbook"
+                         Multiline="true"
+                         OnSubmit="RunAsync" />
+    </FluentCard>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <FluentMessageBar Severity="Severity.Error">@errorMessage</FluentMessageBar>
+    }
+
+    @if (result is not null)
+    {
+        <PlaybookResultPanel Result="result" />
+    }
+</FluentStack>
+
+@code {
+    private PlaybookExecutionResultModel? result;
+    private string? errorMessage;
+
+    private async Task RunAsync(string sourceText)
+    {
+        errorMessage = null;
+        try
+        {
+            result = await PlaybookService.RunTaxonomyAsync(sourceText);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"The Taxonomy Playbook could not be run: {ex.Message}";
+        }
+    }
+}

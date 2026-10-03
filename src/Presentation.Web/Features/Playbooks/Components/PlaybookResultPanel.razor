@@ -1,0 +1,19 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+    <PlaybookStepToggle @bind-SelectedStep="SelectedStep" />
+    <PlaybookSummaryCard Result="Result" />
+    <PlaybookStepDetail Result="Result" Step="SelectedStep" />
+</FluentStack>
+
+@code {
+    /// <summary>
+    /// Lays out one Playbook page's post-run section in the order the user requested: the 3
+    /// Collect/Evaluate/Record toggle buttons, then the playbook summary, then the detail for
+    /// whichever step is selected. Shared by every example playbook page so the layout never
+    /// drifts between them.
+    /// </summary>
+    [Parameter, EditorRequired] public PlaybookExecutionResultModel Result { get; set; } = null!;
+
+    private PlaybookCerStep SelectedStep { get; set; } = PlaybookCerStep.Collect;
+}

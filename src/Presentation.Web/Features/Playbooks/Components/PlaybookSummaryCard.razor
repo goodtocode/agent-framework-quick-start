@@ -1,0 +1,26 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+
+<FluentCard>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        <H3Label>@Result.PlaybookKey <FluentBadge Appearance="BadgeAppearance.Outline">v@Result.Version</FluentBadge></H3Label>
+        <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="6">
+            <FluentBadge Appearance="BadgeAppearance.Filled">@Result.ReplayMode</FluentBadge>
+            <FluentBadge Appearance="BadgeAppearance.Tint">Started @Result.StartedUtc.ToLocalTime().ToString("g")</FluentBadge>
+            <FluentBadge Appearance="BadgeAppearance.Tint">Completed @Result.CompletedUtc.ToLocalTime().ToString("g")</FluentBadge>
+            @if (!string.IsNullOrWhiteSpace(Result.SourceExecutionId))
+            {
+                <FluentBadge Appearance="BadgeAppearance.Tint">Source: @Result.SourceExecutionId</FluentBadge>
+            }
+        </FluentStack>
+        <PLabel>@Result.RecordSummary</PLabel>
+    </FluentStack>
+</FluentCard>
+
+@code {
+    /// <summary>
+    /// The completed playbook execution to summarize. The Record-stage summary is always shown
+    /// here (regardless of which CER step toggle is selected below), since it is the playbook's
+    /// single most useful at-a-glance result.
+    /// </summary>
+    [Parameter, EditorRequired] public PlaybookExecutionResultModel Result { get; set; } = null!;
+}

@@ -1,0 +1,73 @@
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="formModel" OnValidSubmit="HandleSubmitAsync">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        @if (Multiline)
+        {
+            <FluentTextArea Rows="6"
+                            Style="width: 100%"
+                            Value="@formModel.Input"
+                            ValueChanged="OnInputChanged"
+                            Placeholder="@Placeholder"
+                            AriaLabel="@Label"
+                            Disabled="@isSubmitting" />
+        }
+        else
+        {
+            <FluentTextInput Style="width: 100%"
+                             Value="@formModel.Input"
+                             ValueChanged="OnInputChanged"
+                             Placeholder="@Placeholder"
+                             AriaLabel="@Label"
+                             Disabled="@isSubmitting" />
+        }
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Left">
+            <SubmittingButton IsSubmitting="@isSubmitting" Label="@ButtonLabel" />
+        </FluentStack>
+    </FluentStack>
+</EditForm>
+
+@code {
+    /// <summary>
+    /// Label/placeholder/button text for the playbook's single Collect-stage text input, and
+    /// whether that input is a single line (SQL database name) or multiline (taxonomy source
+    /// text, essay text). Every example playbook page uses this same form shape - a plain string
+    /// submitted via <see cref="OnSubmit"/> - matching the unified Collect-stage input convention.
+    /// </summary>
+    [Parameter] public string Label { get; set; } = "Input";
+    [Parameter] public string Placeholder { get; set; } = string.Empty;
+    [Parameter] public string ButtonLabel { get; set; } = "Run";
+    [Parameter] public bool Multiline { get; set; }
+    [Parameter] public EventCallback<string> OnSubmit { get; set; }
+
+    private sealed class PlaybookInputModel
+    {
+        [Required(ErrorMessage = "Input is required.")]
+        public string Input { get; set; } = string.Empty;
+    }
+
+    private readonly PlaybookInputModel formModel = new();
+    private bool isSubmitting;
+
+    private void OnInputChanged(string value) => formModel.Input = value;
+
+    private async Task HandleSubmitAsync()
+    {
+        if (isSubmitting || string.IsNullOrWhiteSpace(formModel.Input))
+        {
+            return;
+        }
+
+        isSubmitting = true;
+        try
+        {
+            await OnSubmit.InvokeAsync(formModel.Input);
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

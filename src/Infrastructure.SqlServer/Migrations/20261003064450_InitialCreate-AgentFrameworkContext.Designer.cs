@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 {
     [DbContext(typeof(AgentFrameworkContext))]
-    [Migration("20261002063717_InitialCreate-AgentFrameworkContext")]
+    [Migration("20261003064450_InitialCreate-AgentFrameworkContext")]
     partial class InitialCreateAgentFrameworkContext
     {
         /// <inheritdoc />

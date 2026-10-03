@@ -1,0 +1,34 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+
+<FluentCard>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        @switch (Step)
+        {
+            case PlaybookCerStep.Collect:
+                <H3Label>Collect</H3Label>
+                <PLabel><strong>Input:</strong> @Result.CollectInput</PLabel>
+                <PLabel><strong>Evidence:</strong> @Result.CollectSummary</PLabel>
+                break;
+            case PlaybookCerStep.Evaluate:
+                <H3Label>Evaluate</H3Label>
+                <PLabel><strong>Finding:</strong> @Result.EvaluateSummary</PLabel>
+                break;
+            case PlaybookCerStep.Record:
+                <H3Label>Record</H3Label>
+                <PLabel><strong>Materialization:</strong> @Result.RecordSummary</PLabel>
+                break;
+        }
+    </FluentStack>
+</FluentCard>
+
+@code {
+    /// <summary>
+    /// The completed playbook execution whose Collect/Evaluate/Record detail is rendered.
+    /// </summary>
+    [Parameter, EditorRequired] public PlaybookExecutionResultModel Result { get; set; } = null!;
+
+    /// <summary>
+    /// Which CER step's detail to show, driven by <see cref="PlaybookStepToggle"/>.
+    /// </summary>
+    [Parameter] public PlaybookCerStep Step { get; set; } = PlaybookCerStep.Collect;
+}
