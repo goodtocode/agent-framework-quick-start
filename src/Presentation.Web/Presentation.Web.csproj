@@ -10,6 +10,13 @@
 		<UserSecretsId>c2325466-9b0d-494a-984a-11ad18457d3f</UserSecretsId>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Compile Remove="wwwroot\css\**" />
+	  <Content Remove="wwwroot\css\**" />
+	  <EmbeddedResource Remove="wwwroot\css\**" />
+	  <None Remove="wwwroot\css\**" />
+	</ItemGroup>
+
   <ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.6.0" />
@@ -26,8 +33,4 @@
 		<PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.16.0" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />		
 	</ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\css\" />
-  </ItemGroup>
 </Project>

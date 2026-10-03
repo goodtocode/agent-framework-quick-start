@@ -59,5 +59,5 @@
 ## SEO and Component Usage
 - Prefer Blazor components over raw HTML to enhance maintainability and reusability.
 - Implement SEO and GEO optimization support by using semantic headings (H1, H2) while minimizing direct HTML usage.
-- Prioritize root-cause fixes over brute-force styling overrides and adhere to global Blazor/Fluent UI conventions.
+- Prioritize root-cause fixes over brute-force styling overrides and adhere to global Blazor/Fluent UI conventions. Verify behavior against current component rendering.
 - Use Blazor/Fluent component properties over CSS for layout/styling because CSS is harder and more brittle to maintain.
