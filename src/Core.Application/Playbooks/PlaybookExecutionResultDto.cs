@@ -50,6 +50,31 @@ public sealed class PlaybookExecutionResultDto
 /// </summary>
 public static class PlaybookExecutionResultDtoFactory
 {
+    /// <summary>
+    /// Projects a persisted <see cref="Core.Domain.Playbooks.PlaybookExecutionEntity"/> back into
+    /// the same <see cref="PlaybookExecutionResultDto"/> shape a fresh run returns, so the UI can
+    /// render a prior execution (e.g. "latest execution summary") identically to a just-completed
+    /// one.
+    /// </summary>
+    public static PlaybookExecutionResultDto CreateFrom(Core.Domain.Playbooks.PlaybookExecutionEntity entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        return new PlaybookExecutionResultDto
+        {
+            PlaybookKey = entity.PlaybookKey,
+            Version = entity.PlaybookVersion,
+            StartedUtc = entity.StartedUtc,
+            CompletedUtc = entity.CompletedUtc,
+            ReplayMode = entity.ReplayMode,
+            SourceExecutionId = entity.SourceExecutionId,
+            CollectInput = entity.CollectInput,
+            CollectSummary = entity.CollectOutput,
+            EvaluateSummary = entity.EvaluateOutput,
+            RecordSummary = entity.RecordOutput
+        };
+    }
+
     public static PlaybookExecutionResultDto CreateFrom<TEvidence, TFinding, TMaterialization>(
         string collectInput,
         PlaybookExecutionResult<TEvidence, TFinding, TMaterialization> result,

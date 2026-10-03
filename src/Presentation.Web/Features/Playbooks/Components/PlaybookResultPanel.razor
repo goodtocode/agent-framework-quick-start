@@ -1,35 +1,25 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
-@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services
-
-@inject IPlaybookService PlaybookService
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
     <PlaybookStepToggle @bind-SelectedStep="SelectedStep" />
     <PlaybookSummaryCard Result="Result" />
-    <PlaybookStepDetail Result="Result" Step="SelectedStep" Catalog="catalog" />
+    <PlaybookStepDetail Result="Result" Step="SelectedStep" Catalog="Catalog" />
 </FluentStack>
 
 @code {
     /// <summary>
     /// Lays out one Playbook page's post-run section in the order the user requested: the 3
-    /// Collect/Evaluate/Record toggle buttons, then the playbook summary, then the detail for
-    /// whichever step is selected. Shared by every example playbook page so the layout never
-    /// drifts between them.
+    /// Collect/Evaluate/Record toggle buttons, then the playbook summary (including the final
+    /// Record-stage result), then the detail for whichever step is selected. Shared by every
+    /// example playbook page so the layout never drifts between them.
     /// </summary>
     [Parameter, EditorRequired] public PlaybookExecutionResultModel Result { get; set; } = null!;
 
+    /// <summary>
+    /// The persisted catalog definition for this Playbook (loaded once at the page level,
+    /// alongside the latest execution), supplying each CER step's real processing/action text.
+    /// </summary>
+    [Parameter] public PlaybookCatalogModel? Catalog { get; set; }
+
     private PlaybookCerStep SelectedStep { get; set; } = PlaybookCerStep.Collect;
-    private PlaybookCatalogModel? catalog;
-    private string? loadedForKey;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (Result is null || Result.PlaybookKey == loadedForKey)
-            return;
-
-        // The persisted catalog (Name/Description/CER action text) rarely changes, so it's
-        // fetched once per distinct Playbook key rather than on every render.
-        catalog = await PlaybookService.GetCatalogAsync(Result.PlaybookKey);
-        loadedForKey = Result.PlaybookKey;
-    }
 }

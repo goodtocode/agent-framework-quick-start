@@ -9,7 +9,7 @@
                 <H4Label>Input</H4Label>
                 <PLabel>@Result.CollectInput</PLabel>
 
-                <H4Label>Processing</H4Label>
+                <H4Label>Processing / Action</H4Label>
                 <PLabel>@GetProcessingDescription(PlaybookCerStep.Collect, "Gather evidence from the submitted input using deterministic queries or tool calls.")</PLabel>
                 @if (GetActionDefinition(PlaybookCerStep.Collect) is { } collectAction)
                 {
@@ -30,7 +30,7 @@
                     <PLabel>• @item</PLabel>
                 }
 
-                <H4Label>Processing</H4Label>
+                <H4Label>Processing / Action</H4Label>
                 <PLabel>@GetProcessingDescription(PlaybookCerStep.Evaluate, "Apply a classification or scoring rubric to the collected evidence.")</PLabel>
                 @if (GetActionDefinition(PlaybookCerStep.Evaluate) is { } evaluateAction)
                 {
@@ -51,7 +51,7 @@
                     <PLabel>• @item</PLabel>
                 }
 
-                <H4Label>Processing</H4Label>
+                <H4Label>Processing / Action</H4Label>
                 <PLabel>@GetProcessingDescription(PlaybookCerStep.Record, "Materialize the evaluated finding into a durable, human-readable outcome.")</PLabel>
                 @if (GetActionDefinition(PlaybookCerStep.Record) is { } recordAction)
                 {

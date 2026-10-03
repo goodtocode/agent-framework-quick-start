@@ -13,11 +13,11 @@
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
     <H1Label>SQL Statistics Classification Playbook</H1Label>
-    <PLabel>
-        Fully deterministic example Playbook: Collect retrieves a SQL Server database's size and
-        object counts, Evaluate classifies it against a versioned size-band rubric, and Record
-        materializes the classification. Enter a database name to run it end to end.
-    </PLabel>
+
+    @if (catalog is not null)
+    {
+        <PlaybookOverviewCard Catalog="catalog" />
+    }
 
     <FluentCard>
         <PlaybookRunForm Label="Database name"
@@ -34,13 +34,24 @@
 
     @if (result is not null)
     {
-        <PlaybookResultPanel Result="result" />
+        <PlaybookResultPanel Result="result" Catalog="catalog" />
     }
 </FluentStack>
 
 @code {
+    private const string PlaybookKey = "sql-statistics";
+
+    private PlaybookCatalogModel? catalog;
     private PlaybookExecutionResultModel? result;
     private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Loads the Playbook's "what it is" catalog info and "what happened last time" execution
+        // summary up front, so both are visible immediately without requiring a fresh run.
+        catalog = await PlaybookService.GetCatalogAsync(PlaybookKey);
+        result = await PlaybookService.GetLatestExecutionAsync(PlaybookKey);
+    }
 
     private async Task RunAsync(string databaseName)
     {
