@@ -5,60 +5,60 @@
         @switch (Step)
         {
             case PlaybookCerStep.Collect:
-                <H3Label>Collect</H3Label>
-                <H4Label>Input</H4Label>
+                <H2Label>Collect</H2Label>
+                <H3Label>Input</H3Label>
                 <PLabel>@Result.CollectInput</PLabel>
 
-                <H4Label>Processing / Action</H4Label>
+                <H3Label>Processing / Action</H3Label>
                 <PLabel>@GetProcessingDescription(PlaybookCerStep.Collect, "Gather evidence from the submitted input using deterministic queries or tool calls.")</PLabel>
                 @if (GetActionDefinition(PlaybookCerStep.Collect) is { } collectAction)
                 {
                     <FluentTextArea Rows="6" ReadOnly="true" Style="width:100%; font-family: monospace;" Value="@collectAction" />
                 }
 
-                <H4Label>Output</H4Label>
+                <H3Label>Output</H3Label>
                 @foreach (var item in GetDisplayItems(Result.CollectSummary))
                 {
                     <PLabel>• @item</PLabel>
                 }
                 break;
             case PlaybookCerStep.Evaluate:
-                <H3Label>Evaluate</H3Label>
-                <H4Label>Input</H4Label>
+                <H2Label>Evaluate</H2Label>
+                <H3Label>Input</H3Label>
                 @foreach (var item in GetDisplayItems(Result.CollectSummary))
                 {
                     <PLabel>• @item</PLabel>
                 }
 
-                <H4Label>Processing / Action</H4Label>
+                <H3Label>Processing / Action</H3Label>
                 <PLabel>@GetProcessingDescription(PlaybookCerStep.Evaluate, "Apply a classification or scoring rubric to the collected evidence.")</PLabel>
                 @if (GetActionDefinition(PlaybookCerStep.Evaluate) is { } evaluateAction)
                 {
                     <FluentTextArea Rows="6" ReadOnly="true" Style="width:100%; font-family: monospace;" Value="@evaluateAction" />
                 }
 
-                <H4Label>Output</H4Label>
+                <H3Label>Output</H3Label>
                 @foreach (var item in GetDisplayItems(Result.EvaluateSummary))
                 {
                     <PLabel>• @item</PLabel>
                 }
                 break;
             case PlaybookCerStep.Record:
-                <H3Label>Record</H3Label>
-                <H4Label>Input</H4Label>
+                <H2Label>Record</H2Label>
+                <H3Label>Input</H3Label>
                 @foreach (var item in GetDisplayItems(Result.EvaluateSummary))
                 {
                     <PLabel>• @item</PLabel>
                 }
 
-                <H4Label>Processing / Action</H4Label>
+                <H3Label>Processing / Action</H3Label>
                 <PLabel>@GetProcessingDescription(PlaybookCerStep.Record, "Materialize the evaluated finding into a durable, human-readable outcome.")</PLabel>
                 @if (GetActionDefinition(PlaybookCerStep.Record) is { } recordAction)
                 {
                     <FluentTextArea Rows="6" ReadOnly="true" Style="width:100%; font-family: monospace;" Value="@recordAction" />
                 }
 
-                <H4Label>Output</H4Label>
+                <H3Label>Output</H3Label>
                 @foreach (var item in GetDisplayItems(Result.RecordSummary))
                 {
                     <PLabel>• @item</PLabel>
