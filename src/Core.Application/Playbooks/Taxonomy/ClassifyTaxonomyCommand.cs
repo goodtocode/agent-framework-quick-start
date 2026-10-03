@@ -12,7 +12,9 @@ namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 public interface ITaxonomyClassificationRunner
 {
     Task<PlaybookExecutionResult<TaxonomyEvidence, TaxonomyFinding, TaxonomyMaterialization>> ClassifyAsync(
-        string text, CancellationToken cancellationToken);
+        string text,
+        CancellationToken cancellationToken,
+        PlaybookReplayContext<TaxonomyEvidence, TaxonomyFinding>? replayContext = null);
 }
 
 public sealed class ClassifyTaxonomyCommand : IRequest<PlaybookExecutionResult<TaxonomyEvidence, TaxonomyFinding, TaxonomyMaterialization>>

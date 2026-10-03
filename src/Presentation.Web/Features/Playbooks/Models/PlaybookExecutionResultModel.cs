@@ -8,6 +8,12 @@ namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models;
 /// </summary>
 public class PlaybookExecutionResultModel
 {
+    /// <summary>
+    /// The persisted execution's own id - supplied as <c>SourceExecutionId</c> on a later Recall
+    /// or Replay request against this execution.
+    /// </summary>
+    public Guid ExecutionId { get; set; }
+
     public string PlaybookKey { get; set; } = string.Empty;
     public string Version { get; set; } = string.Empty;
     public DateTimeOffset StartedUtc { get; set; }
@@ -25,6 +31,7 @@ public class PlaybookExecutionResultModel
 
         return new PlaybookExecutionResultModel
         {
+            ExecutionId = dto.ExecutionId,
             PlaybookKey = dto.PlaybookKey,
             Version = dto.Version,
             StartedUtc = dto.StartedUtc,

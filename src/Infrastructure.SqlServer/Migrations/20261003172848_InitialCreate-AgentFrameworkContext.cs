@@ -230,6 +230,8 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     CollectOutput = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
                     EvaluateOutput = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
                     RecordOutput = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
+                    EvidenceJson = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
+                    FindingJson = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
                     StartedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CompletedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     RowKey = table.Column<string>(type: "nvarchar(max)", nullable: false),

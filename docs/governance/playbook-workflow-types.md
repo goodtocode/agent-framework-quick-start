@@ -123,6 +123,59 @@ answers: "what does this Playbook's Evaluate step always do?" (`PlaybookStepEnti
 versus "what did this Playbook's Evaluate step produce the last time someone ran it?"
 (`PlaybookExecutionEntity.EvaluateOutput`).
 
+## Repeatability: Rerun / Recall / Replay
+
+The Repeatability pillar of governance is made directly actionable through
+`Goodtocode.Agents.Playbook.Execution.PlaybookReplayMode`, which every `Run*PlaybookCommand`
+(`RunSqlStatisticsPlaybookCommand`, `RunTaxonomyPlaybookCommand`, `RunEssayPlaybookCommand`)
+accepts alongside an optional `SourceExecutionId`:
+
+| Mode | Collect | Evaluate | Record | Use case |
+|------|---------|----------|--------|----------|
+| `Rerun` (default) | Runs | Runs | Runs | Normal execution; also the only mode on a Playbook's first run. |
+| `Recall` | Skipped | Skipped | Re-renders the prior Finding | "Show me exactly what happened last time," including after live data has since changed. |
+| `Replay` | Skipped (reuses prior Evidence) | Re-runs | Runs | "Prove this Evaluate/Record logic reproduces the governed result from the same Evidence," without re-collecting from a (possibly now-different) live source. |
+
+**How prior evidence/finding is persisted and resolved.** Every `Rerun` persists the stage's
+typed `TEvidence` and `TFinding` as `PlaybookExecutionEntity.EvidenceJson`/`FindingJson`
+(`System.Text.Json` serialized), in addition to the existing plain-string
+`CollectOutput`/`EvaluateOutput`. When a request arrives with `ReplayMode` of `Recall` or
+`Replay`, the handler calls the shared `PlaybookReplaySourceResolver`
+(`Core.Application/Playbooks/Persistence`) to look up the prior `PlaybookExecutionEntity` — by
+`SourceExecutionId` if supplied, otherwise the caller's most recent execution of that Playbook —
+deserializes `EvidenceJson`/`FindingJson` back into `TEvidence`/`TFinding`, and constructs a
+`PlaybookReplayContext<TEvidence, TFinding>` to pass to the runner. A prior execution that
+predates this feature (no `EvidenceJson`/`FindingJson` persisted) cannot be recalled or replayed
+and raises a `CustomConflictException`.
+
+**Two different replay mechanisms, same contract.** The three example workflows reach
+Recall/Replay through two different code paths, both driven by the same
+`PlaybookReplayContext<TEvidence, TFinding>`:
+
+- **SQL Statistics** (no MAF) calls the package's own replay-aware
+  `PlaybookExecutor<...>.ExecuteAsync(definition, input, replayContext, ct, recorder)` overload
+  directly — the package itself understands how to skip Collect/Evaluate against a supplied
+  replay context.
+- **Taxonomy and Essay** (MAF 3-node graph) use a repo-owned
+  `PlaybookWorkflowGraphExecutor<...>.ExecuteAsync` that branches on `replayContext?.Mode` before
+  touching the MAF graph at all: `Rerun` builds and runs the full `WorkflowBuilder` graph as
+  before; `Recall`/`Replay` bypass the MAF graph entirely and call only the remaining stage
+  tool(s) directly (`Recall` → `IRecordStepTool<,>.RecordAsync` against the prior Finding;
+  `Replay` → `IEvaluateStepTool<,>.EvaluateAsync` then `IRecordStepTool<,>.RecordAsync` against
+  the prior Evidence), while still invoking the same `IPlaybookStepActivityRecorder` calls the
+  graph nodes would have made, so governance capture parity is preserved even though the MAF
+  graph itself never runs for those two modes.
+
+**UI surface.** Each of the 3 Playbook pages
+(`Presentation.Web/Features/Playbooks/*PlaybookPage.razor`) shows "Rerun", "Recall", and "Replay"
+controls (`PlaybookReplayControls.razor`) alongside the latest execution's result panel, each with
+an inline explanation of what it does so the distinction is clear without reading this document.
+Selecting any control re-invokes the same page's run command with the corresponding `ReplayMode`
+and the latest execution's id as `SourceExecutionId` (ignored server-side for `Rerun`), using the
+latest execution's own `CollectInput` rather than requiring the user to retype it. The result
+panel re-renders in place with the rerun/recalled/replayed result — there is no before/after
+comparison view by design, to keep the UI simple for a quick-start template.
+
 ## Unified Collect / Evaluate / Record Shape
 
 All three example workflows deliberately follow one common input/criteria/output pattern, so a

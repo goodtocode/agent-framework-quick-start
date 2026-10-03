@@ -15,7 +15,9 @@ namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
 public interface IEssayEvaluationRunner
 {
     Task<PlaybookExecutionResult<EssayEvidence, EssayRubricFinding, EssayScorecardMaterialization>> EvaluateAsync(
-        string essayText, CancellationToken cancellationToken);
+        string essayText,
+        CancellationToken cancellationToken,
+        PlaybookReplayContext<EssayEvidence, EssayRubricFinding>? replayContext = null);
 }
 
 /// <summary>

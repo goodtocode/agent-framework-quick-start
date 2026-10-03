@@ -1,0 +1,63 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+
+<FluentCard>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        <H3Label>Repeatability</H3Label>
+        <PLabel>
+            Immediately re-execute this Playbook's latest completed run (@Result.ExecutionId)
+            using one of the three governed repeatability modes below, without retyping input.
+        </PLabel>
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Wrap="true">
+            <FluentButton Appearance="ButtonAppearance.Outline"
+                         Disabled="@IsBusy"
+                         OnClick="@(() => TriggerAsync(PlaybookReplayMode.Rerun))">
+                Rerun
+            </FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Outline"
+                         Disabled="@IsBusy"
+                         OnClick="@(() => TriggerAsync(PlaybookReplayMode.Recall))">
+                Recall
+            </FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Outline"
+                         Disabled="@IsBusy"
+                         OnClick="@(() => TriggerAsync(PlaybookReplayMode.Replay))">
+                Replay
+            </FluentButton>
+        </FluentStack>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+            <PLabel>
+                <strong>Rerun:</strong> run Collect, Evaluate, and Record again from scratch,
+                using the same input as the latest run. Use this to see whether the result
+                changes against current live data.
+            </PLabel>
+            <PLabel>
+                <strong>Recall:</strong> re-render the already-recorded finding with no new
+                Collect or Evaluate work at all. Use this to view exactly what happened last
+                time, at zero cost, even if live data has since changed.
+            </PLabel>
+            <PLabel>
+                <strong>Replay:</strong> reuse the recorded evidence (skip Collect) and re-run
+                Evaluate and Record against it. Use this to verify the Evaluate/Record logic
+                reproduces the same governed result from the same evidence.
+            </PLabel>
+        </FluentStack>
+    </FluentStack>
+</FluentCard>
+
+@code {
+    /// <summary>
+    /// Lets the user immediately re-execute the latest completed Playbook execution using any of
+    /// the three repeatability modes the package's own <c>PlaybookReplayMode</c> enum exposes:
+    /// Rerun (fresh Collect/Evaluate/Record against the same input), Recall (re-render the
+    /// recorded finding with no new work), and Replay (reuse recorded evidence, re-run
+    /// Evaluate/Record). Shown only once a <see cref="Result"/> exists, since all three modes
+    /// operate against a prior execution's recorded input/evidence/finding.
+    /// </summary>
+    [Parameter, EditorRequired] public PlaybookExecutionResultModel Result { get; set; } = null!;
+
+    [Parameter] public bool IsBusy { get; set; }
+
+    [Parameter] public EventCallback<PlaybookReplayMode> OnReplay { get; set; }
+
+    private Task TriggerAsync(PlaybookReplayMode mode) => OnReplay.InvokeAsync(mode);
+}

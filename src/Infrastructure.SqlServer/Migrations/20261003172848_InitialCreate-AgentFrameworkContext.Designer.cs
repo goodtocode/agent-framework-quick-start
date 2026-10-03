@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 {
     [DbContext(typeof(AgentFrameworkContext))]
-    [Migration("20261003162033_InitialCreate-AgentFrameworkContext")]
+    [Migration("20261003172848_InitialCreate-AgentFrameworkContext")]
     partial class InitialCreateAgentFrameworkContext
     {
         /// <inheritdoc />
@@ -516,6 +516,12 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
                     b.Property<string>("EvaluateOutput")
                         .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<string>("EvidenceJson")
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<string>("FindingJson")
                         .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<Guid?>("ModifiedBy")

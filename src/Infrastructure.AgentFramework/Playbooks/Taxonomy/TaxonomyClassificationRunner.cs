@@ -21,7 +21,9 @@ public sealed class TaxonomyClassificationRunner(
     private readonly TaxonomyGovernanceActivityRecorder _recorder = recorder;
 
     public Task<PlaybookExecutionResult<TaxonomyEvidence, TaxonomyFinding, TaxonomyMaterialization>> ClassifyAsync(
-        string text, CancellationToken cancellationToken)
+        string text,
+        CancellationToken cancellationToken,
+        PlaybookReplayContext<TaxonomyEvidence, TaxonomyFinding>? replayContext = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
@@ -34,6 +36,7 @@ public sealed class TaxonomyClassificationRunner(
             _resolver.ResolveRecord(null),
             text,
             cancellationToken,
-            activityRecorder: _recorder);
+            activityRecorder: _recorder,
+            replayContext: replayContext);
     }
 }

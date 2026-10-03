@@ -19,6 +19,8 @@ public static class PlaybookExecutionPersister
             CollectOutput = dto.CollectSummary,
             EvaluateOutput = dto.EvaluateSummary,
             RecordOutput = dto.RecordSummary,
+            EvidenceJson = dto.EvidenceJson,
+            FindingJson = dto.FindingJson,
             StartedUtc = dto.StartedUtc,
             CompletedUtc = dto.CompletedUtc
         }, cancellationToken);

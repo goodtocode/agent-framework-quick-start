@@ -1,0 +1,18 @@
+.step-toggle {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--neutral-stroke-divider-rest);
+}
+
+.step-toggle-tab {
+    /* The bottom border carries the selection indicator; the 2px thickness matches the
+       indicator so the selected tab's accent-colored border sits flush over the shared
+       divider line instead of shifting layout when selection changes. */
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    padding-bottom: 2px;
+}
+
+.step-toggle-tab-selected {
+    border-bottom-color: var(--accent-fill-rest);
+}

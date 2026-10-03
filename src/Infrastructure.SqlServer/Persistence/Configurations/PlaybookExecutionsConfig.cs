@@ -50,6 +50,12 @@ public class PlaybookExecutionsConfig : IEntityTypeConfiguration<PlaybookExecuti
             .HasColumnType(ColumnTypes.NvarcharMax)
             .IsRequired();
 
+        builder.Property(x => x.EvidenceJson)
+            .HasColumnType(ColumnTypes.NvarcharMax);
+
+        builder.Property(x => x.FindingJson)
+            .HasColumnType(ColumnTypes.NvarcharMax);
+
         builder.Property(x => x.OwnerId)
             .HasColumnType(ColumnTypes.Uniqueidentifier)
             .IsRequired();

@@ -13,6 +13,12 @@ namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
 /// </summary>
 public sealed class PlaybookExecutionResultDto
 {
+    /// <summary>
+    /// The persisted <see cref="Core.Domain.Playbooks.PlaybookExecutionEntity"/>'s own id. Used as
+    /// the <c>SourceExecutionId</c> of a later Recall or Replay request against this execution.
+    /// </summary>
+    public Guid ExecutionId { get; set; }
+
     public string PlaybookKey { get; set; } = string.Empty;
     public string Version { get; set; } = string.Empty;
     public DateTimeOffset StartedUtc { get; set; }
@@ -40,6 +46,18 @@ public sealed class PlaybookExecutionResultDto
     /// Human-readable summary of the Record stage's typed materialization.
     /// </summary>
     public string RecordSummary { get; set; } = string.Empty;
+
+    /// <summary>
+    /// JSON-serialized Collect-stage typed evidence, carried only so this execution can later be
+    /// used as the source of a Replay request; never rendered directly by the UI.
+    /// </summary>
+    public string? EvidenceJson { get; set; }
+
+    /// <summary>
+    /// JSON-serialized Evaluate-stage typed finding, carried only so this execution can later be
+    /// used as the source of a Recall request; never rendered directly by the UI.
+    /// </summary>
+    public string? FindingJson { get; set; }
 }
 
 /// <summary>
@@ -62,6 +80,7 @@ public static class PlaybookExecutionResultDtoFactory
 
         return new PlaybookExecutionResultDto
         {
+            ExecutionId = entity.Id,
             PlaybookKey = entity.PlaybookKey,
             Version = entity.PlaybookVersion,
             StartedUtc = entity.StartedUtc,
@@ -71,7 +90,9 @@ public static class PlaybookExecutionResultDtoFactory
             CollectInput = entity.CollectInput,
             CollectSummary = entity.CollectOutput,
             EvaluateSummary = entity.EvaluateOutput,
-            RecordSummary = entity.RecordOutput
+            RecordSummary = entity.RecordOutput,
+            EvidenceJson = entity.EvidenceJson,
+            FindingJson = entity.FindingJson
         };
     }
 
@@ -94,7 +115,9 @@ public static class PlaybookExecutionResultDtoFactory
             CollectInput = collectInput,
             CollectSummary = summarySelector.SummarizeEvidence(result.Evidence),
             EvaluateSummary = summarySelector.SummarizeFinding(result.Finding),
-            RecordSummary = summarySelector.SummarizeMaterialization(result.Materialization)
+            RecordSummary = summarySelector.SummarizeMaterialization(result.Materialization),
+            EvidenceJson = System.Text.Json.JsonSerializer.Serialize(result.Evidence),
+            FindingJson = System.Text.Json.JsonSerializer.Serialize(result.Finding)
         };
     }
 }

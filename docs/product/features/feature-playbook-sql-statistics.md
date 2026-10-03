@@ -134,15 +134,29 @@ are inclusive upper bounds.
 
 ## UI Changes
 The `SqlStatisticsPlaybookPage` (`Presentation.Web/Features/Playbooks`) runs this Playbook from a
-database-name input, then renders the shared `PlaybookResultPanel`: a Collect/Evaluate/Record
-toggle, a summary card, and a step-detail panel. The step-detail panel fetches this Playbook's
-catalog entry (`GetPlaybookByKeyAsync("sql-statistics")`) to show each step's persisted
-`Description` and `ActionDefinition` (the actual statistics query) alongside that run's dynamic
-input/output.
+database-name input, then renders the shared `PlaybookResultPanel`: "Rerun"/"Recall"/"Replay"
+repeatability controls (`PlaybookReplayControls`, each with an inline explanation of what it
+does), a Collect/Evaluate/Record toggle, a summary card, and a
+step-detail panel. The step-detail panel fetches this Playbook's catalog entry
+(`GetPlaybookByKeyAsync("sql-statistics")`) to show each step's persisted `Description` and
+`ActionDefinition` (the actual statistics query) alongside that run's dynamic input/output.
+
+## Repeatability (Recall / Replay)
+Because every stage of this Playbook is deterministic, Recall and Replay are low-stakes by
+design — re-evaluating or re-recording the same Evidence always reproduces the same Finding. This
+Playbook exercises the package's own replay path directly: `SqlStatisticsClassificationRunner`
+calls `PlaybookExecutor<...>.ExecuteAsync(definition, input, replayContext, ct, recorder)` when a
+`PlaybookReplayContext<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding>` is supplied (built
+from the prior run's persisted `EvidenceJson`/`FindingJson`), rather than going through a
+repo-owned graph executor like the other two Playbooks. See
+`docs/governance/playbook-workflow-types.md` ("Repeatability: Rerun / Recall / Replay") for the
+full mechanism shared across all three Playbooks.
 
 ## API Changes
 - `POST api/v{version}/my/playbooks/sql-statistics` (`RunMySqlStatisticsPlaybookCommand`) executes
-  the Playbook and persists a `PlaybookExecutionEntity` for the run.
+  the Playbook and persists a `PlaybookExecutionEntity` for the run. Accepts an optional
+  `ReplayMode` (`Rerun`/`Recall`/`Replay`, default `Rerun`) and `SourceExecutionId` to recall or
+  replay a prior execution instead of collecting fresh input.
 - The catalog itself is queryable/creatable/updatable/deletable via the shared, unsecured
   `api/v{version}/playbooks` CRUD endpoints (`PlaybookCatalogEndpoints`): list, get by id, get by
   key, create, update general info, update one CER step, delete.
@@ -173,8 +187,7 @@ size metrics are operational metadata, not regulated or personal data.
   versioned bands before relying on this in production.
 
 ## Out Of Scope
-- Exposing this Playbook via a chat tool, REST endpoint, or UI page.
-- Persisting results by default (persistence is opt-in via `SavePlaybookMaterializationCommand`).
+- Exposing this Playbook via a chat tool.
 - Any LLM-driven reasoning — that is intentionally the role of the other two example Playbooks.
 
 ## Definition Of Done

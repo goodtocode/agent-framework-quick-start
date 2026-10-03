@@ -2796,6 +2796,9 @@ namespace Goodtocode.AgentFramework.Api.Clients
     public partial class PlaybookExecutionResultDto
     {
 
+        [System.Text.Json.Serialization.JsonPropertyName("executionId")]
+        public System.Guid ExecutionId { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("playbookKey")]
         public string PlaybookKey { get; set; }
 
@@ -2825,6 +2828,24 @@ namespace Goodtocode.AgentFramework.Api.Clients
 
         [System.Text.Json.Serialization.JsonPropertyName("recordSummary")]
         public string RecordSummary { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("evidenceJson")]
+        public string EvidenceJson { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("findingJson")]
+        public string FindingJson { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum PlaybookReplayMode
+    {
+
+        _0 = 0,
+
+        _1 = 1,
+
+        _2 = 2,
 
     }
 
@@ -2886,8 +2907,17 @@ namespace Goodtocode.AgentFramework.Api.Clients
     public partial class RunEssayPlaybookCommand
     {
 
+        [System.Text.Json.Serialization.JsonPropertyName("userContext")]
+        public IUserContext UserContext { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("essayText")]
         public string EssayText { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("replayMode")]
+        public PlaybookReplayMode ReplayMode { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("sourceExecutionId")]
+        public string SourceExecutionId { get; set; }
 
     }
 
@@ -2895,8 +2925,17 @@ namespace Goodtocode.AgentFramework.Api.Clients
     public partial class RunSqlStatisticsPlaybookCommand
     {
 
+        [System.Text.Json.Serialization.JsonPropertyName("userContext")]
+        public IUserContext UserContext { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("databaseName")]
         public string DatabaseName { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("replayMode")]
+        public PlaybookReplayMode ReplayMode { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("sourceExecutionId")]
+        public string SourceExecutionId { get; set; }
 
     }
 
@@ -2904,8 +2943,17 @@ namespace Goodtocode.AgentFramework.Api.Clients
     public partial class RunTaxonomyPlaybookCommand
     {
 
+        [System.Text.Json.Serialization.JsonPropertyName("userContext")]
+        public IUserContext UserContext { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("text")]
         public string Text { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("replayMode")]
+        public PlaybookReplayMode ReplayMode { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("sourceExecutionId")]
+        public string SourceExecutionId { get; set; }
 
     }
 

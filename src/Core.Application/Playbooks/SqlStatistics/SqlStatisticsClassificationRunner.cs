@@ -13,7 +13,9 @@ namespace Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
 public interface ISqlStatisticsClassificationRunner
 {
     Task<PlaybookExecutionResult<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding, SqlDatabaseSizeMaterialization>> ClassifyAsync(
-        string databaseName, CancellationToken cancellationToken);
+        string databaseName,
+        CancellationToken cancellationToken,
+        PlaybookReplayContext<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding>? replayContext = null);
 }
 
 public sealed class SqlStatisticsClassificationRunner(
@@ -23,10 +25,14 @@ public sealed class SqlStatisticsClassificationRunner(
     : ISqlStatisticsClassificationRunner
 {
     public Task<PlaybookExecutionResult<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding, SqlDatabaseSizeMaterialization>> ClassifyAsync(
-        string databaseName, CancellationToken cancellationToken)
+        string databaseName,
+        CancellationToken cancellationToken,
+        PlaybookReplayContext<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding>? replayContext = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(databaseName);
 
-        return executor.ExecuteAsync(definition, databaseName, cancellationToken, activityRecorder: recorder);
+        return replayContext is null
+            ? executor.ExecuteAsync(definition, databaseName, cancellationToken, activityRecorder: recorder)
+            : executor.ExecuteAsync(definition, databaseName, replayContext, cancellationToken, activityRecorder: recorder);
     }
 }
