@@ -1,0 +1,7 @@
+.new-chat-message-input-row {
+    max-width: 90%;
+}
+
+::deep .new-chat-message-input-submit {
+    width: 20%;
+}

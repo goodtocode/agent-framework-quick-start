@@ -20,8 +20,8 @@
     [Parameter] public IReadOnlyList<HorizontalMenuItem> Items { get; set; } = [];
     [Parameter] public bool Center { get; set; }
     [Parameter] public bool UseSelectedState { get; set; }
-    [Parameter] public Appearance NonSelectedAppearance { get; set; } = Appearance.Accent;
-    [Parameter] public Appearance SelectedAppearance { get; set; } = Appearance.Accent;
+    [Parameter] public ButtonAppearance NonSelectedAppearance { get; set; } = ButtonAppearance.Outline;
+    [Parameter] public ButtonAppearance SelectedAppearance { get; set; } = ButtonAppearance.Outline;
 
     private void Navigate(string href)
     {
@@ -31,7 +31,7 @@
         }
     }
 
-    private Appearance ResolveAppearance(HorizontalMenuItem item)
+    private ButtonAppearance ResolveAppearance(HorizontalMenuItem item)
     {
         if (!UseSelectedState)
         {

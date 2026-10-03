@@ -5,17 +5,17 @@
 
 @if (_isPreferenceLoaded && _showBanner)
 {
-    <FluentStack aria-label="Analytics consent notice" style="position: fixed; bottom: 1rem; right: 1rem; left: 1rem; z-index: 1000; max-width:98%;">
+    <FluentStack aria-label="Analytics consent notice" Class="analytics-consent-banner">
         <FluentCard>
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
-                <FluentLabel Typo="Typography.H4">Privacy and analytics notice</FluentLabel>
-                <FluentLabel>
+                <H3Label>Privacy and analytics notice</H3Label>
+                <PLabel>
                     We use Microsoft Clarity to understand site usage and improve quality. We only enable analytics after your consent.
-                </FluentLabel>
+                </PLabel>
                 <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8">
-                    <FluentButton Appearance="Appearance.Accent" OnClick="AcceptAsync">Accept analytics</FluentButton>
-                    <FluentButton Appearance="Appearance.Outline" OnClick="DeclineAsync">Decline analytics</FluentButton>
-                    <FluentAnchor Href="/analytics-notice">Learn more</FluentAnchor>
+                    <FluentButton Appearance="ButtonAppearance.Outline" OnClick="AcceptAsync">Accept analytics</FluentButton>
+                    <FluentButton Appearance="ButtonAppearance.Outline" OnClick="DeclineAsync">Decline analytics</FluentButton>
+                    <FluentLink Href="/analytics-notice">Learn more</FluentLink>
                 </FluentStack>
             </FluentStack>
         </FluentCard>

@@ -5,10 +5,10 @@
     <FluentStack Orientation="Orientation.Horizontal"
                  HorizontalAlignment="HorizontalAlignment.Center"
                  Wrap="true"
-                 Style="width:100%; margin-bottom:8px; gap:8px;">
+                 Class="chat-action-strip">
         @foreach (var action in Actions)
         {
-            <FluentButton Appearance="Appearance.Stealth"
+            <FluentButton Appearance="ButtonAppearance.Subtle"
                           OnClick="() => OnActionClicked.InvokeAsync(action)">
                 @action.Label
             </FluentButton>

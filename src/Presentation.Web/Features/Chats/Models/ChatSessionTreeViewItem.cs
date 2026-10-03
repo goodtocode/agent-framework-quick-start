@@ -33,6 +33,9 @@ namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models
 
         public Icon? IconCollapsed { get; set; }
         public Icon? IconExpanded { get; set; }
+        public Icon? IconStart { get; set; }
+        public Icon? IconEnd { get; set; }
+        public Icon? IconAside { get; set; }
         public bool Disabled { get; set; }
         public bool Expanded { get; set; }
         public Func<TreeViewItemExpandedEventArgs, Task>? OnExpandedAsync { get; set; }
