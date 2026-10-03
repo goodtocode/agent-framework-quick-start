@@ -5,6 +5,11 @@ using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
 using Goodtocode.AgentFramework.Core.Application.Governance;
@@ -102,6 +107,11 @@ public static class ConfigureServices
         services.AddSingleton<WebSearchTool>();
 
         services.AddDocumentReviewPlaybookTools();
+        services.AddSqlStatisticsPlaybookTools();
+        services.AddTaxonomyPlaybookTools();
+        services.AddScoped<ITaxonomyClassificationRunner, TaxonomyClassificationRunner>();
+        services.AddEssayPlaybookTools();
+        services.AddScoped<IEssayEvaluationRunner, EssayEvaluationRunner>();
 
         services.AddSingleton(provider =>
         {

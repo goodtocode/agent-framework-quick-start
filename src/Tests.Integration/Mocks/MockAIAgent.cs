@@ -10,6 +10,8 @@ public class MockAIAgent : AIAgent
     public IReadOnlyList<AgentRunOptions?> RunOptions { get; private set; } = [];
     public int RunCount { get; private set; }
     public bool ThrowOnForcedToolRun { get; set; }
+    public string ResponseText { get; set; } = "mock-response";
+    public Queue<string> QueuedResponseTexts { get; } = new();
 
     protected override ValueTask<AgentSession> CreateSessionCoreAsync(CancellationToken cancellationToken = default)
         => new(new MockAgentSession("mock-session"));
@@ -33,7 +35,8 @@ public class MockAIAgent : AIAgent
             throw new InvalidOperationException("Forced-tool inference failed.");
         }
 
-        return Task.FromResult<AgentResponse>(new MockAgentResponse("mock-response"));
+        var text = QueuedResponseTexts.Count > 0 ? QueuedResponseTexts.Dequeue() : ResponseText;
+        return Task.FromResult<AgentResponse>(new MockAgentResponse(text));
     }
 
     protected override async IAsyncEnumerable<AgentResponseUpdate> RunCoreStreamingAsync(IEnumerable<ChatMessage> messages, AgentSession? session = null, AgentRunOptions? options = null, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)

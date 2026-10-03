@@ -1,5 +1,6 @@
 using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Actors;
 using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Chats;
+using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Playbooks;
 
 namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints;
 
@@ -23,6 +24,7 @@ public static class EndpointMap
         endpoints.MapMyChatMessageEndpoints(versionSet);
         endpoints.MapMyActorEndpoints(versionSet);
         endpoints.MapMyChatSessionEndpoints(versionSet);
+        endpoints.MapMyPlaybookEndpoints(versionSet);
 
         return endpoints;
     }

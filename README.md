@@ -339,6 +339,62 @@ dotnet run --project src/Presentation.Api/Presentation.Api.csproj
 Open Microsoft Edge or modern browser
 Navigate to: https://localhost:6185/swagger/index.html in your browser to the Swagger API Interface
 
+# Example Playbooks (Collect → Evaluate → Record)
+
+This quick-start ships with three example **Playbook** workflows built on
+[`Goodtocode.Agents.Playbook`](https://www.nuget.org/packages/Goodtocode.Agents.Playbook) and
+governed end-to-end with [`Goodtocode.Agents.Governance`](https://www.nuget.org/packages/Goodtocode.Agents.Governance).
+A Playbook is a 3-stage **Collect → Evaluate → Record (CER)** pipeline: Collect gathers evidence,
+Evaluate judges that evidence against a versioned rubric, and Record shapes the judged outcome into
+a display- and persistence-ready result. CER is the architectural abstraction; Microsoft Agent
+Framework (MAF) is just **one** orchestration strategy capable of running CER stages — it is not a
+requirement of the pattern itself. These three examples intentionally span the full range from
+"no model involved" to "every stage is a model call," so the differences between them teach exactly
+what agentic orchestration adds (and when you don't need it):
+
+| # | Playbook | Collect | Evaluate | Record | Orchestration | Feature Doc |
+|---|----------|---------|----------|--------|----------------|-------------|
+| 1 | SQL Statistics Classification | Deterministic | Deterministic | Deterministic | `PlaybookExecutor` directly, no MAF | [feature-playbook-sql-statistics.md](./docs/product/features/feature-playbook-sql-statistics.md) |
+| 2 | Taxonomy Extraction and Classification | Agentic | Agentic | Agentic | MAF `WorkflowBuilder` / `InProcessExecution`, 3-node graph | [feature-playbook-taxonomy.md](./docs/product/features/feature-playbook-taxonomy.md) |
+| 3 | Essay Rubric Evaluation | Deterministic | Agentic | Deterministic | Same MAF 3-node graph shape as #2; only the Evaluate tool differs | [feature-playbook-essay.md](./docs/product/features/feature-playbook-essay.md) |
+
+Workflow 3 (Essay) is the **recommended real-world pattern**: deterministic evidence retrieval and
+deterministic materialization surrounding a single, tightly-scoped agentic reasoning stage — model
+involvement only where judgment is genuinely required, with the surrounding arithmetic and shaping
+staying fully replayable.
+
+## Unified Shape Across All Three Playbooks
+
+To keep the examples easy to compare and easy to extend, all three follow one common
+input/criteria/output convention:
+
+- **Collect input is always a plain `string`.** There is no Playbook-specific request wrapper type
+  at the stage boundary — SQL Statistics takes a database name, Taxonomy takes free text to extract
+  terms from, and Essay takes the essay text itself. When the real source of that string is
+  something richer (for example, an existing chat message for Essay), resolving it happens
+  **outside** the Playbook, in the calling command handler — never inside a Collect-stage tool.
+- **Evaluation criteria are always supplied through the same type:** the package's generic
+  `PlaybookKnowledge`/`EvaluationRubric`/`EvaluationCriterion`/`IEvaluationScale` shape, exposed per
+  workflow through a thin `IPlaybookKnowledgeHolder` singleton (`SqlStatisticsKnowledgeHolder.V1`,
+  `TaxonomyKnowledgeHolder.V1`, `EssayKnowledgeHolder.V1`). Only the criteria *data* differs between
+  workflows — the type that carries it never does.
+- **Record output is always reachable as a plain `string` summary**, in addition to whatever richer
+  typed materialization each workflow also produces, via the shared `result.Summary()` extension
+  method.
+
+Every stage execution of every Playbook produces a governed `EvaluationGovernanceRecord`
+(observability, auditability, defensibility, repeatability) per
+[`docs/governance/ai-policy.md`](./docs/governance/ai-policy.md), and the recorded
+`Repeatability.DeterministicReplaySupported` flag correctly reflects whether that specific stage
+was deterministic or agentic. See
+[`docs/governance/playbook-workflow-types.md`](./docs/governance/playbook-workflow-types.md) for
+the full architectural write-up, including project-boundary rules and the MAF adapter placement
+decision.
+
+These three Playbooks are currently proven through `Tests.Integration` rather than exposed as chat
+tools or REST endpoints — see each feature doc's **API Changes** section for what wiring one up
+would require.
+
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
 

@@ -1,0 +1,143 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+
+<FluentCard>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        @switch (Step)
+        {
+            case PlaybookCerStep.Collect:
+                <H3Label>Collect</H3Label>
+                <H4Label>Input</H4Label>
+                <PLabel>@Result.CollectInput</PLabel>
+
+                <H4Label>Processing</H4Label>
+                <PLabel>Gather evidence from the submitted input using deterministic queries or tool calls.</PLabel>
+
+                <H4Label>Output</H4Label>
+                @foreach (var item in GetDisplayItems(Result.CollectSummary))
+                {
+                    <PLabel>• @item</PLabel>
+                }
+                break;
+            case PlaybookCerStep.Evaluate:
+                <H3Label>Evaluate</H3Label>
+                <H4Label>Input</H4Label>
+                @foreach (var item in GetDisplayItems(Result.CollectSummary))
+                {
+                    <PLabel>• @item</PLabel>
+                }
+
+                <H4Label>Processing</H4Label>
+                <PLabel>Apply a classification or scoring rubric to the collected evidence.</PLabel>
+
+                <H4Label>Output</H4Label>
+                @foreach (var item in GetDisplayItems(Result.EvaluateSummary))
+                {
+                    <PLabel>• @item</PLabel>
+                }
+                break;
+            case PlaybookCerStep.Record:
+                <H3Label>Record</H3Label>
+                <H4Label>Input</H4Label>
+                @foreach (var item in GetDisplayItems(Result.EvaluateSummary))
+                {
+                    <PLabel>• @item</PLabel>
+                }
+
+                <H4Label>Processing</H4Label>
+                <PLabel>Materialize the evaluated finding into a durable, human-readable outcome.</PLabel>
+
+                <H4Label>Output</H4Label>
+                @foreach (var item in GetDisplayItems(Result.RecordSummary))
+                {
+                    <PLabel>• @item</PLabel>
+                }
+                break;
+        }
+    </FluentStack>
+</FluentCard>
+
+@code {
+    /// <summary>
+    /// The completed playbook execution whose Collect/Evaluate/Record detail is rendered.
+    /// </summary>
+    [Parameter, EditorRequired] public PlaybookExecutionResultModel Result { get; set; } = null!;
+
+    /// <summary>
+    /// Which CER step's detail to show, driven by <see cref="PlaybookStepToggle"/>.
+    /// </summary>
+    [Parameter] public PlaybookCerStep Step { get; set; } = PlaybookCerStep.Collect;
+
+    private static readonly string[] StructuredSummaryKeys =
+    [
+        "Database",
+        "SizeGb",
+        "TableCount",
+        "IndexCount",
+        "Classification",
+        "Reason",
+        "SourceText",
+        "ExtractedTerms",
+        "Category",
+        "Confidence",
+        "Rationale",
+        "OverallScore",
+        "RubricVersion",
+        "Criteria"
+    ];
+
+    private static IEnumerable<string> GetDisplayItems(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return ["(none)"];
+
+        var structuredItems = TryGetStructuredItems(text);
+        return structuredItems.Count > 0 ? structuredItems : [text];
+    }
+
+    private static List<string> TryGetStructuredItems(string text)
+    {
+        var matches = new List<(string Key, int Index, int ValueStart)>();
+
+        foreach (var key in StructuredSummaryKeys)
+        {
+            var startToken = $"{key}: ";
+            if (text.StartsWith(startToken, StringComparison.Ordinal))
+            {
+                matches.Add((key, 0, startToken.Length));
+            }
+
+            var searchToken = $", {key}: ";
+            var fromIndex = 0;
+            while (fromIndex < text.Length)
+            {
+                var index = text.IndexOf(searchToken, fromIndex, StringComparison.Ordinal);
+                if (index < 0)
+                    break;
+
+                matches.Add((key, index + 2, index + searchToken.Length));
+                fromIndex = index + searchToken.Length;
+            }
+        }
+
+        if (matches.Count == 0)
+            return [];
+
+        var ordered = matches
+            .OrderBy(m => m.Index)
+            .ToList();
+
+        var results = new List<string>(ordered.Count);
+        for (var i = 0; i < ordered.Count; i++)
+        {
+            var current = ordered[i];
+            var end = i == ordered.Count - 1
+                ? text.Length
+                : ordered[i + 1].Index;
+
+            var value = text[current.ValueStart..end].Trim();
+            results.Add($"{current.Key}: {value}");
+        }
+
+        return results;
+    }
+}
