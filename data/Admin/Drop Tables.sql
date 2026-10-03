@@ -35,3 +35,15 @@ GO
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[PlaybookMaterializations]') AND type in (N'U'))
 DROP TABLE [Chat].[PlaybookMaterializations]
 GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[PlaybookExecutions]') AND type in (N'U'))
+DROP TABLE [Chat].[PlaybookExecutions]
+GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[PlaybookSteps]') AND type in (N'U'))
+DROP TABLE [Chat].[PlaybookSteps]
+GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Chat].[Playbooks]') AND type in (N'U'))
+DROP TABLE [Chat].[Playbooks]
+GO

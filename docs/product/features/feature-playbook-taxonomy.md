@@ -74,8 +74,13 @@ adding an endpoint would require.
   no match throws.
 
 ## Domain Changes
-None. This Playbook does not introduce new `Core.Domain` entities; its optional persistence reuses
-the shared `PlaybookMaterializationEntity` (see [Data Requirements](#data-requirements)).
+This Playbook's catalog definition is persisted as a `PlaybookEntity` (`Key: taxonomy`) with
+three `PlaybookStepEntity` children (`Collect`/`Evaluate`/`Record`), each carrying the step's
+`ActionFormat` and static `ActionDefinition` (the term-extraction prompt, the taxonomy-category
+rubric, and the summary/record prompt, respectively). Every run is persisted as a
+`PlaybookExecutionEntity` — see [Data Requirements](#data-requirements) and
+`docs/governance/playbook-workflow-types.md` ("Persistence: Playbook Catalog vs. Playbook
+Execution") for the full entity model shared by all three example Playbooks.
 
 ## Application Changes
 All types live in `Core.Application/Playbooks/Taxonomy/`:
@@ -145,18 +150,25 @@ replay baseline exists yet for the *quality* of model-extracted terms or classif
 already enforced; term-extraction *quality* is not yet separately evaluated).
 
 ## UI Changes
-None. Not yet wired to a chat surface or page.
+The `TaxonomyPlaybookPage` (`Presentation.Web/Features/Playbooks`) runs this Playbook from a
+free-text input, then renders the shared `PlaybookResultPanel`: a Collect/Evaluate/Record toggle,
+a summary card, and a step-detail panel. The step-detail panel fetches this Playbook's catalog
+entry (`GetPlaybookByKeyAsync("taxonomy")`) to show each step's persisted `Description` and
+`ActionDefinition` (the extraction/classification prompts) alongside that run's dynamic
+input/output.
 
 ## API Changes
-None today. To expose this Playbook over HTTP, add a minimal endpoint or controller in
-`Presentation.Api` that sends `ClassifyTaxonomyCommand` through `ISender`, following the same
-authorization/tenant-scoping conventions as other endpoints in that project.
+- `POST api/v{version}/my/playbooks/taxonomy` (`RunMyTaxonomyPlaybookCommand`) executes the
+  Playbook and persists a `PlaybookExecutionEntity` for the run.
+- The catalog itself is queryable/creatable/updatable/deletable via the shared, unsecured
+  `api/v{version}/playbooks` CRUD endpoints (`PlaybookCatalogEndpoints`): list, get by id, get by
+  key, create, update general info, update one CER step, delete.
 
 ## Data Requirements
-No dedicated schema. The Record-stage materialization can optionally be persisted through the
-shared `SavePlaybookMaterializationCommand` (`Core.Application/Playbooks/Persistence`) into the
-single `PlaybookMaterializations` table — no bespoke table or migration is required for this
-Playbook specifically.
+The catalog definition (`Playbooks` + `PlaybookSteps` tables) is seeded once at startup by
+`PlaybookCatalogSeedInitializationService` with `Key = "taxonomy"`. Each run persists one row in
+`PlaybookExecutions` (owner/tenant-scoped) via `SavePlaybookExecutionCommand`, recording
+`CollectInput`, and the `CollectOutput`/`EvaluateOutput`/`RecordOutput` summary strings.
 
 ## Security Requirements
 Any future API endpoint must apply the same tenant/owner scoping (`My`/`Our` request conventions)

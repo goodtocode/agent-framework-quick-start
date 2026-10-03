@@ -13,6 +13,7 @@ public sealed class RunEssayPlaybookCommand : IRequest<PlaybookExecutionResultDt
 }
 
 public sealed class RunEssayPlaybookCommandHandler(
+    ISender sender,
     IEssayEvaluationRunner runner,
     EssayStageSummarySelector summarySelector)
     : IRequestHandler<RunEssayPlaybookCommand, PlaybookExecutionResultDto>
@@ -22,6 +23,8 @@ public sealed class RunEssayPlaybookCommandHandler(
         ArgumentNullException.ThrowIfNull(request);
 
         var result = await runner.EvaluateAsync(request.EssayText, cancellationToken);
-        return PlaybookExecutionResultDtoFactory.CreateFrom(request.EssayText, result, summarySelector);
+        var dto = PlaybookExecutionResultDtoFactory.CreateFrom(request.EssayText, result, summarySelector);
+        await Persistence.PlaybookExecutionPersister.SaveAsync(sender, dto, cancellationToken);
+        return dto;
     }
 }

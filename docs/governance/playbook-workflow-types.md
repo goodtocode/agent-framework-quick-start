@@ -94,11 +94,34 @@ convention (`*.deterministic.*` vs `*.agentic.*`):
 | 2 — Taxonomy | false | false | false |
 | 3 — Essay | true | false | true |
 
-## Optional Persistence
+## Persistence: Playbook Catalog vs. Playbook Execution
 
-All three workflows may optionally persist their typed materialization through a shared
-`SavePlaybookMaterializationCommand` (`Core.Application/Playbooks/Persistence`) backed by a
-single `PlaybookMaterializations` table, so no workflow needs a bespoke persistence schema.
+The Playbook *concept* (what it is) and a Playbook *run* (how it executed, this one time) are
+two separate, separately-persisted things:
+
+- **`PlaybookEntity` / `PlaybookStepEntity`** (`Core.Domain/Playbooks`) are the semi-static,
+  slow-moving **catalog**: one `PlaybookEntity` per workflow (`Key`, `Name`, `Description`,
+  `WorkflowType`, `Version`) owning exactly three `PlaybookStepEntity` children, one per
+  `PlaybookStepType` (`Collect`/`Evaluate`/`Record`). Each step persists its own
+  `Name`/`Description` plus an `ActionFormat` (`SqlQuery`/`Rubric`/`Template`/`Prompt`) and
+  `ActionDefinition` — the actual static query text, rubric/criteria description, or
+  projection/prompt template that stage's tool runs. This is unsecured, shared reference data
+  (`DomainEntity<T>`, not tenant/owner-scoped), queryable/creatable/updatable/deletable through
+  the catalog CRUD endpoints under `api/v{version}/playbooks` (`PlaybookCatalogEndpoints`), and
+  seeded once at startup for the three built-in workflows by
+  `PlaybookCatalogSeedInitializationService`.
+- **`PlaybookExecutionEntity`** (`Core.Domain/Playbooks`) is the per-run, tenant/owner-scoped
+  (`SecuredEntity<T>`) record of one execution: a foreign key to the `PlaybookEntity` it ran
+  against, `ReplayMode`/`SourceExecutionId` (repeatability metadata), and the dynamic
+  `CollectInput`/`CollectOutput`/`EvaluateOutput`/`RecordOutput` strings produced by that run.
+  Every `Run*PlaybookCommand` handler persists one `PlaybookExecutionEntity` via the shared
+  `PlaybookExecutionPersister`/`SavePlaybookExecutionCommand`
+  (`Core.Application/Playbooks/Persistence`) after the CER contract completes.
+
+This separation means the same three questions always have distinct, independently queryable
+answers: "what does this Playbook's Evaluate step always do?" (`PlaybookStepEntity.ActionDefinition`)
+versus "what did this Playbook's Evaluate step produce the last time someone ran it?"
+(`PlaybookExecutionEntity.EvaluateOutput`).
 
 ## Unified Collect / Evaluate / Record Shape
 

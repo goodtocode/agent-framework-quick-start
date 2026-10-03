@@ -391,9 +391,28 @@ was deterministic or agentic. See
 the full architectural write-up, including project-boundary rules and the MAF adapter placement
 decision.
 
-These three Playbooks are currently proven through `Tests.Integration` rather than exposed as chat
-tools or REST endpoints — see each feature doc's **API Changes** section for what wiring one up
-would require.
+## Playbook Catalog vs. Playbook Execution
+
+The Playbook *concept* and a Playbook *run* are persisted as two separate kinds of entity:
+
+- **Catalog** (`PlaybookEntity` + `PlaybookStepEntity`, `Core.Domain/Playbooks`): the semi-static
+  definition of each of the three Playbooks above — its `Name`/`Description`/`WorkflowType`, and
+  its three CER steps, each with a persisted `ActionFormat` and `ActionDefinition` (the actual SQL
+  query, rubric, prompt, or projection template that step runs). This is shared, unsecured
+  reference data, seeded once at startup, and fully CRUD-able through
+  `api/v{version}/playbooks` (`PlaybookCatalogEndpoints`).
+- **Execution** (`PlaybookExecutionEntity`, `Core.Domain/Playbooks`): one owner/tenant-scoped
+  record per run, capturing `CollectInput` plus the `CollectOutput`/`EvaluateOutput`/`RecordOutput`
+  strings produced that run, a foreign key back to the catalog `PlaybookEntity`, and repeatability
+  metadata (`ReplayMode`, `SourceExecutionId`).
+
+See `docs/governance/playbook-workflow-types.md` ("Persistence: Playbook Catalog vs. Playbook
+Execution") for the full entity model.
+
+These three Playbooks are exposed both as REST endpoints (`api/v{version}/my/playbooks/{sql-statistics,taxonomy,essay}`
+to run, `api/v{version}/playbooks` to manage the catalog) and as Blazor pages under `/playbooks/*`
+in Presentation.Web, in addition to being proven through `Tests.Integration` — see each feature
+doc's **UI Changes** and **API Changes** sections for details.
 
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)

@@ -13,11 +13,11 @@
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
     <H1Label>Essay Rubric Evaluation Playbook</H1Label>
-    <PLabel>
-        Hybrid example Playbook: Collect wraps the submitted essay text, the agentic Evaluate
-        stage scores it against four weighted rubric criteria, and the deterministic Record stage
-        bands the overall score into a letter grade. Enter an essay to run it end to end.
-    </PLabel>
+
+    @if (catalog is not null)
+    {
+        <PlaybookOverviewCard Catalog="catalog" />
+    }
 
     <FluentCard>
         <PlaybookRunForm Label="Essay text"
@@ -34,13 +34,24 @@
 
     @if (result is not null)
     {
-        <PlaybookResultPanel Result="result" />
+        <PlaybookResultPanel Result="result" Catalog="catalog" />
     }
 </FluentStack>
 
 @code {
+    private const string PlaybookKey = "essay";
+
+    private PlaybookCatalogModel? catalog;
     private PlaybookExecutionResultModel? result;
     private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Loads the Playbook's "what it is" catalog info and "what happened last time" execution
+        // summary up front, so both are visible immediately without requiring a fresh run.
+        catalog = await PlaybookService.GetCatalogAsync(PlaybookKey);
+        result = await PlaybookService.GetLatestExecutionAsync(PlaybookKey);
+    }
 
     private async Task RunAsync(string essayText)
     {

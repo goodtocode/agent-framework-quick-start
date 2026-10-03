@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 {
     [DbContext(typeof(AgentFrameworkContext))]
-    [Migration("20261003064450_InitialCreate-AgentFrameworkContext")]
+    [Migration("20261003162033_InitialCreate-AgentFrameworkContext")]
     partial class InitialCreateAgentFrameworkContext
     {
         /// <inheritdoc />
@@ -428,11 +428,79 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.ToTable("ChatGovernance", "Chat");
                 });
 
-            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookMaterializationEntity", b =>
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(1000)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(200)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(200)");
+
+                    b.Property<string>("RowKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(100)");
+
+                    b.Property<string>("WorkflowType")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(100)");
+
+                    b.HasKey("Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.HasIndex("Timestamp")
+                        .IsUnique();
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Timestamp"));
+
+                    b.ToTable("Playbooks", "Chat");
+                });
+
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookExecutionEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CollectInput")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<string>("CollectOutput")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<DateTimeOffset>("CompletedUtc")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -446,6 +514,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("EvaluateOutput")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -455,9 +527,8 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("UNIQUEIDENTIFIER");
 
-                    b.Property<string>("PayloadSnapshot")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR(MAX)");
+                    b.Property<Guid>("PlaybookId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PlaybookKey")
                         .IsRequired()
@@ -467,13 +538,23 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                         .IsRequired()
                         .HasColumnType("NVARCHAR(100)");
 
+                    b.Property<string>("RecordOutput")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<string>("ReplayMode")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(100)");
+
                     b.Property<string>("RowKey")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SummaryText")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR(1000)");
+                    b.Property<string>("SourceExecutionId")
+                        .HasColumnType("NVARCHAR(200)");
+
+                    b.Property<DateTimeOffset>("StartedUtc")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("UNIQUEIDENTIFIER");
@@ -489,6 +570,8 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
 
+                    b.HasIndex("PlaybookId");
+
                     b.HasIndex("Timestamp")
                         .IsUnique();
 
@@ -496,7 +579,67 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
 
                     b.HasIndex("TenantId", "OwnerId", "PlaybookKey");
 
-                    b.ToTable("PlaybookMaterializations", "Chat");
+                    b.ToTable("PlaybookExecutions", "Chat");
+                });
+
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookStepEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ActionDefinition")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<string>("ActionFormat")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(100)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(1000)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(200)");
+
+                    b.Property<Guid>("PlaybookId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RowKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StepType")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(100)");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
+                    b.HasIndex("Timestamp")
+                        .IsUnique();
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Timestamp"));
+
+                    b.HasIndex("PlaybookId", "StepType")
+                        .IsUnique();
+
+                    b.ToTable("PlaybookSteps", "Chat");
                 });
 
             modelBuilder.Entity("Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities.IntentEmbeddingEntity", b =>
@@ -568,9 +711,36 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
                     b.Navigation("ChatSession");
                 });
 
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookExecutionEntity", b =>
+                {
+                    b.HasOne("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookEntity", "Playbook")
+                        .WithMany()
+                        .HasForeignKey("PlaybookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Playbook");
+                });
+
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookStepEntity", b =>
+                {
+                    b.HasOne("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookEntity", "Playbook")
+                        .WithMany("Steps")
+                        .HasForeignKey("PlaybookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Playbook");
+                });
+
             modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Chats.ChatSessionEntity", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("Goodtocode.AgentFramework.Core.Domain.Playbooks.PlaybookEntity", b =>
+                {
+                    b.Navigation("Steps");
                 });
 #pragma warning restore 612, 618
         }

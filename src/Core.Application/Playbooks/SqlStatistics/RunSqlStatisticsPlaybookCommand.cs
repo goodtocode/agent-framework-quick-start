@@ -11,6 +11,7 @@ public sealed class RunSqlStatisticsPlaybookCommand : IRequest<PlaybookExecution
 }
 
 public sealed class RunSqlStatisticsPlaybookCommandHandler(
+    ISender sender,
     ISqlStatisticsClassificationRunner runner,
     SqlStatisticsStageSummarySelector summarySelector)
     : IRequestHandler<RunSqlStatisticsPlaybookCommand, PlaybookExecutionResultDto>
@@ -20,6 +21,8 @@ public sealed class RunSqlStatisticsPlaybookCommandHandler(
         ArgumentNullException.ThrowIfNull(request);
 
         var result = await runner.ClassifyAsync(request.DatabaseName, cancellationToken);
-        return PlaybookExecutionResultDtoFactory.CreateFrom(request.DatabaseName, result, summarySelector);
+        var dto = PlaybookExecutionResultDtoFactory.CreateFrom(request.DatabaseName, result, summarySelector);
+        await Persistence.PlaybookExecutionPersister.SaveAsync(sender, dto, cancellationToken);
+        return dto;
     }
 }

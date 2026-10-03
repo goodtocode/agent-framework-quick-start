@@ -1,5 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Playbooks;
 using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
 using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
 using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 
@@ -48,6 +49,12 @@ public static class MyPlaybookEndpoints
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status500InternalServerError);
 
+        group.MapGet("{playbookKey}/latest-execution", GetLatestExecution)
+            .WithName("GetMyLatestPlaybookExecution")
+            .Produces<PlaybookExecutionResultDto>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status401Unauthorized);
+
         return endpoints;
     }
 
@@ -67,5 +74,11 @@ public static class MyPlaybookEndpoints
     {
         var result = await sender.Send(command);
         return TypedResults.Ok(result);
+    }
+
+    private static async Task<IResult> GetLatestExecution(ISender sender, string playbookKey)
+    {
+        var result = await sender.Send(new GetMyLatestPlaybookExecutionQuery { PlaybookKey = playbookKey });
+        return ApiResponseMapper.SingleOrNotFound(result);
     }
 }

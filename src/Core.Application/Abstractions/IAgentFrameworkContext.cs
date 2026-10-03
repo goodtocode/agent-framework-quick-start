@@ -14,7 +14,9 @@ public interface IAgentFrameworkContext
     DbSet<RequestIdempotencyEntity> RequestIdempotency { get; }
     DbSet<ActorEntity> Actors { get; }
     DbSet<ChatGovernanceEntity> ChatGovernance { get; }
-    DbSet<PlaybookMaterializationEntity> PlaybookMaterializations { get; }
+    DbSet<PlaybookEntity> Playbooks { get; }
+    DbSet<PlaybookStepEntity> PlaybookSteps { get; }
+    DbSet<PlaybookExecutionEntity> PlaybookExecutions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 #pragma warning disable CA1716 // Identifiers should not match keywords

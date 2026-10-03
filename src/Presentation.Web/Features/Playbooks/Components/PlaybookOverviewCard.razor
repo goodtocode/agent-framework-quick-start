@@ -1,0 +1,27 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
+
+<FluentCard>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        <H3Label>Playbook Overview</H3Label>
+        <PLabel><strong>Name:</strong> @Catalog.Name</PLabel>
+        <PLabel><strong>Description:</strong> @Catalog.Description</PLabel>
+        <PLabel><strong>Type:</strong> @Catalog.WorkflowType</PLabel>
+        <PLabel><strong>Created:</strong> @Catalog.CreatedOn.ToLocalTime().ToString("g")</PLabel>
+        <PLabel><strong>Modified:</strong> @(Catalog.ModifiedOn.HasValue ? Catalog.ModifiedOn.Value.ToLocalTime().ToString("g") : "Not modified")</PLabel>
+        <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="6">
+            <FluentBadge Appearance="BadgeAppearance.Tint">@Catalog.WorkflowType</FluentBadge>
+            <FluentBadge Appearance="BadgeAppearance.Outline">v@Catalog.Version</FluentBadge>
+            <FluentBadge Appearance="BadgeAppearance.Outline">Key: @Catalog.Key</FluentBadge>
+        </FluentStack>
+    </FluentStack>
+</FluentCard>
+
+@code {
+    /// <summary>
+    /// Renders the Playbook's persisted, high-level catalog identity - what this Playbook *is*,
+    /// independent of any particular run: its Name, Description, WorkflowType, and Version,
+    /// sourced from the real <c>PlaybookEntity</c> catalog record rather than hardcoded page text.
+    /// Shown at the top of every example Playbook page, before and after the Playbook is run.
+    /// </summary>
+    [Parameter, EditorRequired] public PlaybookCatalogModel Catalog { get; set; } = null!;
+}
