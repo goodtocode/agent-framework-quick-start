@@ -39,8 +39,8 @@
 		<PackageReference Include="Microsoft.Identity.Web" Version="4.16.0" />
 		<PackageReference Include="Microsoft.Identity.Web.UI" Version="4.16.0" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.2.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.3.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Core.Application\Core.Application.csproj" />
