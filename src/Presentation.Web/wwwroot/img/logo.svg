@@ -1,0 +1,7 @@
+<svg width="115" height="115" viewBox="0 0 115 115" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GoodToCode logo">
+  <rect x="4" y="4" width="36" height="36" fill="#E6D205" />
+  <rect x="75" y="4" width="36" height="36" fill="#E6D205" />
+  <line x1="39" y1="42" x2="49" y2="55" stroke="#3D4B59" stroke-width="4" stroke-linecap="round" />
+  <line x1="76" y1="42" x2="66" y2="55" stroke="#3D4B59" stroke-width="4" stroke-linecap="round" />
+  <polygon points="57.5,42.5 83,68 57.5,93.5 32,68" fill="#0C60C6" />
+</svg>

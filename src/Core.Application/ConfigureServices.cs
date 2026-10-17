@@ -29,6 +29,8 @@ public static class ConfigureServices
         services.AddSingleton<ChatGovernanceGate>();
         services.AddSingleton<IChatSelectionTokenParser, ChatSelectionTokenParser>();
 
+        services.AddGovernanceRepeatability();
+        services.AddScoped<Playbooks.Repeatability.PlaybookRepeatCoordinator>();
         services.AddSingleton<IRepeatabilityHashStrategy, DefaultRepeatabilityHashStrategy>();
         services.AddScoped<PlaybookGovernanceActivityRecorder>();
         services.AddScoped<DocumentReviewPlaybookDefinition>();

@@ -1,4 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Repeatability;
+using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Agents.Playbook.Execution;
 
 namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
@@ -16,13 +18,13 @@ namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
 public sealed class RunEssayPlaybookCommand : UserScopedRequest, IRequest<PlaybookExecutionResultDto>
 {
     public required string EssayText { get; init; }
-    public PlaybookReplayMode ReplayMode { get; init; } = PlaybookReplayMode.Rerun;
+    public RepeatMode ReplayMode { get; init; } = RepeatMode.Rerun;
     public string? SourceExecutionId { get; init; }
 }
 
 public sealed class RunEssayPlaybookCommandHandler(
     ISender sender,
-    IAgentFrameworkContext context,
+    PlaybookRepeatCoordinator repeats,
     IEssayEvaluationRunner runner,
     EssayStageSummarySelector summarySelector)
     : IRequestHandler<RunEssayPlaybookCommand, PlaybookExecutionResultDto>
@@ -31,28 +33,13 @@ public sealed class RunEssayPlaybookCommandHandler(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        string essayText;
-        PlaybookReplayContext<EssayEvidence, EssayRubricFinding>? replayContext = null;
+        var repeat = await repeats.PrepareAsync<EssayEvidence, EssayRubricFinding>(
+            "essay", request.UserContext, request.ReplayMode, request.SourceExecutionId, cancellationToken);
+        var essayText = repeat.SourceCollectInput ?? request.EssayText;
 
-        if (request.ReplayMode == PlaybookReplayMode.Rerun)
-        {
-            essayText = request.EssayText;
-        }
-        else
-        {
-            var source = await PlaybookReplaySourceResolver.ResolveAsync(
-                context, "essay", request.UserContext.OwnerId, request.UserContext.TenantId,
-                request.SourceExecutionId, cancellationToken);
-
-            essayText = source.CollectInput;
-            var priorEvidence = System.Text.Json.JsonSerializer.Deserialize<EssayEvidence>(source.EvidenceJson!)!;
-            var priorFinding = System.Text.Json.JsonSerializer.Deserialize<EssayRubricFinding>(source.FindingJson!)!;
-            replayContext = new PlaybookReplayContext<EssayEvidence, EssayRubricFinding>(
-                request.ReplayMode, source.Id.ToString(), priorEvidence, priorFinding);
-        }
-
-        var result = await runner.EvaluateAsync(essayText, cancellationToken, replayContext);
-        var dto = PlaybookExecutionResultDtoFactory.CreateFrom(essayText, result, summarySelector);
+        var result = await runner.EvaluateAsync(essayText, cancellationToken, repeat.ExecutionRequest);
+        var dto = PlaybookExecutionResultDtoFactory.CreateFrom(
+            essayText, result, summarySelector, repeat.Request.Mode, repeat.SourceRecordSummary);
         dto.ExecutionId = await Persistence.PlaybookExecutionPersister.SaveAsync(sender, dto, cancellationToken);
         return dto;
     }

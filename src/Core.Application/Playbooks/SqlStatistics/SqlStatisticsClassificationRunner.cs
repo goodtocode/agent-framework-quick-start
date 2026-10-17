@@ -15,7 +15,7 @@ public interface ISqlStatisticsClassificationRunner
     Task<PlaybookExecutionResult<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding, SqlDatabaseSizeMaterialization>> ClassifyAsync(
         string databaseName,
         CancellationToken cancellationToken,
-        PlaybookReplayContext<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding>? replayContext = null);
+        PlaybookExecutionRequest<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding>? request = null);
 }
 
 public sealed class SqlStatisticsClassificationRunner(
@@ -27,12 +27,12 @@ public sealed class SqlStatisticsClassificationRunner(
     public Task<PlaybookExecutionResult<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding, SqlDatabaseSizeMaterialization>> ClassifyAsync(
         string databaseName,
         CancellationToken cancellationToken,
-        PlaybookReplayContext<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding>? replayContext = null)
+        PlaybookExecutionRequest<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding>? request = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(databaseName);
 
-        return replayContext is null
-            ? executor.ExecuteAsync(definition, databaseName, cancellationToken, activityRecorder: recorder)
-            : executor.ExecuteAsync(definition, databaseName, replayContext, cancellationToken, activityRecorder: recorder);
+        return executor.ExecuteAsync(
+            definition, databaseName, request ?? PlaybookExecutionRequest<SqlDatabaseStatisticsEvidence, SqlDatabaseSizeFinding>.Default,
+            cancellationToken, activityRecorder: recorder);
     }
 }

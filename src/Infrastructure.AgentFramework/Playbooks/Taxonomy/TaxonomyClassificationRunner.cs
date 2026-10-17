@@ -1,5 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Tools;
 
@@ -13,9 +14,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxo
 /// </summary>
 public sealed class TaxonomyClassificationRunner(
     IPlaybookStepToolResolver<string, TaxonomyEvidence, TaxonomyEvidence, TaxonomyFinding, TaxonomyFinding, TaxonomyMaterialization> resolver,
-    TaxonomyGovernanceActivityRecorder recorder) : ITaxonomyClassificationRunner
+    TaxonomyGovernanceActivityRecorder recorder,
+    IRepeatPolicy repeatPolicy) : ITaxonomyClassificationRunner
 {
-    private static readonly PlaybookWorkflowGraphExecutor<string, TaxonomyEvidence, TaxonomyFinding, TaxonomyMaterialization> GraphExecutor = new();
+    private readonly PlaybookWorkflowGraphExecutor<string, TaxonomyEvidence, TaxonomyFinding, TaxonomyMaterialization> GraphExecutor = new(repeatPolicy);
 
     private readonly IPlaybookStepToolResolver<string, TaxonomyEvidence, TaxonomyEvidence, TaxonomyFinding, TaxonomyFinding, TaxonomyMaterialization> _resolver = resolver;
     private readonly TaxonomyGovernanceActivityRecorder _recorder = recorder;
@@ -23,7 +25,7 @@ public sealed class TaxonomyClassificationRunner(
     public Task<PlaybookExecutionResult<TaxonomyEvidence, TaxonomyFinding, TaxonomyMaterialization>> ClassifyAsync(
         string text,
         CancellationToken cancellationToken,
-        PlaybookReplayContext<TaxonomyEvidence, TaxonomyFinding>? replayContext = null)
+        PlaybookExecutionRequest<TaxonomyEvidence, TaxonomyFinding>? request = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
@@ -37,6 +39,6 @@ public sealed class TaxonomyClassificationRunner(
             text,
             cancellationToken,
             activityRecorder: _recorder,
-            replayContext: replayContext);
+            request: request);
     }
 }

@@ -61,3 +61,7 @@
 - Implement SEO and GEO optimization support by using semantic headings (H1, H2) while minimizing direct HTML usage.
 - Prioritize root-cause fixes over brute-force styling overrides and adhere to global Blazor/Fluent UI conventions. Verify behavior against current component rendering.
 - Use Blazor/Fluent component properties over CSS for layout/styling because CSS is harder and more brittle to maintain.
+
+## Source Control Workflow
+- Leave all changes local and uncommitted. Do not run `git commit`, `git push`, or open pull requests; the maintainer reviews the uncommitted diff first and then commits, pushes, and opens the PR.
+- Do not create or switch branches unless asked. Summarize what changed so the diff can be reviewed.

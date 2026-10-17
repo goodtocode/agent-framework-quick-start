@@ -14,7 +14,7 @@ public interface ITaxonomyClassificationRunner
     Task<PlaybookExecutionResult<TaxonomyEvidence, TaxonomyFinding, TaxonomyMaterialization>> ClassifyAsync(
         string text,
         CancellationToken cancellationToken,
-        PlaybookReplayContext<TaxonomyEvidence, TaxonomyFinding>? replayContext = null);
+        PlaybookExecutionRequest<TaxonomyEvidence, TaxonomyFinding>? request = null);
 }
 
 public sealed class ClassifyTaxonomyCommand : IRequest<PlaybookExecutionResult<TaxonomyEvidence, TaxonomyFinding, TaxonomyMaterialization>>

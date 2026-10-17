@@ -99,10 +99,17 @@ public static class PlaybookExecutionResultDtoFactory
     public static PlaybookExecutionResultDto CreateFrom<TEvidence, TFinding, TMaterialization>(
         string collectInput,
         PlaybookExecutionResult<TEvidence, TFinding, TMaterialization> result,
-        IPlaybookStageSummarySelector<TEvidence, TFinding, TMaterialization> summarySelector)
+        IPlaybookStageSummarySelector<TEvidence, TFinding, TMaterialization> summarySelector,
+        Goodtocode.Agents.Governance.Domain.RepeatMode repeatMode = Goodtocode.Agents.Governance.Domain.RepeatMode.Rerun,
+        string? sourceRecordSummary = null)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(summarySelector);
+
+        // A skipped Record leaves no materialization, so Recall shows the source's stored record output.
+        var recordSummary = result.ActionsExecuted.HasFlag(Goodtocode.Agents.Governance.Domain.ActionType.Record)
+            ? summarySelector.SummarizeMaterialization(result.Materialization)
+            : sourceRecordSummary ?? string.Empty;
 
         return new PlaybookExecutionResultDto
         {
@@ -110,12 +117,12 @@ public static class PlaybookExecutionResultDtoFactory
             Version = result.Metadata.Version,
             StartedUtc = result.Metadata.StartedUtc,
             CompletedUtc = result.Metadata.CompletedUtc,
-            ReplayMode = result.Metadata.ReplayMode.ToString(),
+            ReplayMode = repeatMode.ToString(),
             SourceExecutionId = result.Metadata.SourceExecutionId,
             CollectInput = collectInput,
             CollectSummary = summarySelector.SummarizeEvidence(result.Evidence),
             EvaluateSummary = summarySelector.SummarizeFinding(result.Finding),
-            RecordSummary = summarySelector.SummarizeMaterialization(result.Materialization),
+            RecordSummary = recordSummary,
             EvidenceJson = System.Text.Json.JsonSerializer.Serialize(result.Evidence),
             FindingJson = System.Text.Json.JsonSerializer.Serialize(result.Finding)
         };
