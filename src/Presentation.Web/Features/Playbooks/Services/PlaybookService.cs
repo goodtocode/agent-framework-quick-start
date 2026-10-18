@@ -1,6 +1,6 @@
 using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models;
 using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http;
-using ClientReplayMode = Goodtocode.AgentFramework.Api.Clients.PlaybookReplayMode;
+using ClientReplayMode = Goodtocode.AgentFramework.Api.Clients.RepeatMode;
 using UiReplayMode = Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models.PlaybookReplayMode;
 
 namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services;

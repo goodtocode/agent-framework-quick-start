@@ -74,19 +74,58 @@ public sealed class ChatMessageIntentRouter(
                 var forcedToolReply = await TryResolveViaForcedToolInferenceAsync(chatHistory, cancellationToken);
                 if (!string.IsNullOrWhiteSpace(forcedToolReply))
                 {
-                    return forcedToolReply;
+                    return await GuardReplyAsync(forcedToolReply, chatHistory, cancellationToken);
                 }
             }
 
             var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
             var response = agentResponse.Messages.LastOrDefault();
             ChatGuard.GuardAgainstNullAgentResponse(response);
-            return response!.Contents.LastOrDefault()?.ToString() ?? string.Empty;
+            var reply = response!.Contents.LastOrDefault()?.ToString() ?? string.Empty;
+            return await GuardReplyAsync(reply, chatHistory, cancellationToken);
         }
         finally
         {
             _chatContextAccessor.ClearCurrentChatSession();
         }
+    }
+
+    /// <summary>
+    /// Single exit validation for every model-generated reply. A reply containing future tense or an
+    /// announced intent is regenerated once with a corrective instruction; whatever still violates is
+    /// stripped, so such text never reaches the user.
+    /// </summary>
+    private async Task<string> GuardReplyAsync(
+        string reply,
+        List<ChatMessage> chatHistory,
+        CancellationToken cancellationToken)
+    {
+        if (!FutureTenseGuard.ContainsFutureTense(reply))
+        {
+            return reply;
+        }
+
+        _logger.LogWarning("Model reply contained future tense or an announced intent; regenerating once.");
+        try
+        {
+            var retryHistory = new List<ChatMessage>(chatHistory)
+            {
+                new(ChatRole.System, ToolRoutingInstructions.NoFutureTensePreamble),
+                new(ChatRole.System, "The previous reply violated the rule above. Produce the final answer now, using only past or present tense and containing results rather than announcements.")
+            };
+            var retryResponse = await _agent.RunAsync(retryHistory, cancellationToken: cancellationToken);
+            var retryReply = retryResponse.Messages.LastOrDefault()?.Contents.LastOrDefault()?.ToString();
+            if (!string.IsNullOrWhiteSpace(retryReply))
+            {
+                return FutureTenseGuard.Enforce(retryReply);
+            }
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            _logger.LogWarning(exception, "Regeneration after a future-tense reply failed; stripping the reply instead.");
+        }
+
+        return FutureTenseGuard.Enforce(reply);
     }
 
     private async Task<string?> TryResolveViaForcedToolInferenceAsync(
@@ -128,6 +167,7 @@ public sealed class ChatMessageIntentRouter(
         var chatHistory = new List<ChatMessage>
         {
             new(ChatRole.System, governed.PromptContext.SystemInstruction),
+            new(ChatRole.System, ToolRoutingInstructions.NoFutureTensePreamble),
             BuildSelectionContextMessage(chatSessionId)
         };
 

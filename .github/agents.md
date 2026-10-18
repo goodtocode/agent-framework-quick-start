@@ -42,3 +42,7 @@ AI-generated changes should:
 - Follow repository naming and style conventions.
 - Include appropriate tests.
 - Keep documentation aligned with implementation.
+
+## Source Control Workflow
+- Leave all changes local and uncommitted. Do not run `git commit`, `git push`, or open pull requests; the maintainer reviews the uncommitted diff first and then commits, pushes, and opens the PR.
+- Do not create or switch branches unless asked. Summarize what changed so the diff can be reviewed.

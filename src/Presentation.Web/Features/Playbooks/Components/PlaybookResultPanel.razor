@@ -2,6 +2,7 @@
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
     <PlaybookReplayControls Result="Result" IsBusy="IsBusy" OnReplay="OnReplay" />
+    <PlaybookStagesOverview />
     <PlaybookStepToggle @bind-SelectedStep="SelectedStep" />
     <PlaybookSummaryCard Result="Result" />
     <PlaybookStepDetail Result="Result" Step="SelectedStep" Catalog="Catalog" />

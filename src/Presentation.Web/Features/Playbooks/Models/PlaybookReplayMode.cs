@@ -17,8 +17,7 @@ public enum PlaybookReplayMode
     Rerun = 0,
 
     /// <summary>
-    /// Rehydrate a prior execution's evidence and finding without running Collect or Evaluate;
-    /// Record still runs so materialization can be re-rendered from the recalled finding.
+    /// Rehydrate a prior execution's recorded result as a pure read: no stage runs again.
     /// </summary>
     Recall = 1,
 

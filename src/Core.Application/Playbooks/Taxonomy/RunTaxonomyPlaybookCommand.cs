@@ -1,4 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Repeatability;
+using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Agents.Playbook.Execution;
 
 namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
@@ -16,13 +18,13 @@ namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 public sealed class RunTaxonomyPlaybookCommand : UserScopedRequest, IRequest<PlaybookExecutionResultDto>
 {
     public required string Text { get; init; }
-    public PlaybookReplayMode ReplayMode { get; init; } = PlaybookReplayMode.Rerun;
+    public RepeatMode ReplayMode { get; init; } = RepeatMode.Rerun;
     public string? SourceExecutionId { get; init; }
 }
 
 public sealed class RunTaxonomyPlaybookCommandHandler(
     ISender sender,
-    IAgentFrameworkContext context,
+    PlaybookRepeatCoordinator repeats,
     ITaxonomyClassificationRunner runner,
     TaxonomyStageSummarySelector summarySelector)
     : IRequestHandler<RunTaxonomyPlaybookCommand, PlaybookExecutionResultDto>
@@ -31,28 +33,13 @@ public sealed class RunTaxonomyPlaybookCommandHandler(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        string text;
-        PlaybookReplayContext<TaxonomyEvidence, TaxonomyFinding>? replayContext = null;
+        var repeat = await repeats.PrepareAsync<TaxonomyEvidence, TaxonomyFinding>(
+            "taxonomy", request.UserContext, request.ReplayMode, request.SourceExecutionId, cancellationToken);
+        var text = repeat.SourceCollectInput ?? request.Text;
 
-        if (request.ReplayMode == PlaybookReplayMode.Rerun)
-        {
-            text = request.Text;
-        }
-        else
-        {
-            var source = await PlaybookReplaySourceResolver.ResolveAsync(
-                context, "taxonomy", request.UserContext.OwnerId, request.UserContext.TenantId,
-                request.SourceExecutionId, cancellationToken);
-
-            text = source.CollectInput;
-            var priorEvidence = System.Text.Json.JsonSerializer.Deserialize<TaxonomyEvidence>(source.EvidenceJson!)!;
-            var priorFinding = System.Text.Json.JsonSerializer.Deserialize<TaxonomyFinding>(source.FindingJson!)!;
-            replayContext = new PlaybookReplayContext<TaxonomyEvidence, TaxonomyFinding>(
-                request.ReplayMode, source.Id.ToString(), priorEvidence, priorFinding);
-        }
-
-        var result = await runner.ClassifyAsync(text, cancellationToken, replayContext);
-        var dto = PlaybookExecutionResultDtoFactory.CreateFrom(text, result, summarySelector);
+        var result = await runner.ClassifyAsync(text, cancellationToken, repeat.ExecutionRequest);
+        var dto = PlaybookExecutionResultDtoFactory.CreateFrom(
+            text, result, summarySelector, repeat.Request.Mode, repeat.SourceRecordSummary);
         dto.ExecutionId = await Persistence.PlaybookExecutionPersister.SaveAsync(sender, dto, cancellationToken);
         return dto;
     }

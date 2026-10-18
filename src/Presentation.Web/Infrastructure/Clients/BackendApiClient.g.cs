@@ -2838,18 +2838,6 @@ namespace Goodtocode.AgentFramework.Api.Clients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum PlaybookReplayMode
-    {
-
-        _0 = 0,
-
-        _1 = 1,
-
-        _2 = 2,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class PlaybookStepDto
     {
 
@@ -2904,6 +2892,18 @@ namespace Goodtocode.AgentFramework.Api.Clients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum RepeatMode
+    {
+
+        _0 = 0,
+
+        _1 = 1,
+
+        _2 = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class RunEssayPlaybookCommand
     {
 
@@ -2914,7 +2914,7 @@ namespace Goodtocode.AgentFramework.Api.Clients
         public string EssayText { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("replayMode")]
-        public PlaybookReplayMode ReplayMode { get; set; }
+        public RepeatMode ReplayMode { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("sourceExecutionId")]
         public string SourceExecutionId { get; set; }
@@ -2932,7 +2932,7 @@ namespace Goodtocode.AgentFramework.Api.Clients
         public string DatabaseName { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("replayMode")]
-        public PlaybookReplayMode ReplayMode { get; set; }
+        public RepeatMode ReplayMode { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("sourceExecutionId")]
         public string SourceExecutionId { get; set; }
@@ -2950,7 +2950,7 @@ namespace Goodtocode.AgentFramework.Api.Clients
         public string Text { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("replayMode")]
-        public PlaybookReplayMode ReplayMode { get; set; }
+        public RepeatMode ReplayMode { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("sourceExecutionId")]
         public string SourceExecutionId { get; set; }

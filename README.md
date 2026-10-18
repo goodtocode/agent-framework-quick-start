@@ -411,8 +411,11 @@ Execution") for the full entity model.
 
 ### Repeatability: Rerun / Recall / Replay
 
-Every `Run*PlaybookCommand` accepts a `PlaybookReplayMode` (from
-`Goodtocode.Agents.Playbook.Execution`) plus an optional `SourceExecutionId`:
+Every `Run*PlaybookCommand` accepts a Governance `RepeatMode` (from
+`Goodtocode.Agents.Governance.Domain`, available transitively through
+`Goodtocode.Agents.Playbook`) plus an optional `SourceExecutionId`. The app references only
+Playbook; it builds a `PlaybookExecutionRequest` directly, with no mappers. See
+[feature-playbook-repeatability.md](./docs/product/features/feature-playbook-repeatability.md):
 
 - **Rerun** (default) — a fresh execution: Collect, Evaluate, and Record all run against new
   input. This is the only mode available on a Playbook's first execution.

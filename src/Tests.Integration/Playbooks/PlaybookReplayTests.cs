@@ -2,7 +2,7 @@ using Goodtocode.AgentFramework.Core.Application.Playbooks;
 using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
 using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.AgentFramework.Core.Domain.Playbooks;
-using Goodtocode.Agents.Playbook.Execution;
+using Goodtocode.Agents.Governance.Domain;
 
 namespace Goodtocode.AgentFramework.Tests.Integration.Playbooks;
 
@@ -92,7 +92,7 @@ public sealed class PlaybookReplayTests : TestBase
 
         var dto = await Sender.Send(new RunSqlStatisticsPlaybookCommand { DatabaseName = "Contoso" }, CancellationToken.None);
 
-        dto.ReplayMode.ShouldBe(nameof(PlaybookReplayMode.Rerun));
+        dto.ReplayMode.ShouldBe(nameof(RepeatMode.Rerun));
         dto.ExecutionId.ShouldNotBeEmpty();
         string.IsNullOrWhiteSpace(dto.EvidenceJson).ShouldBeFalse();
         string.IsNullOrWhiteSpace(dto.FindingJson).ShouldBeFalse();
@@ -118,11 +118,11 @@ public sealed class PlaybookReplayTests : TestBase
         var recalled = await Sender.Send(new RunSqlStatisticsPlaybookCommand
         {
             DatabaseName = "ignored-for-recall",
-            ReplayMode = PlaybookReplayMode.Recall,
+            ReplayMode = RepeatMode.Recall,
             SourceExecutionId = original.ExecutionId.ToString()
         }, CancellationToken.None);
 
-        recalled.ReplayMode.ShouldBe(nameof(PlaybookReplayMode.Recall));
+        recalled.ReplayMode.ShouldBe(nameof(RepeatMode.Recall));
         recalled.SourceExecutionId.ShouldBe(original.ExecutionId.ToString());
         recalled.CollectInput.ShouldBe("Contoso");
         recalled.EvaluateSummary.ShouldBe(original.EvaluateSummary);
@@ -143,18 +143,18 @@ public sealed class PlaybookReplayTests : TestBase
         var replayed = await Sender.Send(new RunSqlStatisticsPlaybookCommand
         {
             DatabaseName = "ignored-for-replay",
-            ReplayMode = PlaybookReplayMode.Replay,
+            ReplayMode = RepeatMode.Replay,
             SourceExecutionId = original.ExecutionId.ToString()
         }, CancellationToken.None);
 
-        replayed.ReplayMode.ShouldBe(nameof(PlaybookReplayMode.Replay));
+        replayed.ReplayMode.ShouldBe(nameof(RepeatMode.Replay));
         replayed.SourceExecutionId.ShouldBe(original.ExecutionId.ToString());
         replayed.CollectInput.ShouldBe("Contoso");
         replayed.EvaluateSummary.ShouldBe(original.EvaluateSummary);
     }
 
     [TestMethod]
-    public async Task TaxonomyRecallSkipsCollectAndEvaluateAgentCalls()
+    public async Task TaxonomyRecallMakesNoAgentCallsAndReturnsStoredRecord()
     {
         await SeedTaxonomyPlaybookAsync();
 
@@ -164,19 +164,19 @@ public sealed class PlaybookReplayTests : TestBase
 
         var original = await Sender.Send(new RunTaxonomyPlaybookCommand { Text = "Quarterly budget forecast" }, CancellationToken.None);
 
-        // Only the Record stage's agent call is queued; Recall must not invoke Collect or
-        // Evaluate, so no extra queued responses are needed for those stages.
-        agent.QueuedResponseTexts.Enqueue("""{"summary": "Recalled: Classified as Finance with high confidence."}""");
+        // Recall is a pure read: if any stage called the agent it would consume this sentinel.
+        agent.QueuedResponseTexts.Enqueue("""{"summary": "sentinel: must not be consumed"}""");
 
         var recalled = await Sender.Send(new RunTaxonomyPlaybookCommand
         {
             Text = "ignored-for-recall",
-            ReplayMode = PlaybookReplayMode.Recall,
+            ReplayMode = RepeatMode.Recall,
             SourceExecutionId = original.ExecutionId.ToString()
         }, CancellationToken.None);
 
-        recalled.ReplayMode.ShouldBe(nameof(PlaybookReplayMode.Recall));
+        recalled.ReplayMode.ShouldBe(nameof(RepeatMode.Recall));
         recalled.EvaluateSummary.ShouldBe(original.EvaluateSummary);
-        agent.QueuedResponseTexts.Count.ShouldBe(0);
+        recalled.RecordSummary.ShouldBe(original.RecordSummary);
+        agent.QueuedResponseTexts.Count.ShouldBe(1);
     }
 }

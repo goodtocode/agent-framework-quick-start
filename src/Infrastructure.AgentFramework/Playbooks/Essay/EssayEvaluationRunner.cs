@@ -1,5 +1,6 @@
 using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Tools;
 
@@ -13,9 +14,10 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essa
 /// </summary>
 public sealed class EssayEvaluationRunner(
     IPlaybookStepToolResolver<string, EssayEvidence, EssayEvidence, EssayRubricFinding, EssayRubricFinding, EssayScorecardMaterialization> resolver,
-    EssayGovernanceActivityRecorder recorder) : IEssayEvaluationRunner
+    EssayGovernanceActivityRecorder recorder,
+    IRepeatPolicy repeatPolicy) : IEssayEvaluationRunner
 {
-    private static readonly PlaybookWorkflowGraphExecutor<string, EssayEvidence, EssayRubricFinding, EssayScorecardMaterialization> GraphExecutor = new();
+    private readonly PlaybookWorkflowGraphExecutor<string, EssayEvidence, EssayRubricFinding, EssayScorecardMaterialization> GraphExecutor = new(repeatPolicy);
 
     private readonly IPlaybookStepToolResolver<string, EssayEvidence, EssayEvidence, EssayRubricFinding, EssayRubricFinding, EssayScorecardMaterialization> _resolver = resolver;
     private readonly EssayGovernanceActivityRecorder _recorder = recorder;
@@ -23,7 +25,7 @@ public sealed class EssayEvaluationRunner(
     public Task<PlaybookExecutionResult<EssayEvidence, EssayRubricFinding, EssayScorecardMaterialization>> EvaluateAsync(
         string essayText,
         CancellationToken cancellationToken,
-        PlaybookReplayContext<EssayEvidence, EssayRubricFinding>? replayContext = null)
+        PlaybookExecutionRequest<EssayEvidence, EssayRubricFinding>? request = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(essayText);
 
@@ -37,6 +39,6 @@ public sealed class EssayEvaluationRunner(
             essayText,
             cancellationToken,
             activityRecorder: _recorder,
-            replayContext: replayContext);
+            request: request);
     }
 }

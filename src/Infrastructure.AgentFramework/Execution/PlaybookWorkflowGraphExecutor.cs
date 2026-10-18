@@ -1,3 +1,5 @@
+using Goodtocode.Agents.Governance.Application;
+using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Steps;
 using Microsoft.Agents.AI.Workflows;
@@ -15,12 +17,11 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 /// PipelineWorkflowStepExecutor. Each node calls the shared
 /// <see cref="IPlaybookStepActivityRecorder{TEvidence,TFinding,TMaterialization}"/> after its
 /// stage completes, so governance capture is identical regardless of orchestration model. When an
-/// optional <see cref="PlaybookReplayContext{TEvidence,TFinding}"/> is supplied, the full graph is
-/// bypassed in favor of direct, in-order tool calls for just the stages that mode requires -
-/// Record only for Recall, Evaluate+Record for Replay - mirroring the same repeatability pillar
-/// the package's own <c>PlaybookExecutor</c> implements for the non-MAF SQL Statistics playbook.
+/// optional <see cref="PlaybookExecutionRequest{TEvidence,TFinding}"/> skips any stage, the full
+/// graph is bypassed in favor of direct, in-order tool calls with the same skip semantics as the
+/// package's own <c>PlaybookExecutor</c>.
 /// </summary>
-public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFinding, TMaterialization>
+public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFinding, TMaterialization>(IRepeatPolicy repeatPolicy)
 {
     public async Task<PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>> ExecuteAsync(
         PlaybookIdentity identity,
@@ -30,22 +31,22 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
         TCollectInput input,
         CancellationToken cancellationToken = default,
         IPlaybookStepActivityRecorder<TEvidence, TFinding, TMaterialization>? activityRecorder = null,
-        PlaybookReplayContext<TEvidence, TFinding>? replayContext = null)
+        PlaybookExecutionRequest<TEvidence, TFinding>? request = null)
     {
         ArgumentNullException.ThrowIfNull(collectTool);
         ArgumentNullException.ThrowIfNull(evaluateTool);
         ArgumentNullException.ThrowIfNull(recordTool);
 
-        replayContext?.Validate();
+        request ??= PlaybookExecutionRequest<TEvidence, TFinding>.Default;
+        var plan = repeatPolicy.Plan(request.Repeat);
+        request.Validate(plan);
 
         var startedUtc = DateTimeOffset.UtcNow;
 
-        return replayContext?.Mode switch
-        {
-            PlaybookReplayMode.Recall => await ExecuteRecallAsync(identity, recordTool, replayContext, activityRecorder, startedUtc, cancellationToken).ConfigureAwait(false),
-            PlaybookReplayMode.Replay => await ExecuteReplayAsync(identity, evaluateTool, recordTool, replayContext, activityRecorder, startedUtc, cancellationToken).ConfigureAwait(false),
-            _ => await ExecuteRerunAsync(identity, collectTool, evaluateTool, recordTool, input, activityRecorder, startedUtc, cancellationToken).ConfigureAwait(false)
-        };
+        // The graph only models a full run; any skipped stage uses the same skip semantics as PlaybookExecutor.
+        return plan.Run == ActionType.All
+            ? await ExecuteRerunAsync(identity, collectTool, evaluateTool, recordTool, input, activityRecorder, startedUtc, cancellationToken).ConfigureAwait(false)
+            : await ExecuteSkippingAsync(identity, collectTool, evaluateTool, recordTool, input, request, plan, activityRecorder, startedUtc, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -84,8 +85,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
                     identity.Version,
                     startedUtc,
                     DateTimeOffset.UtcNow,
-                    PlaybookReplayMode.Rerun,
-                    SourceExecutionId: null!);
+                    SourceExecutionId: null);
 
                 return new PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>(
                     collectNode.Evidence!,
@@ -100,65 +100,67 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
     }
 
     /// <summary>
-    /// Recall: rehydrates the prior execution's evidence and finding and runs only the Record
-    /// stage, bypassing the Collect/Evaluate nodes entirely so materialization can be re-rendered
-    /// from the recalled finding without any new tool calls.
+    /// Runs the stages the request leaves enabled as direct tool calls, in order. Skipped stages
+    /// are not invoked, not recorded, and take their seed instead, so Recall is a pure read.
     /// </summary>
-    private static async Task<PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>> ExecuteRecallAsync(
+    private static async Task<PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>> ExecuteSkippingAsync(
         PlaybookIdentity identity,
-        IRecordStepTool<TFinding, TMaterialization> recordTool,
-        PlaybookReplayContext<TEvidence, TFinding> replayContext,
-        IPlaybookStepActivityRecorder<TEvidence, TFinding, TMaterialization>? activityRecorder,
-        DateTimeOffset startedUtc,
-        CancellationToken cancellationToken)
-    {
-        var materialization = await recordTool.RecordAsync(replayContext.PriorFinding, cancellationToken).ConfigureAwait(false);
-
-        if (activityRecorder is not null)
-        {
-            await activityRecorder.OnRecordedAsync(identity, materialization, recordTool.ToolName, cancellationToken).ConfigureAwait(false);
-        }
-
-        var metadata = new PlaybookExecutionMetadata(
-            identity.PlaybookKey, identity.Version, startedUtc, DateTimeOffset.UtcNow,
-            PlaybookReplayMode.Recall, replayContext.SourceExecutionId);
-
-        return new PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>(
-            replayContext.PriorEvidence, replayContext.PriorFinding, materialization, metadata);
-    }
-
-    /// <summary>
-    /// Replay: reuses the prior execution's Collect-stage evidence (skipping Collect) and re-runs
-    /// Evaluate and Record against it, to verify exact reproduction of a governed result.
-    /// </summary>
-    private static async Task<PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>> ExecuteReplayAsync(
-        PlaybookIdentity identity,
+        ICollectStepTool<TCollectInput, TEvidence> collectTool,
         IEvaluateStepTool<TEvidence, TFinding> evaluateTool,
         IRecordStepTool<TFinding, TMaterialization> recordTool,
-        PlaybookReplayContext<TEvidence, TFinding> replayContext,
+        TCollectInput input,
+        PlaybookExecutionRequest<TEvidence, TFinding> request,
+        RepeatPlan plan,
         IPlaybookStepActivityRecorder<TEvidence, TFinding, TMaterialization>? activityRecorder,
         DateTimeOffset startedUtc,
         CancellationToken cancellationToken)
     {
-        var evidence = replayContext.PriorEvidence;
-
-        var finding = await evaluateTool.EvaluateAsync(evidence, cancellationToken).ConfigureAwait(false);
-        if (activityRecorder is not null)
+        TEvidence evidence;
+        if (!plan.Runs(ActionType.Collect))
         {
-            await activityRecorder.OnEvaluatedAsync(identity, finding, evaluateTool.ToolName, cancellationToken).ConfigureAwait(false);
+            evidence = request.SeedEvidence!;
+        }
+        else
+        {
+            evidence = await collectTool.ExecuteAsync(input, cancellationToken).ConfigureAwait(false);
+            if (activityRecorder is not null)
+            {
+                await activityRecorder.OnCollectedAsync(identity, evidence, collectTool.ToolName, cancellationToken).ConfigureAwait(false);
+            }
         }
 
-        var materialization = await recordTool.RecordAsync(finding, cancellationToken).ConfigureAwait(false);
-        if (activityRecorder is not null)
+        TFinding finding;
+        if (!plan.Runs(ActionType.Evaluate))
         {
-            await activityRecorder.OnRecordedAsync(identity, materialization, recordTool.ToolName, cancellationToken).ConfigureAwait(false);
+            finding = request.SeedFinding!;
+        }
+        else
+        {
+            finding = await evaluateTool.EvaluateAsync(evidence, cancellationToken).ConfigureAwait(false);
+            if (activityRecorder is not null)
+            {
+                await activityRecorder.OnEvaluatedAsync(identity, finding, evaluateTool.ToolName, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        TMaterialization materialization = default!;
+        if (plan.Runs(ActionType.Record))
+        {
+            materialization = await recordTool.RecordAsync(finding, cancellationToken).ConfigureAwait(false);
+            if (activityRecorder is not null)
+            {
+                await activityRecorder.OnRecordedAsync(identity, materialization, recordTool.ToolName, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         var metadata = new PlaybookExecutionMetadata(
             identity.PlaybookKey, identity.Version, startedUtc, DateTimeOffset.UtcNow,
-            PlaybookReplayMode.Replay, replayContext.SourceExecutionId);
+            SourceExecutionId: request.Repeat.SourceExecutionId);
 
-        return new PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>(evidence, finding, materialization, metadata);
+        return new PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>(evidence, finding, materialization, metadata)
+        {
+            ActionsExecuted = plan.Run
+        };
     }
 
     private sealed class CollectNode(

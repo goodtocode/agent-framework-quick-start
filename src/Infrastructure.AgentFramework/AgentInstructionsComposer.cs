@@ -17,9 +17,12 @@ public interface IAgentInstructionsComposer
 /// <summary>
 /// Reads the current options snapshot whenever agent instructions are composed.
 /// </summary>
-public sealed class AgentInstructionsComposer(IOptionsMonitor<AgentToolInstructionsOptions> optionsMonitor) : IAgentInstructionsComposer
+public sealed class AgentInstructionsComposer(
+    IOptionsMonitor<AgentToolInstructionsOptions> optionsMonitor,
+    IOptions<SearchProviderOptions> searchOptions) : IAgentInstructionsComposer
 {
     private readonly IOptionsMonitor<AgentToolInstructionsOptions> _optionsMonitor = optionsMonitor;
+    private readonly SearchProviderOptions _searchOptions = searchOptions.Value;
 
     /// <inheritdoc />
     public string Compose()
@@ -27,7 +30,13 @@ public sealed class AgentInstructionsComposer(IOptionsMonitor<AgentToolInstructi
         var options = _optionsMonitor.CurrentValue;
         var instructions = new StringBuilder();
 
+        instructions.AppendLine(ToolRoutingInstructions.NoFutureTensePreamble.Trim());
+        instructions.AppendLine();
         instructions.AppendLine(ToolRoutingInstructions.AntiAnnouncementGuidance.Trim());
+        instructions.AppendLine();
+        instructions.AppendLine((_searchOptions.IsAvailable
+            ? ToolRoutingInstructions.WebSearchGuidance
+            : ToolRoutingInstructions.WebSearchUnavailableGuidance).Trim());
         instructions.AppendLine();
 
         if (!string.IsNullOrWhiteSpace(options.GlobalPreamble))

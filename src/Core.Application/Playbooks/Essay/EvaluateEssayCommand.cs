@@ -17,7 +17,7 @@ public interface IEssayEvaluationRunner
     Task<PlaybookExecutionResult<EssayEvidence, EssayRubricFinding, EssayScorecardMaterialization>> EvaluateAsync(
         string essayText,
         CancellationToken cancellationToken,
-        PlaybookReplayContext<EssayEvidence, EssayRubricFinding>? replayContext = null);
+        PlaybookExecutionRequest<EssayEvidence, EssayRubricFinding>? request = null);
 }
 
 /// <summary>
