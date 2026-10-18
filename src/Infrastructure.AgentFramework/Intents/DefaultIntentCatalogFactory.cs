@@ -7,7 +7,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 /// </summary>
 public static class DefaultIntentCatalogFactory
 {
-    public static IntentCatalog Create() => new(
+    public static IntentCatalog Create(bool includeWebSearch = true) => new(
     [
         // Parameterized selection intents evaluated first (RuleIntentClassifier checks Captures
         // before Examples across all intents, so ordering here only affects tie-breaks among captures).
@@ -161,7 +161,10 @@ public static class DefaultIntentCatalogFactory
         // Level 4 deterministic routing for web search: guarantee the "search the web for [query]"
         // phrasing never falls through to the LLM's own tool-selection. The Capture extracts the
         // query part so it can be passed to the search tool.
-        new IntentDefinition(IntentNames.SearchWeb, Examples: [],
-            Captures: [new PhraseCapture("search the web for", "query", CaptureKind.Rest)])
+        // Included only when web search is available (feature switch on and provider configured).
+        .. includeWebSearch
+            ? (IntentDefinition[])[new IntentDefinition(IntentNames.SearchWeb, Examples: [],
+                Captures: [new PhraseCapture("search the web for", "query", CaptureKind.Rest)])]
+            : []
     ]);
 }

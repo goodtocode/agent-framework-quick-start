@@ -86,7 +86,9 @@ public static class ConfigureServices
 
         services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
 
-        services.AddSingleton(DefaultIntentCatalogFactory.Create());
+        var searchProviderOptions = configuration.GetSection(SearchProviderOptions.SectionName).Get<SearchProviderOptions>()
+            ?? new SearchProviderOptions();
+        services.AddSingleton(DefaultIntentCatalogFactory.Create(searchProviderOptions.IsAvailable));
         services.AddSingleton<RuleIntentClassifier>();
         services.AddScoped<SemanticIntentClassifier>();
         services.AddScoped<IIntentClassifier, HybridIntentClassifier>();
@@ -202,13 +204,18 @@ public static class ConfigureServices
             var chatClient = provider.GetRequiredService<ChatClient>();
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
             var instructionsComposer = provider.GetRequiredService<IAgentInstructionsComposer>();
+            var searchOptions = provider.GetRequiredService<IOptions<SearchProviderOptions>>().Value;
             var tools = new List<AITool>
             {
                 provider.GetRequiredService<MyChatSessionsTool>(),
                 provider.GetRequiredService<ActorsTool>(),
-                provider.GetRequiredService<MyChatMessagesTool>(),
-                provider.GetRequiredService<WebSearchTool>()
+                provider.GetRequiredService<MyChatMessagesTool>()
             };
+
+            if (searchOptions.IsAvailable)
+            {
+                tools.Add(provider.GetRequiredService<WebSearchTool>());
+            }
 
             var agentOptions = new ChatClientAgentOptions
             {
@@ -258,8 +265,7 @@ public static class ConfigureServices
         services.AddScoped<IWebSearchProvider>(provider =>
         {
             var options = provider.GetRequiredService<IOptions<SearchProviderOptions>>().Value;
-            if (options.Provider.Equals("Bing", StringComparison.OrdinalIgnoreCase)
-                && IsBingConfigured(options))
+            if (options.IsAvailable)
             {
                 return provider.GetRequiredService<BingSearchProvider>();
             }
@@ -353,18 +359,6 @@ public static class ConfigureServices
         }
 
         return false;
-    }
-
-    private static bool IsBingConfigured(SearchProviderOptions options)
-    {
-        var apiKey = options.ApiKey ?? string.Empty;
-        if (!HasValue(apiKey)
-            || apiKey.Equals("<secret>", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        return HasUri(options.Endpoint ?? string.Empty);
     }
 
     private static bool HasValue(string value)
