@@ -1,3 +1,4 @@
+@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Formatting
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
 
 <FluentCard>
@@ -7,7 +8,7 @@
             case PlaybookCerStep.Collect:
                 <H2Label>Collect</H2Label>
                 <H3Label>Input</H3Label>
-                <PLabel>@Result.CollectInput</PLabel>
+                <PLabel Style="white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6;">@Result.CollectInput.FormatForPlaybookDisplay()</PLabel>
 
                 <H3Label>Processing / Action</H3Label>
                 <PLabel>@GetProcessingDescription(PlaybookCerStep.Collect, "Gather evidence from the submitted input using deterministic queries or tool calls.")</PLabel>
@@ -19,15 +20,16 @@
                 <H3Label>Output</H3Label>
                 @foreach (var item in GetDisplayItems(Result.CollectSummary))
                 {
-                    <PLabel>• @item</PLabel>
+                    <PLabel Style="white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6;">• @item.FormatForPlaybookDisplay()</PLabel>
                 }
                 break;
+
             case PlaybookCerStep.Evaluate:
                 <H2Label>Evaluate</H2Label>
                 <H3Label>Input</H3Label>
                 @foreach (var item in GetDisplayItems(Result.CollectSummary))
                 {
-                    <PLabel>• @item</PLabel>
+                    <PLabel Style="white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6;">• @item.FormatForPlaybookDisplay()</PLabel>
                 }
 
                 <H3Label>Processing / Action</H3Label>
@@ -40,15 +42,16 @@
                 <H3Label>Output</H3Label>
                 @foreach (var item in GetDisplayItems(Result.EvaluateSummary))
                 {
-                    <PLabel>• @item</PLabel>
+                    <PLabel Style="white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6;">• @item.FormatForPlaybookDisplay()</PLabel>
                 }
                 break;
+
             case PlaybookCerStep.Record:
                 <H2Label>Record</H2Label>
                 <H3Label>Input</H3Label>
                 @foreach (var item in GetDisplayItems(Result.EvaluateSummary))
                 {
-                    <PLabel>• @item</PLabel>
+                    <PLabel Style="white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6;">• @item.FormatForPlaybookDisplay()</PLabel>
                 }
 
                 <H3Label>Processing / Action</H3Label>
@@ -61,7 +64,7 @@
                 <H3Label>Output</H3Label>
                 @foreach (var item in GetDisplayItems(Result.RecordSummary))
                 {
-                    <PLabel>• @item</PLabel>
+                    <PLabel Style="white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6;">• @item.FormatForPlaybookDisplay()</PLabel>
                 }
                 break;
         }
@@ -69,21 +72,10 @@
 </FluentCard>
 
 @code {
-    /// <summary>
-    /// The completed playbook execution whose Collect/Evaluate/Record detail is rendered.
-    /// </summary>
     [Parameter, EditorRequired] public PlaybookExecutionResultModel Result { get; set; } = null!;
 
-    /// <summary>
-    /// Which CER step's detail to show, driven by <see cref="PlaybookStepToggle"/>.
-    /// </summary>
     [Parameter] public PlaybookCerStep Step { get; set; } = PlaybookCerStep.Collect;
 
-    /// <summary>
-    /// The persisted catalog definition for this Playbook, supplying each CER step's real
-    /// Name/Description and processing/action text (query, rubric, or template). Optional: may
-    /// still be loading, in which case a generic processing description is shown instead.
-    /// </summary>
     [Parameter] public PlaybookCatalogModel? Catalog { get; set; }
 
     private string GetProcessingDescription(PlaybookCerStep step, string fallback) =>
