@@ -32,18 +32,25 @@ public class SharedPlaybookGovernanceActivityRecorder<TEvidence, TFinding, TMate
     /// </summary>
     public IReadOnlyList<EvaluationGovernanceRecord> Records => _records;
 
-    public Task OnCollectedAsync(PlaybookIdentity identity, TEvidence evidence, string? toolName, CancellationToken cancellationToken = default) =>
-        RecordStageAsync(identity, "collect", toolName, summarySelector.SummarizeEvidence(evidence), evidence);
+    public Task OnCollectedAsync(PlaybookIdentity identity, TEvidence evidence, string? toolName, IReadOnlyList<GovernedTurnRecord> governedTurns, CancellationToken cancellationToken = default) =>
+        RecordStageAsync(identity, "collect", toolName, summarySelector.SummarizeEvidence(evidence), evidence, governedTurns);
 
-    public Task OnEvaluatedAsync(PlaybookIdentity identity, TFinding finding, string? toolName, CancellationToken cancellationToken = default) =>
-        RecordStageAsync(identity, "evaluate", toolName, summarySelector.SummarizeFinding(finding), finding);
+    public Task OnEvaluatedAsync(PlaybookIdentity identity, TFinding finding, string? toolName, IReadOnlyList<GovernedTurnRecord> governedTurns, CancellationToken cancellationToken = default) =>
+        RecordStageAsync(identity, "evaluate", toolName, summarySelector.SummarizeFinding(finding), finding, governedTurns);
 
-    public Task OnRecordedAsync(PlaybookIdentity identity, TMaterialization materialization, string? toolName, CancellationToken cancellationToken = default) =>
-        RecordStageAsync(identity, "record", toolName, summarySelector.SummarizeMaterialization(materialization), materialization);
+    public Task OnRecordedAsync(PlaybookIdentity identity, TMaterialization materialization, string? toolName, IReadOnlyList<GovernedTurnRecord> governedTurns, CancellationToken cancellationToken = default) =>
+        RecordStageAsync(identity, "record", toolName, summarySelector.SummarizeMaterialization(materialization), materialization, governedTurns);
 
-    private Task RecordStageAsync(PlaybookIdentity identity, string stage, string? toolName, string promptContent, object? rawInput)
+    private Task RecordStageAsync(PlaybookIdentity identity, string stage, string? toolName, string promptContent, object? rawInput, IReadOnlyList<GovernedTurnRecord> governedTurns)
     {
         var correlationId = Guid.NewGuid();
+        var intent = governedTurns.FirstOrDefault(x => x.PolicyId is not null);
+        var policies = new List<GovernanceReference> { GovernanceReference.Parse($"policy://playbook/{identity.PlaybookKey}-v1") };
+        if (intent is not null)
+        {
+            policies.Add(GovernanceReference.Parse($"policy://agentic-intent/{intent.PolicyId}/{intent.PolicyVersion}/{intent.PolicyHash}"));
+        }
+
         var record = new EvaluationGovernanceRecord
         {
             PolicyProfileVersion = $"playbook-{identity.PlaybookKey}-{identity.Version}",
@@ -70,7 +77,7 @@ public class SharedPlaybookGovernanceActivityRecorder<TEvidence, TFinding, TMate
             },
             Defensibility = new DefensibilityRecord
             {
-                PoliciesApplied = [GovernanceReference.Parse($"policy://playbook/{identity.PlaybookKey}-v1")],
+                PoliciesApplied = policies,
                 JustificationRefs = [GovernanceReference.Parse($"justification://playbook/{identity.PlaybookKey}-{stage}")],
                 ReasoningSummary = $"Playbook '{identity.PlaybookKey}' '{stage}' stage requires an attributable, traceable, and repeatable governance envelope.",
                 ConfidenceScore = null
