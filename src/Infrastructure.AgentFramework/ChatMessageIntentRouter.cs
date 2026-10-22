@@ -5,6 +5,9 @@ using Goodtocode.AgentFramework.Core.Application.Chats;
 using Goodtocode.AgentFramework.Core.Application.Governance;
 using Goodtocode.AgentFramework.Core.Domain.Governance;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
+using Goodtocode.Agents.Governance.Application;
+using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Mediator;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
@@ -26,8 +29,14 @@ public sealed class ChatMessageIntentRouter(
     IWebSearchProvider webSearchProvider,
     IIntentClassifier intentClassifier,
     Tools.IAgentChatContextAccessor chatContextAccessor,
+    IIntentPolicyProvider intentPolicyProvider,
+    ChatGovernanceScope governanceScope,
+    IAgentInstructionsComposer instructionsComposer,
     ILogger<ChatMessageIntentRouter> logger) : IChatMessageRouter, IIntentRouter
 {
+    private readonly IIntentPolicyProvider _intentPolicyProvider = intentPolicyProvider;
+    private readonly ChatGovernanceScope _governanceScope = governanceScope;
+    private readonly IAgentInstructionsComposer _instructionsComposer = instructionsComposer;
     private readonly AIAgent _agent = agent;
     private readonly ISender _sender = sender;
     private readonly IAgentFrameworkContext _context = context;
@@ -67,6 +76,11 @@ public sealed class ChatMessageIntentRouter(
         _chatContextAccessor.SetCurrentChatSession(chatSessionId);
         try
         {
+            var governed = await GovernTurnAsync(chatSessionId, message, cancellationToken);
+            var instruction = AgentInstruction.Create(
+                $"{governed.PromptContext.SystemInstruction}\n\n{_instructionsComposer.Compose()}",
+                InstructionScope.Session);
+            using var governedScope = _governanceScope.Begin(_rlsContext.TenantId, instruction);
             var chatHistory = await BuildChatHistoryAsync(chatSessionId, message, cancellationToken);
 
             if (mode == ChatRoutingMode.Routed)
@@ -151,22 +165,30 @@ public sealed class ChatMessageIntentRouter(
         }
     }
 
-    private async Task<List<ChatMessage>> BuildChatHistoryAsync(
+    private async Task<GovernedEvaluationResult> GovernTurnAsync(
         Guid chatSessionId,
         string userMessage,
         CancellationToken cancellationToken)
     {
-        var chatSession = await _sender.Send(new GetMyChatSessionQuery { Id = chatSessionId }, cancellationToken);
-        var governed = _governanceGate.Enforce(_rlsContext, userMessage);
+        var policy = await _intentPolicyProvider.ResolveAsync(new IntentPolicyRequest(_rlsContext.TenantId), cancellationToken);
+        var governed = _governanceGate.Enforce(_rlsContext, userMessage, policy);
         _context.Set<ChatGovernanceEntity>().Add(_governanceGate.CreatePersistenceRecord(
             _rlsContext.OwnerId,
             _rlsContext.TenantId,
             chatSessionId,
             governed));
         await _context.SaveChangesAsync(cancellationToken);
+        return governed;
+    }
+
+    private async Task<List<ChatMessage>> BuildChatHistoryAsync(
+        Guid chatSessionId,
+        string userMessage,
+        CancellationToken cancellationToken)
+    {
+        var chatSession = await _sender.Send(new GetMyChatSessionQuery { Id = chatSessionId }, cancellationToken);
         var chatHistory = new List<ChatMessage>
         {
-            new(ChatRole.System, governed.PromptContext.SystemInstruction),
             new(ChatRole.System, ToolRoutingInstructions.NoFutureTensePreamble),
             BuildSelectionContextMessage(chatSessionId)
         };

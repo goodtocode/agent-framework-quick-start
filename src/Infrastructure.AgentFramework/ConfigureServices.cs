@@ -13,6 +13,9 @@ using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
 using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
 using Goodtocode.AgentFramework.Core.Application.Governance;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
+using Goodtocode.Agents.Governance.Application;
+using Goodtocode.Agents.Playbook.Prompting.Governance;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
@@ -83,6 +86,15 @@ public static class ConfigureServices
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton<IAgentInstructionsComposer, AgentInstructionsComposer>();
+
+        services.AddOptions<GovernedIntentOptions>()
+            .Bind(configuration.GetSection(GovernedIntentOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddSingleton<ChatGovernanceScope>();
+        services.AddSingleton<IGovernedIntentScope>(sp => sp.GetRequiredService<ChatGovernanceScope>());
+        services.AddSingleton<IIntentPolicyProvider>(new StaticIntentPolicyProvider(SampleIntentPolicy.Create()));
+        services.AddGovernedIntentPreamble();
 
         services.AddScoped<IToolApplicationExecutor, ToolApplicationExecutor>();
 
@@ -203,7 +215,7 @@ public static class ConfigureServices
         {
             var chatClient = provider.GetRequiredService<ChatClient>();
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-            var instructionsComposer = provider.GetRequiredService<IAgentInstructionsComposer>();
+            var governedOptions = provider.GetRequiredService<IOptions<GovernedIntentOptions>>().Value;
             var searchOptions = provider.GetRequiredService<IOptions<SearchProviderOptions>>().Value;
             var tools = new List<AITool>
             {
@@ -223,14 +235,19 @@ public static class ConfigureServices
                 Description = "GoodToCode AgentFramework Copilot",
                 ChatOptions = new Microsoft.Extensions.AI.ChatOptions
                 {
-                    Instructions = instructionsComposer.Compose(),
                     Tools = tools
                 }
             };
 
             return chatClient.AsAIAgent(
                 options: agentOptions,
-                clientFactory: null,
+                clientFactory: inner => new ChatClientBuilder(inner)
+                    .UseGovernedIntent(new GovernedChatClientOptions
+                    {
+                        IntentRequired = governedOptions.IntentRequired,
+                        PreambleMode = governedOptions.PreambleMode
+                    })
+                    .Build(provider),
                 loggerFactory: loggerFactory,
                 services: provider
             );

@@ -1,4 +1,6 @@
 # Agent Framework C# Quick-Start
+**Governed chat: Agentic Intent.** Every session gets a governed Instruction and every message a Preamble from a versioned policy. See [docs/governance/agentic-intent-adoption.md](docs/governance/agentic-intent-adoption.md) to replace the sample policy or add jurisdiction rules.
+
 **Azure Bicep Infrastucture as Standalone Landing Zone**
 
 [![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-iac.yml)

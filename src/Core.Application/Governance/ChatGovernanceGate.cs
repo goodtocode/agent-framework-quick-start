@@ -10,12 +10,19 @@ public sealed class ChatGovernanceGate
 
     public Goodtocode.Agents.Governance.Application.GovernedEvaluationResult Enforce(
         IRlsContext userContext,
-        string prompt)
+        string prompt,
+        IntentPolicy? policy = null)
     {
         ArgumentNullException.ThrowIfNull(userContext);
         ArgumentException.ThrowIfNullOrWhiteSpace(prompt);
 
         var correlationId = Guid.NewGuid();
+        var policiesApplied = new List<GovernanceReference> { GovernanceReference.Parse("policy://chat/governance-v1") };
+        if (policy is not null)
+        {
+            policiesApplied.Add(GovernanceReference.Parse($"policy://agentic-intent/{policy.PolicyId}/{policy.Version}/{policy.ComputeLockHash()}"));
+        }
+
         return enforcer.Enforce(new GovernanceEvaluationRequest
         {
             Governance = new EvaluationGovernanceRecord
@@ -45,7 +52,7 @@ public sealed class ChatGovernanceGate
                 },
                 Defensibility = new DefensibilityRecord
                 {
-                    PoliciesApplied = [GovernanceReference.Parse("policy://chat/governance-v1")],
+                    PoliciesApplied = policiesApplied,
                     JustificationRefs =
                     [
                         GovernanceReference.Parse("justification://chat/governance-v1")
@@ -54,7 +61,7 @@ public sealed class ChatGovernanceGate
                     ConfidenceScore = null
                 }
             },
-            ExistingSystemInstruction = "You are a helpful AI assistant.",
+            Instruction = AgentInstruction.Create("You are a helpful AI assistant.", InstructionScope.Session),
             RepeatabilityPromptContent = prompt,
             RepeatabilityInputs = new Dictionary<string, object?>
             {

@@ -4,6 +4,8 @@ using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
 using Goodtocode.AgentFramework.Core.Application.Governance;
 using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
+using Goodtocode.Agents.Governance.Application;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
@@ -89,6 +91,10 @@ public abstract class TestBase : IDisposable
         services.AddSingleton<IChatJourneyProvider, RuleChatJourneyProvider>();
         services.AddSingleton<IChatJourneyContextAccessor, AgentChatJourneyContextAccessor>();
         services.AddScoped<ChatGovernanceGate>();
+        services.AddSingleton<ChatGovernanceScope>();
+        services.AddSingleton<IAgentInstructionsComposer, AgentInstructionsComposer>();
+        services.AddSingleton<IIntentPolicyProvider>(
+            new StaticIntentPolicyProvider(SampleIntentPolicy.Create()));
         services.AddScoped<ChatMessageIntentRouter>();
         services.AddScoped<IChatMessageRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
         services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());

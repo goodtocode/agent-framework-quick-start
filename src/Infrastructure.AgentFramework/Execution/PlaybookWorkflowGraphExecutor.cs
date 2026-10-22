@@ -21,7 +21,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 /// graph is bypassed in favor of direct, in-order tool calls with the same skip semantics as the
 /// package's own <c>PlaybookExecutor</c>.
 /// </summary>
-public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFinding, TMaterialization>(IRepeatPolicy repeatPolicy)
+public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFinding, TMaterialization>(IRepeatPolicy repeatPolicy, GovernedTurnLedger? turns = null)
 {
     public async Task<PlaybookExecutionResult<TEvidence, TFinding, TMaterialization>> ExecuteAsync(
         PlaybookIdentity identity,
@@ -45,8 +45,8 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
 
         // The graph only models a full run; any skipped stage uses the same skip semantics as PlaybookExecutor.
         return plan.Run == ActionType.All
-            ? await ExecuteRerunAsync(identity, collectTool, evaluateTool, recordTool, input, activityRecorder, startedUtc, cancellationToken).ConfigureAwait(false)
-            : await ExecuteSkippingAsync(identity, collectTool, evaluateTool, recordTool, input, request, plan, activityRecorder, startedUtc, cancellationToken).ConfigureAwait(false);
+            ? await ExecuteRerunAsync(identity, collectTool, evaluateTool, recordTool, input, activityRecorder, turns, startedUtc, cancellationToken).ConfigureAwait(false)
+            : await ExecuteSkippingAsync(identity, collectTool, evaluateTool, recordTool, input, request, plan, activityRecorder, turns, startedUtc, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -60,12 +60,13 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
         IRecordStepTool<TFinding, TMaterialization> recordTool,
         TCollectInput input,
         IPlaybookStepActivityRecorder<TEvidence, TFinding, TMaterialization>? activityRecorder,
+        GovernedTurnLedger? turns,
         DateTimeOffset startedUtc,
         CancellationToken cancellationToken)
     {
-        var collectNode = new CollectNode(identity, collectTool, activityRecorder, cancellationToken);
-        var evaluateNode = new EvaluateNode(identity, evaluateTool, activityRecorder, cancellationToken);
-        var recordNode = new RecordNode(identity, recordTool, activityRecorder, cancellationToken);
+        var collectNode = new CollectNode(identity, collectTool, activityRecorder, turns, cancellationToken);
+        var evaluateNode = new EvaluateNode(identity, evaluateTool, activityRecorder, turns, cancellationToken);
+        var recordNode = new RecordNode(identity, recordTool, activityRecorder, turns, cancellationToken);
 
         var builder = new WorkflowBuilder(collectNode);
         builder.AddEdge(collectNode, evaluateNode);
@@ -112,6 +113,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
         PlaybookExecutionRequest<TEvidence, TFinding> request,
         RepeatPlan plan,
         IPlaybookStepActivityRecorder<TEvidence, TFinding, TMaterialization>? activityRecorder,
+        GovernedTurnLedger? turns,
         DateTimeOffset startedUtc,
         CancellationToken cancellationToken)
     {
@@ -125,7 +127,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
             evidence = await collectTool.ExecuteAsync(input, cancellationToken).ConfigureAwait(false);
             if (activityRecorder is not null)
             {
-                await activityRecorder.OnCollectedAsync(identity, evidence, collectTool.ToolName, cancellationToken).ConfigureAwait(false);
+                await activityRecorder.OnCollectedAsync(identity, evidence, collectTool.ToolName, Drain(turns), cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -139,7 +141,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
             finding = await evaluateTool.EvaluateAsync(evidence, cancellationToken).ConfigureAwait(false);
             if (activityRecorder is not null)
             {
-                await activityRecorder.OnEvaluatedAsync(identity, finding, evaluateTool.ToolName, cancellationToken).ConfigureAwait(false);
+                await activityRecorder.OnEvaluatedAsync(identity, finding, evaluateTool.ToolName, Drain(turns), cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -149,7 +151,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
             materialization = await recordTool.RecordAsync(finding, cancellationToken).ConfigureAwait(false);
             if (activityRecorder is not null)
             {
-                await activityRecorder.OnRecordedAsync(identity, materialization, recordTool.ToolName, cancellationToken).ConfigureAwait(false);
+                await activityRecorder.OnRecordedAsync(identity, materialization, recordTool.ToolName, Drain(turns), cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -163,10 +165,13 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
         };
     }
 
+    private static IReadOnlyList<GovernedTurnRecord> Drain(GovernedTurnLedger? turns) => turns?.Drain() ?? [];
+
     private sealed class CollectNode(
         PlaybookIdentity identity,
         ICollectStepTool<TCollectInput, TEvidence> tool,
         IPlaybookStepActivityRecorder<TEvidence, TFinding, TMaterialization>? activityRecorder,
+        GovernedTurnLedger? turns,
         CancellationToken cancellationToken)
         : Executor<TCollectInput, TEvidence>("collect")
     {
@@ -179,7 +184,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
 
             if (activityRecorder is not null)
             {
-                await activityRecorder.OnCollectedAsync(identity, evidence, tool.ToolName, cancellationToken).ConfigureAwait(false);
+                await activityRecorder.OnCollectedAsync(identity, evidence, tool.ToolName, Drain(turns), cancellationToken).ConfigureAwait(false);
             }
 
             return evidence;
@@ -190,6 +195,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
         PlaybookIdentity identity,
         IEvaluateStepTool<TEvidence, TFinding> tool,
         IPlaybookStepActivityRecorder<TEvidence, TFinding, TMaterialization>? activityRecorder,
+        GovernedTurnLedger? turns,
         CancellationToken cancellationToken)
         : Executor<TEvidence, TFinding>("evaluate")
     {
@@ -202,7 +208,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
 
             if (activityRecorder is not null)
             {
-                await activityRecorder.OnEvaluatedAsync(identity, finding, tool.ToolName, cancellationToken).ConfigureAwait(false);
+                await activityRecorder.OnEvaluatedAsync(identity, finding, tool.ToolName, Drain(turns), cancellationToken).ConfigureAwait(false);
             }
 
             return finding;
@@ -213,6 +219,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
         PlaybookIdentity identity,
         IRecordStepTool<TFinding, TMaterialization> tool,
         IPlaybookStepActivityRecorder<TEvidence, TFinding, TMaterialization>? activityRecorder,
+        GovernedTurnLedger? turns,
         CancellationToken cancellationToken)
         : Executor<TFinding, TMaterialization>("record")
     {
@@ -222,7 +229,7 @@ public sealed class PlaybookWorkflowGraphExecutor<TCollectInput, TEvidence, TFin
 
             if (activityRecorder is not null)
             {
-                await activityRecorder.OnRecordedAsync(identity, materialization, tool.ToolName, cancellationToken).ConfigureAwait(false);
+                await activityRecorder.OnRecordedAsync(identity, materialization, tool.ToolName, Drain(turns), cancellationToken).ConfigureAwait(false);
             }
 
             return materialization;
