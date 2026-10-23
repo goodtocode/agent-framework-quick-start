@@ -129,6 +129,19 @@ dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructur
 
 For detailed alternatives and troubleshooting, see the Authentication section below.
 
+## Rebrand a clone for your organization
+After cloning, `Update-Branding.ps1` replaces the original organization and Quick-start product branding across the whole repo (source, solution files, GitHub Actions, Azure DevOps, IaC, docs). It is a dry run unless `-Apply` is given, never replaces the repo's NuGet package dependencies, Entra scopes, user-secrets keys or the `AgentFramework` EF context/database names, and regenerates the `UserSecretsId` values.
+
+```powershell
+# Preview (no changes)
+pwsh -File ./Update-Branding.ps1 -NewCompany "Contoso" -NewProduct "Contoso Assist" -Namespace "Contoso.Assist"
+
+# Apply on a clean working tree, then review the diff
+pwsh -File ./Update-Branding.ps1 -NewCompany "Contoso" -NewProduct "Contoso Assist" -Namespace "Contoso.Assist" -Apply
+```
+
+See `branding.sample.json` (use with `-ConfigFile`) for all values. Rules are in `branding.map.json`. Afterwards, run the Entra setup steps above for the new product.
+
 ---
 
 # Install Prerequisites

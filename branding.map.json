@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "description": "Data-only brand rules shared by Update-Branding.ps1 and the agent-framework-template packaging scripts. No effect on build or run.",
+  "rules": [
+    { "id": "usersecrets-api",   "find": "bf5b92ab-f3fe-4af6-b299-583240397247", "kind": "literal", "value": "@guid",
+      "tokens": { "DotnetNew": "__USER_SECRETS_ID_API__", "Vsix": "$guid1$" } },
+    { "id": "usersecrets-web",   "find": "c2325466-9b0d-494a-984a-11ad18457d3f", "kind": "literal", "value": "@guid",
+      "tokens": { "DotnetNew": "__USER_SECRETS_ID_WEB__", "Vsix": "$guid2$" } },
+    { "id": "usersecrets-tests", "find": "998fefad-d248-4bad-9d33-8a060711dd88", "kind": "literal", "value": "@guid",
+      "tokens": { "DotnetNew": "__USER_SECRETS_ID_TESTS__", "Vsix": "$guid3$" } },
+
+    { "id": "product-seo",      "find": "GoodToCode Quick-start for Microsoft Agent Framework", "kind": "literal", "value": "{NewProduct}",
+      "tokens": { "DotnetNew": "__PRODUCT_NAME__", "Vsix": null } },
+    { "id": "product-full",     "find": "GoodToCode Agent Framework Quick-start", "kind": "literal", "value": "{NewProduct}",
+      "tokens": { "DotnetNew": "__PRODUCT_NAME__", "Vsix": null } },
+    { "id": "product-title",    "find": "Quick-start for Microsoft Agent Framework", "kind": "literal", "value": "{NewProduct}",
+      "tokens": { "DotnetNew": "__PRODUCT_NAME__", "Vsix": null } },
+    { "id": "product-prose",    "find": "Microsoft Agent Framework Quick-start", "kind": "literal", "value": "{NewProduct}",
+      "tokens": { "DotnetNew": "__PRODUCT_NAME__", "Vsix": null } },
+    { "id": "product-org",      "find": "GoodToCode Agent Framework", "kind": "literal", "value": "{NewProduct}",
+      "tokens": { "DotnetNew": "__PRODUCT_NAME__", "Vsix": null } },
+
+    { "id": "repo-slug",        "find": "goodtocode/agent-framework-quick-start", "kind": "literal", "value": "{RepoOwner}/{RepoName}",
+      "tokens": { "DotnetNew": "__REPO_OWNER__/__REPO_NAME__", "Vsix": null } },
+    { "id": "repo-name",        "find": "agent-framework-quick-start", "kind": "literal", "value": "{RepoName}",
+      "tokens": { "DotnetNew": "__REPO_NAME__", "Vsix": null } },
+
+    { "id": "tenant-host",      "find": "goodtocodesecuredev.ciamlogin.com", "kind": "literal", "value": "{TenantHost}",
+      "tokens": { "DotnetNew": "__TENANT_HOST__", "Vsix": "your-tenant-name.ciamlogin.com" } },
+
+    { "id": "contact-email",    "find": "developers@goodtocode.com", "kind": "literal", "value": "{ContactEmail}",
+      "tokens": { "DotnetNew": "__CONTACT_EMAIL__", "Vsix": null } },
+    { "id": "company-domain",   "find": "(?<![A-Za-z0-9-])goodtocode\\.com", "kind": "regex", "value": "{Domain}",
+      "tokens": { "DotnetNew": "__COMPANY_DOMAIN__", "Vsix": null } },
+
+    { "id": "namespace-prefix", "find": "Goodtocode.AgentFramework", "kind": "literal", "value": "{Namespace}",
+      "tokens": { "DotnetNew": null, "Vsix": null } },
+    { "id": "workflow-prefix",  "find": "gtc-agent-standalone", "kind": "literal", "value": "{CompanyShort}-agent-standalone",
+      "tokens": { "DotnetNew": null, "Vsix": null } },
+
+    { "id": "company-display",  "find": "GoodToCode", "kind": "literal", "value": "{NewCompany}",
+      "tokens": { "DotnetNew": "__COMPANY_NAME__", "Vsix": null } },
+    { "id": "company-bare",     "find": "Goodtocode(?![A-Za-z0-9])(?!\\.[A-Za-z])", "kind": "regex", "value": "{NewCompany}",
+      "tokens": { "DotnetNew": "__COMPANY_NAME__", "Vsix": null } },
+    { "id": "company-slug",     "find": "(?<![A-Za-z0-9])goodtocode(?![A-Za-z0-9])", "kind": "regex", "value": "{CompanySlug}",
+      "tokens": { "DotnetNew": "__COMPANY_SLUG__", "Vsix": null } }
+  ],
+
+  "renames": [
+    { "find": "Goodtocode.AgentFramework", "value": "{Namespace}" },
+    { "find": "gtc-agent-standalone", "value": "{CompanyShort}-agent-standalone" }
+  ],
+
+  "protect": [
+    "Goodtocode.Mediator",
+    "Goodtocode.Domain",
+    "Goodtocode.Validation",
+    "Goodtocode.Agents",
+    "Goodtocode.SecuredHttpClient",
+    "Goodtocode.Assertion",
+    "access_as_user",
+    "assets.read",
+    "assets.edit",
+    "assets.delete",
+    "AgentFrameworkContext",
+    "Initial Catalog=AgentFramework"
+  ],
+
+  "protectForTokens": [
+    "Goodtocode.AgentFramework"
+  ],
+
+  "leftover": {
+    "Values":    [ "(?i)goodtocode" ],
+    "DotnetNew": [ "(?i)goodtocode" ],
+    "Vsix":      [ "(?i)goodtocodesecuredev", "bf5b92ab-f3fe-4af6-b299-583240397247", "c2325466-9b0d-494a-984a-11ad18457d3f", "998fefad-d248-4bad-9d33-8a060711dd88" ]
+  },
+
+  "excludeDirectories": [ "bin", "obj", "TestResults", ".git", ".vs", "node_modules", "_test-output" ],
+  "excludeFiles": [ "branding.map.json", "branding.json", "branding.sample.json", "Update-Branding.ps1", "Update-Branding.Tests.ps1", "LICENSE", "*.nupkg", "*.zip" ],
+  "textExtensions": [
+    ".cs", ".razor", ".csproj", ".sqlproj", ".slnx", ".sln", ".json", ".md", ".yml", ".yaml", ".txt", ".svg", ".html",
+    ".css", ".js", ".ps1", ".psm1", ".bicep", ".bicepparam", ".props", ".targets", ".config", ".xml", ".feature", ".sql",
+    ".http", ".user", ".editorconfig"
+  ]
+}

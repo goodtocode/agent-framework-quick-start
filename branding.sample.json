@@ -1,0 +1,12 @@
+{
+  "NewCompany": "Contoso",
+  "NewProduct": "Contoso Assist",
+  "Namespace": "Contoso.Assist",
+  "CompanySlug": "contoso",
+  "CompanyShort": "cso",
+  "Domain": "contoso.com",
+  "ContactEmail": "developers@contoso.com",
+  "RepoOwner": "contoso",
+  "RepoName": "contoso-assist",
+  "TenantHost": "contoso.ciamlogin.com"
+}
