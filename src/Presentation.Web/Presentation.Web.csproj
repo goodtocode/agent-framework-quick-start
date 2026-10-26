@@ -23,7 +23,7 @@
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.10.0" />
 		<PackageReference Include="Goodtocode.SecuredHttpClient" Version="1.1.11" />
 		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.2.0" />
-		<PackageReference Include="Markdig" Version="1.4.2" />
+		<PackageReference Include="Markdig" Version="1.5.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.13" />
 		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.0.1" />		
