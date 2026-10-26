@@ -24,9 +24,10 @@
 		<PackageReference Include="Goodtocode.Agents.Playbook" Version="2.1.26" />
 		<PackageReference Include="Goodtocode.Mediator" Version="1.1.26" />
 		<PackageReference Include="Goodtocode.Validation" Version="1.1.38" />
-		<PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.25.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.26.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.14" />
+		<PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.14" />
 	</ItemGroup>
 
 	<ItemGroup>
