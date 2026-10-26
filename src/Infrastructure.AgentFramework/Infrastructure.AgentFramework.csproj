@@ -21,7 +21,7 @@
 		<PackageReference Include="Microsoft.Agents.AI" Version="1.25.0" />
 		<PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.25.0" />
 		<PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.25.0" />
-		<PackageReference Include="Goodtocode.Agents.Playbook.Prompting" Version="2.1.14" />
+		<PackageReference Include="Goodtocode.Agents.Playbook.Prompting" Version="2.1.15" />
 	</ItemGroup>
 
 	<ItemGroup>
