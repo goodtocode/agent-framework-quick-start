@@ -21,7 +21,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
-		<PackageReference Include="Goodtocode.Agents.Playbook" Version="2.1.26" />
+		<PackageReference Include="Goodtocode.Agents.Playbook" Version="2.1.27" />
 		<PackageReference Include="Goodtocode.Mediator" Version="1.1.26" />
 		<PackageReference Include="Goodtocode.Validation" Version="1.1.38" />
 		<PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.25.0" />
