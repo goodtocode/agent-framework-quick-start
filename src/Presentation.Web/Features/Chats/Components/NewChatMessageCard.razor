@@ -1,6 +1,5 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services
-@using Microsoft.AspNetCore.Components.Web
 
 @inject IChatService chatService
 
@@ -11,8 +10,7 @@
                              ValueChanged="OnMessageChanged"
                              Placeholder="Type your message here..."
                              AriaLabel="Type your message here..."
-                             Disabled="@isSubmitting"
-                             @onkeyup="HandleTextFieldKeyUpAsync" />
+                             Disabled="@isSubmitting" />
             <SubmittingButton Class="new-chat-message-card-submit" IsSubmitting="@isSubmitting" Label="Send" />
         </FluentStack>
         <DataAnnotationsValidator />
@@ -56,16 +54,6 @@
 
     private async Task HandleFormSubmitAsync(EditContext _)
         => await SubmitMessageAsync();
-
-    private async Task HandleTextFieldKeyUpAsync(KeyboardEventArgs args)
-    {
-        if (!args.Key.Equals("Enter", StringComparison.Ordinal))
-        {
-            return;
-        }
-
-        await SubmitMessageAsync();
-    }
 
     private async Task SubmitMessageAsync()
     {
