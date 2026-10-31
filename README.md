@@ -44,7 +44,7 @@ dotnet dev-certs https --trust
 dotnet tool install --global dotnet-ef
 
 # Create Entra app registrations and write API/Web user-secrets
-pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api" -WebRedirectUri "https://localhost:6195/signin-oidc" -WebLogoutUri "https://localhost:6195/signout-callback-oidc"
+pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api" -WebRedirectUri "https://localhost:6195/signin-oidc" -WebLogoutUri "https://localhost:6195/signout-callback-oidc" -GenerateSecrets
 
 # IMPORTANT: WebRedirectUri/WebLogoutUri must match your local Web app launchSettings URL/port.
 # If your Presentation.Web Properties/launchSettings.json uses a different HTTPS port, update both values above.
@@ -192,7 +192,7 @@ For this solution:
 If you do not have app registrations, run the script below to create both Web and API app registrations and set all user-secrets (admin consent required):
 
 ```
-pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api" -WebRedirectUri "https://localhost:6195/signin-oidc" -WebLogoutUri "https://localhost:6195/signout-callback-oidc"
+pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api" -WebRedirectUri "https://localhost:6195/signin-oidc" -WebLogoutUri "https://localhost:6195/signout-callback-oidc" -GenerateSecrets
 ```
 
 `-WebRedirectUri` and `-WebLogoutUri` must match your local Web app `Properties/launchSettings.json` HTTPS URL/port.
@@ -207,7 +207,7 @@ Run one script to verify the common EEID prerequisites for local .NET Web -> API
 - Consent grant presence (the core `AADSTS65001` check)
 
 ```powershell
-pwsh -File ./.azure/scripts/entra/Verify-EntraSetup.ps1 -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -ExpectedRedirectUri "https://localhost:6195/signin-oidc" -ExpectedLogoutUri "https://localhost:6195/signout-callback-oidc"
+pwsh -File ./.azure/scripts/entra/Test-EntraAppRegistration.ps1 -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -ExpectedRedirectUri "https://localhost:6195/signin-oidc" -ExpectedLogoutUri "https://localhost:6195/signout-callback-oidc"
 ```
 
 Exit code behavior:
@@ -226,13 +226,13 @@ The script will output a summary table with all relevant IDs (TenantId, Instance
 
 **2. OR: Use existing app registrations and configure .NET secrets:**
 
-If you already have app registrations, run the following scripts to set user-secrets from your account:
+If you already have app registrations, re-run the orchestrator. It only adds what is missing and writes the IDs to user-secrets. The web client secret cannot be read back from Entra, so restore it from Key Vault, or add `-GenerateSecrets -RotateSecrets` to the first command to create a new one:
 
 ```
-pwsh -File ./.azure/scripts/entra/Set-ApiAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -ApiAppRegistrationName "myproduct-api-dev-001" -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -ApiProjectPath "./src/Presentation.Api"
+pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api"
 ```
 ```
-pwsh -File ./.azure/scripts/entra/Set-WebAppUserSecrets.ps1 -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiClientId "<api-app-client-id>" -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -PasswordResetPolicyName "B2C_1_passwordreset" -WebClientSecret "<web-app-client-secret>" -WebProjectPath "./src/Presentation.Web"
+pwsh -File ./.azure/scripts/dotnet/Sync-DotnetUserSecretKeyVault.ps1 -Direction FromKeyVault -TenantId "<your-tenant-id>" -SubscriptionId "<your-subscription-id>" -KeyVaultName "<key-vault-name>" -ProductName "agentframework" -ProjectName "Web" -ProjectPath "./src/Presentation.Web"
 ```
 
 **3. OR: Configure everything manually:**
@@ -481,7 +481,7 @@ Follow these steps to configure your environment for GitHub Actions CI/CD and Az
 Use the provided PowerShell script to create both the Web and API app registrations in your Entra External ID (EEID) tenant. Replace the placeholders with your actual values:
 
 ```powershell
-pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 \
+pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 \
 	-EntraInstanceUrl "https://<your-tenant-name>.ciamlogin.com" \
 	-TenantId "<your-tenant-id>" \
 	-WebAppRegistrationName "<web-app-registration-name>" \
@@ -489,7 +489,8 @@ pwsh -File ./.azure/scripts/entra/New-EntraAppRegistrations.ps1 \
 	-WebProjectPath "./src/Presentation.Web" \
 	-ApiProjectPath "./src/Presentation.Api" \
 	-WebRedirectUri "https://localhost:6195/signin-oidc" \
-	-WebLogoutUri "https://localhost:6195/signout-callback-oidc"
+	-WebLogoutUri "https://localhost:6195/signout-callback-oidc" \
+	-GenerateSecrets
 ```
 
 Make sure the redirect/logout URIs match your local `Presentation.Web` launch profile HTTPS URL.
