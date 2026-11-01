@@ -3,11 +3,11 @@
 
 **Azure Bicep Infrastucture as Standalone Landing Zone**
 
-[![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-iac.yml)
+[![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-iac.yml)
 
 **Clean Architecture C# Blazor Microapp and Web API Microservice**
 
-[![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-web-api-sql-aoai.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/gtc-agent-standalone-web-api-sql-aoai.yml)
+[![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-app.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-app.yml)
 
 Microsoft Agent Framework Quick-start is a enterprise-ready starter kit for building modern, agentic applications with C#, Blazor (Fluent UI), and ASP.NET Core Web API. This solution demonstrates how to use the Microsoft Agent Framework to create a Copilot-style chat client, fully integrated with SQL Server for persistent storage of authors, chat sessions, and messages—all orchestrated through a clean architecture pattern. 
 
@@ -457,19 +457,19 @@ doc's **UI Changes** and **API Changes** sections for details.
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
 
-The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Below is a summary of the two main workflow files, their purposes, and triggers:
+The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agent-dev-wus2-001-rg`. Below is a summary of the workflow files, their purposes, and triggers:
 
 ### Triggers
 All workflow YAML files in this repo are designed to:
-- **Trigger CI**: On any Pull Request (PR) to any branch (runs build/test/validate only)
-- **Trigger CD**: On push to the `main` branch (runs full deployment)
+- **Trigger CI**: On any Pull Request (PR) to `main` (runs build/test/what-if only)
+- **Trigger CD**: On push to the `main` branch (runs full deployment to the `development` GitHub environment)
 
 | Workflow File                        | Purpose                                                                                 | CI Trigger (PR)         | CD Trigger (Push to main) |
 |--------------------------------------|-----------------------------------------------------------------------------------------|-------------------------|---------------------------|
-| `COMPANY-PRODUCT-api.yml`            | CI/CD for .NET Web API (build, test, deploy to Azure App Service)                       | Yes                    | Yes                      |
-| `COMPANY-PRODUCT-api-sql.yml`        | CI/CD for .NET Web API with Azure SQL (includes DB migration)                           | Yes                    | Yes                      |
-| `COMPANY-PRODUCT-iac.yml`            | Deploy Azure infrastructure using Bicep templates                                       | Yes                    | Yes                      |
-| `COMPANY-PRODUCT-nuget.yml`          | Build, test, and publish NuGet packages                                                 | Yes                    | Yes                      |
+| `agent-app.yml`                      | Build, test and deploy the Blazor web, Web API and SQL migrations to Azure App Service   | Yes                    | Yes                      |
+| `agent-iac.yml`                      | Deploy the standalone Azure infrastructure (`.azure/templates/workload-digitalproduct.bicep`) | Yes (what-if)     | Yes                      |
+
+To add a production environment, add a `production` entry to the plan job of both workflows, add `.azure/variables/workload-digitalproduct-standalone-prod.bicepparam`, and require reviewers on the `production` GitHub environment.
 ---
 
 ### Setting up GitHub Actions to Deploy to Azure
@@ -505,10 +505,12 @@ Set the required secrets in your GitHub repository for the deployment workflows.
 $secrets = @{
 	API_CLIENT_ID        = "<api-app-client-id>"
 	AZURE_CLIENT_ID      = "<azure-client-id>"
+	AZURE_OPENAI_APIKEY  = "<azure-openai-api-key>"
+	AZURE_OPENAI_ENDPOINT = "<azure-openai-endpoint>"
 	AZURE_SUBSCRIPTION_ID= "<azure-subscription-id>"
 	AZURE_TENANT_ID      = "<azure-tenant-id>"
+	EEID_INSTANCE        = "<eeid-instance-url>"
 	EEID_TENANT_ID       = "<eeid-tenant-id>"
-	OPENAI_APIKEY        = "<openai-api-key>"
 	SQL_ADMIN_PASSWORD   = "<sql-admin-password>"
 	SQL_ADMIN_USER       = "<sql-admin-user>"
 	WEB_CLIENT_ID        = "<web-app-client-id>"
@@ -536,7 +538,7 @@ PLATFORM_SUBSCRIPTION_ID="<platform-subscription-id>"
 Run the following script to federate your Azure subscription with your GitHub repository. Replace the placeholders with your actual values:
 
 ```powershell
-pwsh -File ./.github/scripts/repo/New-Github-Azure-Federation.ps1 \
+pwsh -File ./.github/scripts/cd/New-Github-Azure-Federation.ps1 \
 	-TenantId "<azure-tenant-id>" \
 	-SubscriptionId "<azure-subscription-id>" \
 	-PrincipalName "<federated-identity-name>" \

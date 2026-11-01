@@ -44,13 +44,13 @@ variables:
   - name: DOTNET_SYSTEM_GLOBALIZATION_INVARIANT
     value: 'true'
   - name: productRgName
-    value: gtc-agent-dev-wus2-001-rg
+    value: agent-dev-wus2-001-rg
   - name: productRgLocation
     value: westus2
   - name: productBicepTemplate
-    value: .azure/templates/landingzone-standalone-web-api-sql.bicep
+    value: .azure/templates/workload-digitalproduct.bicep
   - name: productBicepParameters
-    value: .azure/variables/landingzone-standalone-web-api-sql-dev.bicepparam
+    value: .azure/variables/workload-digitalproduct-standalone-dev.bicepparam
 
 stages:
   - stage: ci
@@ -78,7 +78,7 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                az deployment group what-if --resource-group $(productRgName) --template-file $(productBicepTemplate) --parameters $(productBicepParameters) --parameters sqlAdminUser=$(SQL_ADMIN_USER) sqlAdminPassword=$(SQL_ADMIN_PASSWORD)
+                SQL_ADMIN_USER=$(SQL_ADMIN_USER) SQL_ADMIN_PASSWORD=$(SQL_ADMIN_PASSWORD) az deployment group what-if --resource-group $(productRgName) --template-file $(productBicepTemplate) --parameters $(productBicepParameters)
 
   - stage: cd
     displayName: Deploy landing zone IaC
@@ -106,4 +106,4 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                az deployment group create --resource-group $(productRgName) --template-file $(productBicepTemplate) --parameters $(productBicepParameters) --parameters sqlAdminUser=$(SQL_ADMIN_USER) sqlAdminPassword=$(SQL_ADMIN_PASSWORD)
+                SQL_ADMIN_USER=$(SQL_ADMIN_USER) SQL_ADMIN_PASSWORD=$(SQL_ADMIN_PASSWORD) az deployment group create --resource-group $(productRgName) --template-file $(productBicepTemplate) --parameters $(productBicepParameters)

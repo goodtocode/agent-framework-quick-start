@@ -35,8 +35,6 @@
 
     { "id": "namespace-prefix", "find": "Goodtocode.AgentFramework", "kind": "literal", "value": "{Namespace}",
       "tokens": { "DotnetNew": null, "Vsix": null } },
-    { "id": "workflow-prefix",  "find": "gtc-agent-standalone", "kind": "literal", "value": "{CompanyShort}-agent-standalone",
-      "tokens": { "DotnetNew": null, "Vsix": null } },
 
     { "id": "company-display",  "find": "GoodToCode", "kind": "literal", "value": "{NewCompany}",
       "tokens": { "DotnetNew": "__COMPANY_NAME__", "Vsix": null } },
@@ -47,8 +45,7 @@
   ],
 
   "renames": [
-    { "find": "Goodtocode.AgentFramework", "value": "{Namespace}" },
-    { "find": "gtc-agent-standalone", "value": "{CompanyShort}-agent-standalone" }
+    { "find": "Goodtocode.AgentFramework", "value": "{Namespace}" }
   ],
 
   "protect": [

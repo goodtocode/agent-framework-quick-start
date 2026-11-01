@@ -1,13 +1,15 @@
-####################################################################################
-# To execute
-#   1. Run Powershell as ADMINistrator
-#   2. In powershell, set security polilcy for this script: 
-#      Set-ExecutionPolicy Unrestricted -Scope Process -Force
-#   3. Change directory to the script folder:
-#      CD C:\Scripts (wherever your script is)
-#   4. In powershell, run script: 
-#      .\New-Github-Azure-Federation.ps1  -TenantId 12343dac-0e69-436a-866b-456727dd3579 -SubscriptionId 12343dac-0e69-436a-866b-456727dd3579 -PrincipalName myco-github-devtest-001 -Organization mygithuborg -Repository mygithubrepo -Environment development
-####################################################################################
+<#
+.SYNOPSIS
+Creates a federated identity so GitHub Actions can sign in to Azure.
+
+.DESCRIPTION
+Run PowerShell as ADMINistrator.
+If script execution is blocked, set the policy for this process first: Set-ExecutionPolicy Unrestricted -Scope Process -Force. Then change to the script folder and run the example below.
+
+.EXAMPLE
+# From the script folder:
+.\New-Github-Azure-Federation.ps1  -TenantId 12343dac-0e69-436a-866b-456727dd3579 -SubscriptionId 12343dac-0e69-436a-866b-456727dd3579 -PrincipalName myco-github-development-100 -Organization mygithuborg -Repository mygithubrepo -Environment development,production
+#>
 
 param (
    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
@@ -15,14 +17,14 @@ param (
    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
    [guid]$SubscriptionId = $(throw '-SubscriptionId is a required parameter.'), #12343dac-0e69-436a-866b-456727dd3579
    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-   [string]$PrincipalName = $(throw '-PrincipalName is a required parameter.'), #Example: COMPANY-SUB_OR_PRODUCTLINE-github-001
+   [string]$PrincipalName = $(throw '-PrincipalName is a required parameter.'), #Example: can-SUB_OR_PRODUCTLINE-github-100
    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
    [string]$Organization = $(throw '-Organization is a required parameter.'), #GitHub Organization Name
    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
    [string]$Repository = $(throw '-Repository is a required parameter.'), #GitHub Repository Name
    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-   [string]$Environment = $(throw '-Environment is a required parameter.') #GitHub Repository Environment: development, production
-)
+   [string[]]$Environment = $(throw    '-Environment is a required parameter.') #GitHub Repository Environment(s): development, production
+   )
 ####################################################################################
 Set-ExecutionPolicy Unrestricted -Scope Process -Force
 $VerbosePreference = 'SilentlyContinue' # 'SilentlyContinue' # 'Continue'
@@ -74,27 +76,60 @@ if (-not $sp) {
 Write-Host "Service Principal Id: $($sp.Id)"
 $spObjectId = $sp.Id
 
-# Idempotent Role Assignment
-$roleAssignment = Get-AzRoleAssignment -ObjectId $spObjectId -RoleDefinitionName Contributor -Scope "/subscriptions/$SubscriptionId" -ErrorAction SilentlyContinue
+# Idempotent Role Assignment with retry to handle Entra ID propagation delay.
+$roleName = 'Contributor'
+$roleScope = "/subscriptions/$SubscriptionId"
+$maxAttempts = 6
+$retryDelaySeconds = 10
+
+$roleAssignment = Get-AzRoleAssignment -ObjectId $spObjectId -RoleDefinitionName $roleName -Scope $roleScope -ErrorAction SilentlyContinue
 if (-not $roleAssignment) {
-   New-AzRoleAssignment -ObjectId $spObjectId -RoleDefinitionName Contributor -Scope "/subscriptions/$SubscriptionId"
+   for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+      try {
+         Write-Host "Assigning role '$roleName' on '$roleScope' (attempt $attempt of $maxAttempts)..."
+         New-AzRoleAssignment -ObjectId $spObjectId -RoleDefinitionName $roleName -Scope $roleScope -ErrorAction Stop | Out-Null
+         break
+      }
+      catch {
+         if ($attempt -eq $maxAttempts) {
+            throw
+         }
+         Write-Host "Role assignment attempt $attempt failed. Retrying in $retryDelaySeconds seconds..."
+         Start-Sleep -Seconds $retryDelaySeconds
+      }
+   }
 }
 else {
    Write-Host "Role assignment already exists."
 }
 
+# Verify role assignment exists after create/retry path.
+$roleAssignment = Get-AzRoleAssignment -ObjectId $spObjectId -RoleDefinitionName $roleName -Scope $roleScope -ErrorAction SilentlyContinue
+if (-not $roleAssignment) {
+   throw "Failed to verify role assignment '$roleName' for service principal '$PrincipalName' at scope '$roleScope'."
+}
+Write-Host "Verified role assignment '$roleName' at '$roleScope'."
+
 $tenantId = (Get-AzContext).Subscription.TenantId
 
 # Create new App Registration Federated Credentials for the GitHub operations
-$subjectRepo = "repo:" + $Organization + "/" + $Repository + ":environment:" + $Environment
-$existingCredRepo = Get-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "$PrincipalName-repo" }
-if (-not $existingCredRepo) {
-   New-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -Audience api://AzureADTokenExchange -Issuer 'https://token.actions.githubusercontent.com' -Name "$PrincipalName-repo" -Subject "$subjectRepo"
+# GitHub's immutable subject format embeds numeric org/repo IDs; names are still needed to look them up (requires 'gh auth login').
+$orgId = gh api "orgs/$Organization" --jq .id
+$repoId = gh api "repos/$Organization/$Repository" --jq .id
+if (-not $orgId -or -not $repoId) { throw "Could not resolve GitHub org/repo IDs for $Organization/$Repository; run 'gh auth login' first." }
+$subjectPrefix = "repo:$Organization@$orgId/$Repository@$repoId"
+Write-Host "Subject prefix: $subjectPrefix"
+
+$existingCreds = @(Get-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -ErrorAction SilentlyContinue)
+foreach ($envName in $Environment) {
+   $credName = "$PrincipalName-env-$envName"
+   if ($existingCreds | Where-Object { $_.Name -eq $credName }) {
+      Write-Host "Federated credential $credName already exists."
+      continue
+   }
+   New-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -Audience api://AzureADTokenExchange -Issuer 'https://token.actions.githubusercontent.com' -Name $credName -Subject "${subjectPrefix}:environment:$envName"
 }
-else {
-   Write-Host "Federated credential $PrincipalName-repo already exists."
-}
-$subjectRepoMain = "repo:" + $Organization + "/" + $Repository + ":ref:refs/heads/main"
+$subjectRepoMain = "${subjectPrefix}:ref:refs/heads/main"
 $existingCredMain = Get-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "$PrincipalName-main" }
 if (-not $existingCredMain) {
    New-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -Audience api://AzureADTokenExchange -Issuer 'https://token.actions.githubusercontent.com' -Name "$PrincipalName-main" -Subject "$subjectRepoMain"
@@ -102,7 +137,7 @@ if (-not $existingCredMain) {
 else {
    Write-Host "Federated credential $PrincipalName-main already exists."
 }
-$subjectRepoPR = "repo:" + $Organization + "/" + $Repository + ":pull_request"
+$subjectRepoPR = "${subjectPrefix}:pull_request"
 $existingCredPR = Get-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "$PrincipalName-PR" }
 if (-not $existingCredPR) {
    New-AzADAppFederatedCredential -ApplicationObjectId $appObjectId -Audience api://AzureADTokenExchange -Issuer 'https://token.actions.githubusercontent.com' -Name "$PrincipalName-PR" -Subject "$subjectRepoPR"

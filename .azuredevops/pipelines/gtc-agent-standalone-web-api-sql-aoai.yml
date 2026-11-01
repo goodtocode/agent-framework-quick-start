@@ -115,7 +115,7 @@ variables:
   - name: azureWebAppName
     value: agent-dev-wus2-001-web
   - name: azureRgName
-    value: gtc-agent-dev-wus2-001-rg
+    value: agent-dev-wus2-001-rg
   - name: sqlName
     value: agent-dev-wus2-001-sql
   - name: sqlDbName
