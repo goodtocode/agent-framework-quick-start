@@ -14,8 +14,8 @@
         @foreach (var message in Messages ?? Enumerable.Empty<ChatMessageModel>())
         {
             var isUser = IsUserMessage(message);
-            <FluentStack HorizontalAlignment="@(isUser ? HorizontalAlignment.End : HorizontalAlignment.Start)" Class="chat-message-item">
-                <FluentCard Appearance="CardAppearance.Filled" Class="@(isUser ? "chat-message-card-user" : "chat-message-card-assistant")">
+            <FluentStack HorizontalAlignment="@(isUser ? HorizontalAlignment.End : HorizontalAlignment.Start)" Width="100%" Class="chat-message-item">
+                <FluentCard Appearance="CardAppearance.Filled" Width="@(isUser ? "70%" : "100%")" Class="@(isUser ? "chat-message-card-user" : "chat-message-card-assistant")">
                     @if (isUser)
                     {
                         @message.Content
