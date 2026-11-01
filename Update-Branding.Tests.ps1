@@ -6,7 +6,7 @@ BeforeAll {
         $root = Join-Path ([System.IO.Path]::GetTempPath()) ("brand-" + [guid]::NewGuid())
         New-Item -ItemType Directory -Path "$root\src\App", "$root\.github\workflows" -Force | Out-Null
         Set-Content "$root\Goodtocode.AgentFramework.Web.slnx" '<Solution />'
-        Set-Content "$root\.github\workflows\gtc-agent-standalone-iac.yml" 'name: gtc-agent-standalone-iac'
+        Set-Content "$root\.github\workflows\agent-iac.yml" 'name: Agent IaC'
         Set-Content "$root\src\App\App.csproj" @'
 <Project><PropertyGroup>
 <RootNamespace>Goodtocode.AgentFramework.App</RootNamespace>
@@ -36,7 +36,7 @@ Describe 'Update-Branding Values' {
         & $Script -Path $Root -NewCompany Contoso -NewProduct 'Contoso Assist' -Namespace Contoso.Assist -Apply -Force | Out-Null
         $LASTEXITCODE | Should -Be 0
         Test-Path "$Root\Contoso.Assist.Web.slnx" | Should -BeTrue
-        Test-Path "$Root\.github\workflows\contoso-agent-standalone-iac.yml" | Should -BeTrue
+        Test-Path "$Root\.github\workflows\agent-iac.yml" | Should -BeTrue
         $csproj = Get-Content "$Root\src\App\App.csproj" -Raw
         $csproj | Should -Match 'Contoso\.Assist\.App'
         $csproj | Should -Match 'Goodtocode\.Mediator'
