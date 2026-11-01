@@ -9,6 +9,8 @@
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Wrap="true">
             <FluentTextInput Width="70%" Value="@messageModel.NewMessage"
                              ValueChanged="OnMessageChanged"
+                             Immediate="true"
+                             ImmediateDelay="0"
                              Placeholder="Type your message here..."
                              AriaLabel="Type your message here..."
                              Disabled="@isSubmitting" />

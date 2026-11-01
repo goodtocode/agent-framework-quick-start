@@ -12,6 +12,8 @@
                  Class="new-chat-message-input-row">
         <FluentTextInput Width="70%" Value="@messageModel.NewMessage"
                          ValueChanged="OnMessageChanged"
+                         Immediate="true"
+                         ImmediateDelay="0"
                          Placeholder="Type your message here..."
                          AriaLabel="Type your message here..."
                          Disabled="@isSubmitting" />
