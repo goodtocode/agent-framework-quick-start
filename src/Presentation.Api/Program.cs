@@ -1,13 +1,9 @@
-using Azure.Monitor.OpenTelemetry.AspNetCore;
-using Azure.Monitor.OpenTelemetry.Exporter;
 using Goodtocode.AgentFramework.Core.Application;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer;
 using Goodtocode.AgentFramework.Presentation.Api;
 using Goodtocode.AgentFramework.Presentation.Api.Common.Exceptions;
 using Goodtocode.AgentFramework.Presentation.Api.Endpoints;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 
 [assembly: ApiConventionType(typeof(DefaultApiConventions))]
 
@@ -26,29 +22,11 @@ builder.Services.AddHealthChecks();
 
 BuildApiVerAndApiExplorer(builder);
 
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracing => tracing
-        .AddAspNetCoreInstrumentation()
-        .AddHttpClientInstrumentation()
-    )
-    .WithMetrics(metrics => metrics
-        .AddAspNetCoreInstrumentation()
-        .AddHttpClientInstrumentation()
-    )
-    .UseAzureMonitor(options =>
-    {
-        options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
-    });
-
-builder.Logging.AddOpenTelemetry(options =>
-{
-    options.AddAzureMonitorLogExporter(o =>
-    {
-        o.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
-    });
-});
+builder.AddAzureMonitorTelemetry();
 
 var app = builder.Build();
+
+app.WarnIfTelemetryDisabled();
 
 if (app.Environment.IsDevelopment() || app.Environment.IsLocal())
 {
