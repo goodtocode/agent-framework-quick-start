@@ -20,7 +20,7 @@ pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https
 
 .EXAMPLE
 # API + Web + E2E with auto-consent (run from the repo root):
-pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https://your-tenant.ciamlogin.com" -TenantId "<tenant-id>" -ApiAppRegistrationName "myproduct-api-dev-001" -WebAppRegistrationName "myproduct-web-dev-001" -E2EAppRegistrationName "myproduct-e2e-dev-001" -ApiProjectPath "./src/Presentation.Api" -WebProjectPath "./src/Presentation.Web" -E2EProjectPath "./src/Tests.Endtoend" -WebRedirectUri "https://localhost:7175/signin-oidc" -WebLogoutUri "https://localhost:7175/signout-callback-oidc" -IncludeE2E -GenerateSecrets -AutoConsent
+pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https://your-tenant.ciamlogin.com" -TenantId "<tenant-id>" -ApiAppRegistrationName "myproduct-api-dev-001" -WebAppRegistrationName "myproduct-web-dev-001" -E2EAppRegistrationName "myproduct-e2e-dev-001" -ApiProjectPath "./src/Presentation.Api" -WebProjectPath "./src/Presentation.Web" -E2EProjectPath "./src/Tests.Endtoend" -WebRedirectUri "https://localhost:6195/signin-oidc" -WebLogoutUri "https://localhost:6195/signout-callback-oidc" -IncludeE2E -GenerateSecrets -AutoConsent
 
 .EXAMPLE
 # Intentional secret rotation on existing apps (run from the repo root):
@@ -40,8 +40,8 @@ param(
     # Web app (Auth Code + PKCE), optional
     [string]$WebAppRegistrationName = "",
     [string]$WebProjectPath         = "",
-    [string]$WebRedirectUri         = "https://localhost:7175/signin-oidc",
-    [string]$WebLogoutUri           = "https://localhost:7175/signout-callback-oidc",
+    [string]$WebRedirectUri         = "https://localhost:6195/signin-oidc",
+    [string]$WebLogoutUri           = "https://localhost:6195/signout-callback-oidc",
     [string]$ResetUserFlowName      = "",
 
     # E2E / CI (Client Credentials), opt-in only

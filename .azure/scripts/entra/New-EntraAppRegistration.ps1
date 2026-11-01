@@ -16,7 +16,7 @@ pwsh -File ./New-EntraAppRegistration.ps1 -Type Api -TenantId "<your-tenant-id>"
 
 .EXAMPLE
 # Web app that calls the API, with a client secret:
-pwsh -File ./New-EntraAppRegistration.ps1 -Type Web -TenantId "<your-tenant-id>" -AppRegistrationName "myproduct-web-dev-001" -ApiAppId "<api-app-client-id>" -RedirectUris "https://localhost:7175/signin-oidc" -LogoutUri "https://localhost:7175/signout-callback-oidc" -GenerateSecret -ProjectName "Presentation.Web"
+pwsh -File ./New-EntraAppRegistration.ps1 -Type Web -TenantId "<your-tenant-id>" -AppRegistrationName "myproduct-web-dev-001" -ApiAppId "<api-app-client-id>" -RedirectUris "https://localhost:6195/signin-oidc" -LogoutUri "https://localhost:6195/signout-callback-oidc" -GenerateSecret -ProjectName "Presentation.Web"
 
 .EXAMPLE
 # Add a redirect URI to an existing Web registration:
@@ -60,8 +60,8 @@ param(
     [ValidateSet(1, 2)][int]$AccessTokenVersion = 2,
 
     # Web: sign-in configuration.
-    [string[]]$RedirectUris = @('https://localhost:7175/signin-oidc'),
-    [string]$LogoutUri = 'https://localhost:7175/signout-callback-oidc',
+    [string[]]$RedirectUris = @('https://localhost:6195/signin-oidc'),
+    [string]$LogoutUri = 'https://localhost:6195/signout-callback-oidc',
     [string[]]$GraphPermissions = @('User.Read', 'email', 'profile'),
 
     # Claims added to tokens. Defaults depend on -Type.
