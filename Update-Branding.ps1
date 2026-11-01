@@ -243,7 +243,7 @@ if ($leftovers.Count -gt 0) {
 if ($Apply -and $isValues) {
     Write-Host ''
     Write-Host 'Next steps:'
-    Write-Host '  1. Create Entra app registrations and user-secrets for the new product (see README: New-EntraAppRegistrations.ps1).'
+    Write-Host '  1. Create Entra app registrations and user-secrets for the new product (see README: New-EntraDotnetSolution.ps1).'
     if (-not $KeepUserSecretsIds) { Write-Host '  2. UserSecretsId values were regenerated; previously stored secrets do not carry over.' }
     Write-Host '  3. Review the diff, build and test before committing.'
 }

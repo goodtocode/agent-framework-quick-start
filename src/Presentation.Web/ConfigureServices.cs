@@ -64,6 +64,7 @@ public static class ConfigureServices
             options.BaseAddress = backendApiOptions.BaseUrl;
             options.ClientName = "BackendApiClient";
             options.MaxRetry = 3;
+            options.Timeout = TimeSpan.FromSeconds(backendApiOptions.TimeoutSeconds);
         });
 
         services.AddScoped(provider =>

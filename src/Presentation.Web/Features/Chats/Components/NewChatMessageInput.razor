@@ -1,6 +1,6 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services
-@using Microsoft.AspNetCore.Components.Web
+@using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http
 
 @inject IChatService chatService
 
@@ -12,14 +12,19 @@
                  Class="new-chat-message-input-row">
         <FluentTextInput Width="70%" Value="@messageModel.NewMessage"
                          ValueChanged="OnMessageChanged"
+                         Immediate="true"
+                         ImmediateDelay="0"
                          Placeholder="Type your message here..."
                          AriaLabel="Type your message here..."
-                         Disabled="@isSubmitting"
-                         @onkeyup="HandleTextFieldKeyUpAsync" />
+                         Disabled="@isSubmitting" />
         <SubmittingButton Class="new-chat-message-input-submit" IsSubmitting="@isSubmitting" Label="Send" />
     </FluentStack>
     <DataAnnotationsValidator />
     <ValidationSummary />
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <FluentMessageBar Severity="Severity.Error">@errorMessage</FluentMessageBar>
+    }
 </EditForm>
 
 @code
@@ -39,6 +44,7 @@
     private ChatMessageInputModel messageModel { get; set; } = new();
     private EditContext? editContext;
     private bool isSubmitting = false;
+    private string? errorMessage;
 
     protected override void OnInitialized()
     {
@@ -59,16 +65,6 @@
     private async Task HandleFormSubmitAsync(EditContext _)
         => await SubmitMessageAsync();
 
-    private async Task HandleTextFieldKeyUpAsync(KeyboardEventArgs args)
-    {
-        if (!args.Key.Equals("Enter", StringComparison.Ordinal))
-        {
-            return;
-        }
-
-        await SubmitMessageAsync();
-    }
-
     private async Task SubmitMessageAsync()
     {
         if (isSubmitting)
@@ -86,6 +82,7 @@
             return;
         }
 
+        errorMessage = null;
         isSubmitting = true;
         StateHasChanged();
         try
@@ -109,6 +106,11 @@
                 await OnMessageSubmitted.InvokeAsync();
             }
             ClearForm();
+        }
+        catch (Exception ex)
+        {
+            // The typed message is kept so the user can resubmit without retyping.
+            errorMessage = ApiErrorMessage.For(ex);
         }
         finally
         {

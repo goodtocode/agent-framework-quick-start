@@ -46,7 +46,6 @@ public static class ConfigureServices
             c.AddPolicy("AllowOrigin",
                 options =>
                     options
-                        .WithOrigins("https://localhost:7000")
                         .AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader());
