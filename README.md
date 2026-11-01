@@ -43,33 +43,16 @@ dotnet dev-certs https --trust
 # Install EF CLI
 dotnet tool install --global dotnet-ef
 
-# Create Entra app registrations and write API/Web user-secrets
-pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api" -WebRedirectUri "https://localhost:6195/signin-oidc" -WebLogoutUri "https://localhost:6195/signout-callback-oidc" -GenerateSecrets
-
-# IMPORTANT: WebRedirectUri/WebLogoutUri must match your local Web app launchSettings URL/port.
-# If your Presentation.Web Properties/launchSettings.json uses a different HTTPS port, update both values above.
-
-# Set API provider to Azure OpenAI
-cd src/Presentation.Api
-dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
-
-# Set Azure OpenAI settings in API project
-dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
-dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
-
-# Set Azure OpenAI settings in integration test project
-cd ../Tests.Integration
-dotnet user-secrets init
-dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
-dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
-
-# Return to repository root
-cd ../..
-
-# Create or update SQL schema
-dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+# Fill in the values below, then run the local install script. It creates the Entra app registrations and grants consent,
+# sets the user-secrets for Presentation.Api, Presentation.Web and Tests.Integration, and applies the EF migrations to
+# your local SQL Server (LocalDB). No copy/paste between steps. Omit AzureOpenAIApiKey to be prompted without echo.
+$install = @{
+    EntraInstanceUrl    = "https://<your-tenant-name>.ciamlogin.com"
+    EntraTenantId       = "<entra-tenant-id>"
+    AzureOpenAIEndpoint = "https://<resource>.openai.azure.com/openai/v1"
+    AzureOpenAIApiKey   = "<azure-openai-api-key>"
+}
+./Initialize-Local.ps1 @install
 
 # Run integration tests
 cd src/Tests.Integration
@@ -83,45 +66,51 @@ dotnet run --project Presentation.Api/Presentation.Api.csproj
 dotnet run --project Presentation.Web/Presentation.Web.csproj
 ```
 
+## What the local install script does
+`Initialize-Local.ps1` sets up localhost only. It never touches GitHub, Azure Pipelines or Azure resources; see "Setting up GitHub Actions to Deploy to Azure" below for CI/CD.
+- **Entra:** creates `agent-api-dev-001` and `agent-web-dev-001` (rename with `-ProductName`, `-EnvironmentShort`, `-Instance`), grants admin consent, and writes the Entra user-secrets. The Web redirect and logout URIs are read from the HTTPS URL in `Presentation.Web/Properties/launchSettings.json`, so they always match your local port.
+- **User-secrets:** `AzureOpenAI:Endpoint` and `AzureOpenAI:ApiKey` for `Presentation.Api` and `Tests.Integration`, and an empty `ApplicationInsights:ConnectionString` for `Presentation.Api` and `Presentation.Web`.
+- **Database:** installs `dotnet-ef` if missing and applies the EF migrations to LocalDB (`Initial Catalog=AgentFramework`). Use `-DatabaseConnectionString` for another SQL Server, or `-SkipDatabase` to skip it.
+- **Existing Entra registrations:** add `-SkipEntra` to skip the first step, or use the re-setup block below.
+
+**Application Insights:** the apps start without a connection string, with no Azure telemetry (a warning is logged). The connection string only exists after the infrastructure PR deploys. Then set it for both apps from the repo root:
+```powershell
+dotnet user-secrets set "ApplicationInsights:ConnectionString" "<connection-string>" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "ApplicationInsights:ConnectionString" "<connection-string>" --project .\src\Presentation.Web\Presentation.Web.csproj
+```
+In Azure, the deployment sets the connection string for you.
+
+**Azure OpenAI deployment names:** the committed appsettings use `chat-fast` (Development and local), `chat-balanced` (Production) and `embedding-fast`. These are placeholders for the names of your own Azure OpenAI or AI Foundry model deployments. Replace them in `src/Presentation.Api/appsettings.*.json` to match your deployments (deployment names are not secrets, so they need no GitHub secrets), or pass `-ChatDeploymentName` and `-EmbeddingDeploymentName` to `Initialize-Local.ps1` to override them in your local user-secrets only.
+
 ## Quick-Start: Re-Setup for Existing Entra (no Entra setup scripts)
 ```powershell
 # Enter repository root
 cd <path-to-repo-root>
 
-# Set API Entra secrets
-cd src/Presentation.Api
-dotnet user-secrets init
-dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
-dotnet user-secrets set "EntraExternalId:TenantId" "TENANT_ID"
-dotnet user-secrets set "EntraExternalId:ClientId" "API_CLIENT_ID"
-dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
-dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
-dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
-dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
+# Set API secrets (run from the repository root)
+dotnet user-secrets set "EntraExternalId:Instance" "https://<your-tenant-name>.ciamlogin.com" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "EntraExternalId:TenantId" "<entra-tenant-id>" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "EntraExternalId:ClientId" "<api-client-id>" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "ApplicationInsights:ConnectionString" "" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Presentation.Api\Presentation.Api.csproj
 
-# Set Web Entra secrets
-cd ../Presentation.Web
-dotnet user-secrets init
-dotnet user-secrets set "BackendApi:ClientId" "API_CLIENT_ID"
-dotnet user-secrets set "EntraExternalId:Instance" "https://your-tenant-name.ciamlogin.com"
-dotnet user-secrets set "EntraExternalId:TenantId" "TENANT_ID"
-dotnet user-secrets set "EntraExternalId:ClientId" "WEB_CLIENT_ID"
-dotnet user-secrets set "EntraExternalId:PasswordResetUrl" "https://your-tenant-name.ciamlogin.com/TENANT_ID/oauth2/v2.0/authorize?p=B2C_1_passwordreset"
-dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true"
-dotnet user-secrets set "EntraExternalId:ClientSecret" "WEB_CLIENT_SECRET"
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "AZURE_MONITOR_CONNECTION_STRING"
+# Set Web secrets
+dotnet user-secrets set "BackendApi:ClientId" "<api-client-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
+dotnet user-secrets set "EntraExternalId:Instance" "https://<your-tenant-name>.ciamlogin.com" --project .\src\Presentation.Web\Presentation.Web.csproj
+dotnet user-secrets set "EntraExternalId:TenantId" "<entra-tenant-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
+dotnet user-secrets set "EntraExternalId:ClientId" "<web-client-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
+dotnet user-secrets set "EntraExternalId:ClientSecret" "<web-client-secret>" --project .\src\Presentation.Web\Presentation.Web.csproj
+dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true" --project .\src\Presentation.Web\Presentation.Web.csproj
+dotnet user-secrets set "ApplicationInsights:ConnectionString" "" --project .\src\Presentation.Web\Presentation.Web.csproj
 
-# Set integration test Azure OpenAI settings
-cd ../Tests.Integration
-dotnet user-secrets init
-dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
-dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
+# Set integration test Azure OpenAI secrets
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Tests.Integration\Tests.Integration.csproj
+dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Tests.Integration\Tests.Integration.csproj
 
-# Return to repository root
-cd ../..
+# Optional: EntraExternalId:PasswordResetUrl (Web), and AzureOpenAI:ChatDeploymentName / AzureOpenAI:EmbeddingDeploymentName
+# (Api and Tests.Integration) only when you need to override the appsettings values.
 
 # Create or update SQL schema
 dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
@@ -286,23 +275,18 @@ Set `ASPNETCORE_ENVIRONMENT` manually only when running outside launch profiles 
 
   
 ## Setup AI provider configuration (Azure OpenAI default)
-**Important:** Set the provider in Presentation.Api and configure Azure OpenAI values.
+**Important:** The default provider is Azure OpenAI, set by `AgentProvider:Kind` in the committed appsettings, so only the endpoint and key are secrets. The install script above sets them. To set them by hand, run from the repository root:
 ### Azure OpenAI (default)
 ```
-cd src/Presentation.Api
-dotnet user-secrets set "AgentProvider:Kind" "AzureOpenAI"
-dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
-dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
-cd ../Tests.Integration
-dotnet user-secrets init
-dotnet user-secrets set "AzureOpenAI:ChatDeploymentName" "gpt-4"
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://YOUR_ENDPOINT.openai.azure.com/"
-dotnet user-secrets set "AzureOpenAI:ApiKey" "YOUR_API_KEY"
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Presentation.Api\Presentation.Api.csproj
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Tests.Integration\Tests.Integration.csproj
+dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Tests.Integration\Tests.Integration.csproj
 ```
+The deployment names come from `AzureOpenAI:ChatDeploymentName` and `AzureOpenAI:EmbeddingDeploymentName` in `src/Presentation.Api/appsettings.*.json` (`chat-fast`, `chat-balanced`, `embedding-fast`). Replace them with your own deployment names, or override them with `dotnet user-secrets set` using the same keys.
+
 Alternately you can set in Environment variables
 ```
-AzureOpenAI__ChatDeploymentName
 AzureOpenAI__Endpoint
 AzureOpenAI__ApiKey
 ```
