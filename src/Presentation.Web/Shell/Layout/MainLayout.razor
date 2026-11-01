@@ -115,6 +115,18 @@
   }
 
   private bool _synced = false;
+  private string? _lastUri;
+
+  protected override void OnParametersSet()
+  {
+    // An ErrorBoundary stays in its error state until recovered, so clear it when the user navigates elsewhere.
+    if (_lastUri is not null && !string.Equals(_lastUri, Navigation.Uri, StringComparison.Ordinal))
+    {
+      errorBoundaryRef?.Recover();
+    }
+
+    _lastUri = Navigation.Uri;
+  }
 
   private PlatformNavigationModel? ActivePlatformNavigation
   {

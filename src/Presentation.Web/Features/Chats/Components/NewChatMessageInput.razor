@@ -1,5 +1,6 @@
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models
 @using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services
+@using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http
 
 @inject IChatService chatService
 
@@ -18,6 +19,10 @@
     </FluentStack>
     <DataAnnotationsValidator />
     <ValidationSummary />
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <FluentMessageBar Severity="Severity.Error">@errorMessage</FluentMessageBar>
+    }
 </EditForm>
 
 @code
@@ -37,6 +42,7 @@
     private ChatMessageInputModel messageModel { get; set; } = new();
     private EditContext? editContext;
     private bool isSubmitting = false;
+    private string? errorMessage;
 
     protected override void OnInitialized()
     {
@@ -74,6 +80,7 @@
             return;
         }
 
+        errorMessage = null;
         isSubmitting = true;
         StateHasChanged();
         try
@@ -97,6 +104,11 @@
                 await OnMessageSubmitted.InvokeAsync();
             }
             ClearForm();
+        }
+        catch (Exception ex)
+        {
+            // The typed message is kept so the user can resubmit without retyping.
+            errorMessage = ApiErrorMessage.For(ex);
         }
         finally
         {

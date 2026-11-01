@@ -14,4 +14,10 @@ public sealed class BackendApiOptions
 
     [Required]
     public string ClientId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Maximum seconds to wait for one Presentation.Api request. Chat requests that fall through to the LLM can take well over 10 seconds.
+    /// </summary>
+    [Range(10, 600)]
+    public int TimeoutSeconds { get; set; } = ResilientHttpClientOptions.DefaultTimeoutSeconds;
 }

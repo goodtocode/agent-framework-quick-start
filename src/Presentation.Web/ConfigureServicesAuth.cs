@@ -3,6 +3,7 @@ using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;
 using Goodtocode.AgentFramework.Presentation.Web.Options;
 using Goodtocode.SecuredHttpClient.Middleware;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Identity.Web;
 
 namespace Goodtocode.AgentFramework.Presentation.Web;
@@ -157,36 +158,19 @@ public static class ConfigureServicesAuth
         {
             clientOptions.DefaultRequestHeaders.Clear();
             clientOptions.BaseAddress = options.BaseAddress;
+            // The resilience handler owns timeouts; HttpClient's own 100s default would otherwise cap it.
+            clientOptions.Timeout = Timeout.InfiniteTimeSpan;
         })
         .AddHttpMessageHandler<TokenHandler>()
         .AddStandardResilienceHandler(resilienceOptions =>
         {
-            resilienceOptions.Retry.ShouldHandle = args =>
-            {
-                var method = args.Outcome.Result?.RequestMessage?.Method;
-                if (method == HttpMethod.Post
-                    || method == HttpMethod.Put
-                    || method == HttpMethod.Patch
-                    || method == HttpMethod.Delete)
-                {
-                    return ValueTask.FromResult(false);
-                }
+            resilienceOptions.AttemptTimeout.Timeout = options.Timeout;
+            // Total covers one retry of an idempotent read; the breaker sampling window must be at least twice the attempt timeout.
+            resilienceOptions.TotalRequestTimeout.Timeout = options.Timeout * 2;
+            resilienceOptions.CircuitBreaker.SamplingDuration = options.Timeout * 2;
 
-                if (args.Outcome.Exception is HttpRequestException or TaskCanceledException)
-                {
-                    return ValueTask.FromResult(true);
-                }
-
-                var statusCode = args.Outcome.Result?.StatusCode;
-                if (!statusCode.HasValue)
-                {
-                    return ValueTask.FromResult(false);
-                }
-
-                var code = (int)statusCode.Value;
-                return ValueTask.FromResult(code == 408 || code == 429 || code >= 500);
-            };
-
+            // Never replay POST/PUT/PATCH/DELETE: a retried chat message would run the LLM fallback twice.
+            resilienceOptions.Retry.DisableForUnsafeHttpMethods();
             resilienceOptions.Retry.UseJitter = true;
             resilienceOptions.Retry.MaxRetryAttempts = options.MaxRetry;
         });

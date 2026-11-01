@@ -143,10 +143,7 @@ public static class ConfigureServices
 
                 var client = new OpenAIClient(
                     new System.ClientModel.ApiKeyCredential(options.ApiKey),
-                    new OpenAIClientOptions
-                    {
-                        Endpoint = new Uri(options.Endpoint)
-                    });
+                    CreateClientOptions(options.Endpoint));
                 return client.GetChatClient(options.ChatCompletionModelId);
             }
 
@@ -162,10 +159,7 @@ public static class ConfigureServices
 
                 var client = new OpenAIClient(
                     new System.ClientModel.ApiKeyCredential(options.ApiKey),
-                    new OpenAIClientOptions
-                    {
-                        Endpoint = new Uri(normalizedEndpoint)
-                    });
+                    CreateClientOptions(normalizedEndpoint));
                 return client.GetChatClient(options.ChatDeploymentName);
             }
 
@@ -179,10 +173,7 @@ public static class ConfigureServices
 
                 var client = new OpenAIClient(
                     new System.ClientModel.ApiKeyCredential(string.IsNullOrWhiteSpace(options.ApiKey) ? "ollama" : options.ApiKey),
-                    new OpenAIClientOptions
-                    {
-                        Endpoint = new Uri(options.Endpoint)
-                    });
+                    CreateClientOptions(options.Endpoint));
                 return client.GetChatClient(options.ChatCompletionModelId);
             }
 
@@ -196,10 +187,7 @@ public static class ConfigureServices
 
                 var client = new OpenAIClient(
                     new System.ClientModel.ApiKeyCredential(options.ApiKey),
-                    new OpenAIClientOptions
-                    {
-                        Endpoint = new Uri(options.Endpoint)
-                    });
+                    CreateClientOptions(options.Endpoint));
                 return client.GetChatClient(options.ChatCompletionModelId);
             }
 
@@ -292,6 +280,15 @@ public static class ConfigureServices
 
         return services;
     }
+
+    // Chat completions that fall through to the LLM commonly take 10+ seconds; keep this below Presentation.Web's BackendApi:TimeoutSeconds so the API fails cleanly first.
+    private static readonly TimeSpan ModelRequestTimeout = TimeSpan.FromSeconds(150);
+
+    private static OpenAIClientOptions CreateClientOptions(string endpoint) => new()
+    {
+        Endpoint = new Uri(endpoint),
+        NetworkTimeout = ModelRequestTimeout
+    };
 
     private static bool IsSelectedProvider(AgentProviderOptions options, string providerKind)
         => options.Kind.Equals(providerKind, StringComparison.OrdinalIgnoreCase);
