@@ -441,7 +441,7 @@ doc's **UI Changes** and **API Changes** sections for details.
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
 
-The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agent-dev-wus2-001-rg`. Below is a summary of the workflow files, their purposes, and triggers:
+The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agent-dev-wus2-100-rg`. Below is a summary of the workflow files, their purposes, and triggers:
 
 ### Triggers
 All workflow YAML files in this repo are designed to:

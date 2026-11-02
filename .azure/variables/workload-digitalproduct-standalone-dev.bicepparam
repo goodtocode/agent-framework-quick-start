@@ -2,12 +2,12 @@ using '../templates/workload-digitalproduct.bicep'
 
 // Phase 1 (mode 1, standalone): plan, Log Analytics, App Insights, web, API and SQL all live in this RG.
 // RG: {product}-{env}-{region}-{instance}-rg. Secrets: set SQL_ADMIN_USER and SQL_ADMIN_PASSWORD in the environment before running az deployment group.
-// Deploy: az deployment group create -g agent-dev-wus2-001-rg -f .azure/templates/workload-digitalproduct.bicep -p .azure/variables/workload-digitalproduct-standalone-dev.bicepparam
+// Deploy: az deployment group create -g agent-dev-wus2-100-rg -f .azure/templates/workload-digitalproduct.bicep -p .azure/variables/workload-digitalproduct-standalone-dev.bicepparam
 
 var productIac = 'agent'
 var environmentIac = 'dev'
 var regionIac = 'wus2'
-var instanceIac = '001'
+var instanceIac = '100'
 var prefix = '${productIac}-${environmentIac}-${regionIac}-${instanceIac}'
 
 param mode = 'standalone'
