@@ -31,7 +31,7 @@ public sealed class AzureOpenAiEmbeddingGeneratorTests
     [TestMethod]
     public async Task GenerateAsyncReturnsVectorFromAzureResponse()
     {
-        var generator = CreateGenerator(new QueueHandler(CreateResponse("[0.1, 0.2, 0.3]", 0)));
+        var generator = CreateGenerator(new QueueHandler(CreateResponse("[0.1, 0.2, 0.3]", 0)), dimension: 3);
 
         var result = await generator.GenerateAsync("create a playbook", CancellationToken.None);
 
@@ -42,7 +42,7 @@ public sealed class AzureOpenAiEmbeddingGeneratorTests
     public async Task GenerateBatchAsyncMapsResponsesByInputIndex()
     {
         var handler = new QueueHandler(CreateBatchResponse());
-        var generator = CreateGenerator(handler);
+        var generator = CreateGenerator(handler, dimension: 1);
 
         var result = await generator.GenerateBatchAsync(new[] { "first", "second" }, CancellationToken.None);
 
@@ -51,14 +51,38 @@ public sealed class AzureOpenAiEmbeddingGeneratorTests
         Assert.AreEqual(1, handler.SendCount);
     }
 
-    private static AzureOpenAiEmbeddingGenerator CreateGenerator(HttpMessageHandler handler)
+    [TestMethod]
+    public async Task GenerateAsyncUsesV1EndpointDeploymentAndDimension()
+    {
+        var handler = new QueueHandler(CreateResponse("[0.1, 0.2, 0.3]", 0));
+        var generator = CreateGenerator(handler, dimension: 3, endpoint: "https://example.test/openai/v1/");
+
+        await generator.GenerateAsync("synthetic intent", CancellationToken.None);
+
+        Assert.AreEqual("https://example.test/openai/v1/embeddings", handler.RequestUri!.ToString());
+        using var request = System.Text.Json.JsonDocument.Parse(handler.RequestBody!);
+        Assert.AreEqual("embedding-standard", request.RootElement.GetProperty("model").GetString());
+        Assert.AreEqual(3, request.RootElement.GetProperty("dimensions").GetInt32());
+    }
+
+    [TestMethod]
+    public async Task GenerateAsyncRejectsUnexpectedVectorDimension()
+    {
+        var generator = CreateGenerator(new QueueHandler(CreateResponse("[0.1]", 0)));
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() =>
+            generator.GenerateAsync("synthetic intent", CancellationToken.None));
+    }
+
+    private static AzureOpenAiEmbeddingGenerator CreateGenerator(HttpMessageHandler handler, int dimension = 1536, string endpoint = "https://example.test")
     {
         return new AzureOpenAiEmbeddingGenerator(
             Options.Create(new AzureOpenAIOptions
             {
                 ApiKey = "test-key",
-                Endpoint = "https://example.test",
-                EmbeddingDeploymentName = "embedding-fast"
+                Endpoint = endpoint,
+                EmbeddingDeploymentName = "embedding-standard",
+                EmbeddingDimension = dimension
             }),
             NullLogger<AzureOpenAiEmbeddingGenerator>.Instance,
             new HttpClient(handler));
@@ -91,13 +115,17 @@ public sealed class AzureOpenAiEmbeddingGeneratorTests
         private readonly Queue<HttpResponseMessage> responses = new(responses);
 
         public int SendCount { get; private set; }
+        public Uri? RequestUri { get; private set; }
+        public string? RequestBody { get; private set; }
 
-        protected override Task<HttpResponseMessage> SendAsync(
+        protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
             SendCount++;
-            return Task.FromResult(responses.Dequeue());
+            RequestUri = request.RequestUri;
+            RequestBody = await request.Content!.ReadAsStringAsync(cancellationToken);
+            return responses.Dequeue();
         }
     }
 }

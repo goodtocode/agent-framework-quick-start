@@ -50,6 +50,7 @@ public abstract class TestBase : IDisposable
     internal IRlsContext rlsContext;
 
     internal MockAIAgent agent = new();
+    internal MockAIAgent chatAgent = new();
     internal OpenAIOptions optionsOpenAi = new();
     internal FakeSqlDatabaseStatisticsProvider sqlDatabaseStatisticsProvider = new();
 
@@ -75,6 +76,8 @@ public abstract class TestBase : IDisposable
         services.AddSingleton<IRlsContext, UserContext>(provider =>
             UserContext.Create(provider.GetRequiredService<IClaimsReader>()));
         services.AddSingleton<AIAgent>(provider => agent);
+        services.AddKeyedSingleton<AIAgent>(InferencePurpose.Chat, (provider, key) => chatAgent);
+        services.AddKeyedSingleton<AIAgent>(InferencePurpose.ToolReasoning, (provider, key) => agent);
         services.AddTransient(typeof(IPipelineBehavior<>),
             typeof(TestInjectUserContextBehavior<>));
         services.AddTransient(typeof(IPipelineBehavior<,>),

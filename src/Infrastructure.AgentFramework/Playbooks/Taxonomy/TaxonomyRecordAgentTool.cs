@@ -4,6 +4,7 @@ using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
 
@@ -13,7 +14,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxo
 /// the raw response into the typed <see cref="TaxonomyMaterialization"/> contract.
 /// </summary>
 [PlaybookTool("taxonomy.agentic.record")]
-public sealed class TaxonomyRecordAgentTool(AIAgent agent) : IRecordStepTool<TaxonomyFinding, TaxonomyMaterialization>
+public sealed class TaxonomyRecordAgentTool([FromKeyedServices(InferencePurpose.ToolReasoning)] AIAgent agent) : IRecordStepTool<TaxonomyFinding, TaxonomyMaterialization>
 {
     private readonly AIAgent _agent = agent;
 

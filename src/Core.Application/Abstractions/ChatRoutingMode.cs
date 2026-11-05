@@ -5,9 +5,9 @@ namespace Goodtocode.AgentFramework.Core.Application.Abstractions;
 /// </summary>
 public enum ChatRoutingMode
 {
-    /// <summary>Uses deterministic routing, forced-tool inference, then an open agent turn.</summary>
+    /// <summary>Uses deterministic routing, then purpose-specific function inference without open-agent retries.</summary>
     Routed = 0,
 
-    /// <summary>Bypasses deterministic and forced-tool routing for diagnostics or explicit direct-agent requests.</summary>
+    /// <summary>Uses text-only inference without classification or application functions.</summary>
     Direct = 1
 }

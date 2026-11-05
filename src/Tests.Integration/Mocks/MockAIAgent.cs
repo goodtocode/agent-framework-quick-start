@@ -10,6 +10,7 @@ public class MockAIAgent : AIAgent
     public IReadOnlyList<AgentRunOptions?> RunOptions { get; private set; } = [];
     public int RunCount { get; private set; }
     public bool ThrowOnForcedToolRun { get; set; }
+    public bool CancelOnForcedToolRun { get; set; }
     public string ResponseText { get; set; } = "mock-response";
     public Queue<string> QueuedResponseTexts { get; } = new();
 
@@ -30,6 +31,10 @@ public class MockAIAgent : AIAgent
         LastMessages = [.. messages];
         RunOptions = [.. RunOptions, options];
         RunCount++;
+        if (CancelOnForcedToolRun && options is ChatClientAgentRunOptions)
+        {
+            throw new OperationCanceledException("Required-tool inference was cancelled.");
+        }
         if (ThrowOnForcedToolRun && options is ChatClientAgentRunOptions)
         {
             throw new InvalidOperationException("Forced-tool inference failed.");

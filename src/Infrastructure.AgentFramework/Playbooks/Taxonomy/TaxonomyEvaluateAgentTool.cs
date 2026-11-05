@@ -5,6 +5,7 @@ using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
 
@@ -16,7 +17,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxo
 /// <see cref="TaxonomyFinding"/> contract.
 /// </summary>
 [PlaybookTool("taxonomy.agentic.evaluate")]
-public sealed class TaxonomyEvaluateAgentTool(AIAgent agent, TaxonomyKnowledgeHolder knowledgeHolder) : IEvaluateStepTool<TaxonomyEvidence, TaxonomyFinding>
+public sealed class TaxonomyEvaluateAgentTool([FromKeyedServices(InferencePurpose.ToolReasoning)] AIAgent agent, TaxonomyKnowledgeHolder knowledgeHolder) : IEvaluateStepTool<TaxonomyEvidence, TaxonomyFinding>
 {
     private readonly AIAgent _agent = agent;
     private readonly PlaybookKnowledge _knowledge = knowledgeHolder.Knowledge;

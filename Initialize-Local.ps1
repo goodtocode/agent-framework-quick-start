@@ -9,7 +9,7 @@ Run from any folder in PowerShell (not 'pwsh -File', so a splatted hashtable wor
 3. Database: applies the EF migrations to the local SQL Server (LocalDB by default).
 Local only: it does not touch GitHub, Azure Pipelines or Azure resources. CI/CD secrets and federation are set up separately.
 Safe to re-run: existing registrations are reused, and the Web client secret is only regenerated with -RotateSecrets.
-Leave -ApplicationInsightsConnectionString empty until the infrastructure is deployed; the apps start without it, with no Azure telemetry. Deployment names are only stored when you pass them, because the appsettings files already carry the template defaults (chat-fast, chat-balanced, embedding-fast).
+Leave -ApplicationInsightsConnectionString empty until the infrastructure is deployed; the apps start without it, with no Azure telemetry. Deployment names are only stored when you pass them, because the appsettings files already carry the template defaults (chat-fast, tool-standard, tool-reasoning, embedding-standard).
 
 .EXAMPLE
 # Omit -AzureOpenAIApiKey to be prompted without echo:
@@ -31,6 +31,8 @@ param(
     [Parameter(Mandatory)][string]$AzureOpenAIEndpoint,
     [string]$AzureOpenAIApiKey,
     [string]$ChatDeploymentName,
+    [string]$ToolDeploymentName,
+    [string]$ToolReasoningDeploymentName,
     [string]$EmbeddingDeploymentName,
     [string]$ApplicationInsightsConnectionString = "",
 
@@ -108,6 +110,8 @@ $openAi = @{
     "AzureOpenAI:ApiKey"   = $AzureOpenAIApiKey
 }
 if ($ChatDeploymentName) { $openAi["AzureOpenAI:ChatDeploymentName"] = $ChatDeploymentName }
+if ($ToolDeploymentName) { $openAi["AzureOpenAI:ToolDeploymentName"] = $ToolDeploymentName }
+if ($ToolReasoningDeploymentName) { $openAi["AzureOpenAI:ToolReasoningDeploymentName"] = $ToolReasoningDeploymentName }
 if ($EmbeddingDeploymentName) { $openAi["AzureOpenAI:EmbeddingDeploymentName"] = $EmbeddingDeploymentName }
 $appInsights = @{ "ApplicationInsights:ConnectionString" = $ApplicationInsightsConnectionString }
 

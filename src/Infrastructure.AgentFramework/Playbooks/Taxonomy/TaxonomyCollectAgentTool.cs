@@ -4,6 +4,7 @@ using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
 
@@ -14,7 +15,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxo
 /// boundary.
 /// </summary>
 [PlaybookTool("taxonomy.agentic.collect")]
-public sealed class TaxonomyCollectAgentTool(AIAgent agent) : ICollectStepTool<string, TaxonomyEvidence>
+public sealed class TaxonomyCollectAgentTool([FromKeyedServices(InferencePurpose.ToolReasoning)] AIAgent agent) : ICollectStepTool<string, TaxonomyEvidence>
 {
     private readonly AIAgent _agent = agent;
 

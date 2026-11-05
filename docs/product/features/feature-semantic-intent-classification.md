@@ -97,7 +97,7 @@ The API configuration exposes the following section in every environment file:
 
 The section is bound through `IOptions<IntentClassificationOptions>`. `EnableSemantic` must remain `false` until evaluation and rollout approval are complete.
 
-Azure embedding settings are bound through `AzureOpenAIOptions`, including `EmbeddingDeploymentName` with the default deployment name `embedding-fast`.
+Azure embedding settings are bound through `AzureOpenAIOptions`, including `EmbeddingDeploymentName` with the default deployment name `embedding-standard`.
 
 ## Shared Implementation
 
@@ -190,7 +190,7 @@ Both repositories require:
 - Reqnroll scenarios covering the disabled switch and an enabled semantic match using deterministic embeddings and in-memory storage.
 - API configuration parsing tests or equivalent validation confirming the switch is present and disabled by default.
 
-Live Azure-backed seeding is a separate environment validation. It requires a configured `embedding-fast` deployment, SQL database, credentials, and an applied migration.
+Live Azure-backed seeding is a separate environment validation. It requires a configured `embedding-standard` deployment, SQL database, credentials, and an applied migration.
 
 ## Rollout
 
@@ -221,3 +221,31 @@ Live Azure-backed seeding is a separate environment validation. It requires a co
 - [ ] Production enablement is approved and reversible.
 - [ ] Governance documentation contains durable principles only.
 - [ ] Tactical implementation details remain in this product feature document.
+
+
+## Purpose-specific Foundry inference
+
+These applications consume the shared `platform-azure` Foundry deployments:
+
+| Purpose | Configuration | Deployment | Model |
+| --- | --- | --- | --- |
+| Text-only chat | `AzureOpenAI:ChatDeploymentName` | `chat-fast` | Phi-4-mini-instruct |
+| Interactive functions | `AzureOpenAI:ToolDeploymentName` | `tool-standard` | Mistral-Large-3 (Azure-direct) |
+| Playbook reasoning | `AzureOpenAI:ToolReasoningDeploymentName` | `tool-reasoning` | MAI-Thinking-1 |
+| Intent embeddings | `AzureOpenAI:EmbeddingDeploymentName` | `embedding-standard` | Cohere embed-v-4-0 (Azure-direct, 1536 dimensions) |
+
+`embedding-standard` is shared by intent classification and retrieval consumers, using Cohere embed-v-4-0 at 1536 dimensions.
+MAI-Thinking-1 remains a preview model despite the deployment name having no preview suffix.
+Verify model availability, access, and quota before provisioning the shared deployments; the names alone do not establish capabilities.
+
+The keyed `InferencePurpose.Chat` agent advertises no application functions. Direct mode and reply-wording correction use only this agent. Correction receives the original reply, retains the governed policy context, and cannot repeat application operations.
+The default agent is `InferencePurpose.Tool`: described public tool methods become real `AIFunction` instances with typed schemas and qualified names.
+After classification misses, general requests use one automatic-function turn. Recognized chat-history requests require a function call; missing calls, provider failures, and cancellation propagate without a second open-agent attempt.
+Agentic Essay and Taxonomy stages explicitly consume `InferencePurpose.ToolReasoning`; these stages do not expose chat administration functions.
+Existing durable chat governance and hosted catalog/embedding initialization remain enabled.
+
+AzureAIFoundry uses the corresponding `ChatCompletionModelId`, `ToolCompletionModelId`, and `ToolReasoningModelId` deployment settings. OpenAI, GitHubCopilotSDK, and Ollama also require explicit purpose models; unused providers remain unvalidated. Ollama defaults retain text-only phi4 and use OpenAI gpt-oss:20b for function/reasoning purposes, requiring a local model pull before use.
+
+Embedding calls use the official OpenAI SDK and the normalized `/openai/v1/embeddings` endpoint, passing the deployment name and configured dimension. Root endpoints and existing `/openai/v1/` endpoints are both supported.
+Before enabling semantic classification, regenerate persisted intent embeddings when changing the embedding model, even if the dimension is unchanged. Reconcile SQL vector storage when changing dimensions; do not compare embeddings from different model spaces.
+No timeout increases, automatic model fallback, or Azure deployment are part of this change.
