@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 using Goodtocode.Mediator;
 using Microsoft.Extensions.AI;
@@ -24,7 +26,7 @@ public abstract class ScopedAgentTool(IServiceProvider serviceProvider)
             .Where(method => method.GetCustomAttribute<DescriptionAttribute>() is not null)
             .Select(method => AIFunctionFactory.Create(method, this, new AIFunctionFactoryOptions
             {
-                Name = $"{toolType.Name}_{method.Name}"
+                Name = CreateFunctionName(toolType, method)
             }))
             .ToList();
         if (functions.Count == 0)
@@ -33,6 +35,19 @@ public abstract class ScopedAgentTool(IServiceProvider serviceProvider)
         }
 
         return functions;
+    }
+
+    private static string CreateFunctionName(Type toolType, MethodInfo method)
+    {
+        var name = $"{toolType.Name}_{method.Name}";
+        if (name.Length <= 64)
+        {
+            return name;
+        }
+
+        // Preserve a readable prefix and a stable suffix to avoid truncation collisions.
+        var suffix = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(name)))[..16];
+        return $"{name[..47]}_{suffix}";
     }
 
     /// <summary>

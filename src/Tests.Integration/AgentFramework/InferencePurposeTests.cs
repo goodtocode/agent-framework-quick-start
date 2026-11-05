@@ -93,6 +93,7 @@ public sealed class InferencePurposeTests
         Assert.AreEqual(expectsTools, handler.FunctionNames.Count > 0);
         if (expectsTools)
         {
+            Assert.IsTrue(handler.FunctionNames.All(name => name.Length <= 64));
             CollectionAssert.Contains(handler.FunctionNames, "MyChatSessionsTool_ListRecentSessionsAsync");
             CollectionAssert.Contains(handler.FunctionNames, "MyChatMessagesTool_ListRecentMessagesAsync");
             Assert.AreEqual(handler.FunctionNames.Count, handler.FunctionNames.Distinct().Count());

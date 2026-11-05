@@ -235,6 +235,9 @@ These applications consume the shared `platform-azure` Foundry deployments:
 | Intent embeddings | `AzureOpenAI:EmbeddingDeploymentName` | `embedding-standard` | Cohere embed-v-4-0 (Azure-direct, 1536 dimensions) |
 
 `embedding-standard` is shared by intent classification and retrieval consumers, using Cohere embed-v-4-0 at 1536 dimensions.
+Callable function names must fit the OpenAI-compatible API's 64-character limit. Names within the limit
+remain unchanged; longer tool-qualified names use a readable 47-character prefix and a deterministic
+16-hex-character SHA-256 suffix to avoid truncation collisions and provider HTTP 422 errors.
 MAI-Thinking-1 remains a preview model despite the deployment name having no preview suffix.
 Verify model availability, access, and quota before provisioning the shared deployments; the names alone do not establish capabilities.
 

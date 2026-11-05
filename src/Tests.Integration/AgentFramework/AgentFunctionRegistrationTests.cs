@@ -31,6 +31,7 @@ public sealed class AgentFunctionRegistrationTests
             foreach (var method in methods)
             {
                 var function = functions.Single(candidate => candidate.Name == $"{tool.GetType().Name}_{method.Name}");
+                Assert.IsTrue(function.Name.Length <= 64);
                 Assert.IsTrue(names.Add(function.Name));
                 Assert.AreEqual(method.GetCustomAttribute<DescriptionAttribute>()!.Description, function.Description);
                 var properties = function.JsonSchema.GetProperty("properties");
@@ -69,6 +70,39 @@ public sealed class AgentFunctionRegistrationTests
     {
         using var provider = new ServiceCollection().BuildServiceProvider();
         Assert.ThrowsExactly<InvalidOperationException>(() => new EmptyTool(provider).CreateFunctions());
+    }
+
+    [TestMethod]
+    public async Task LongFunctionNamesAreStableDistinctAndInvocable()
+    {
+        using var provider = new ServiceCollection().BuildServiceProvider();
+        var tool = new LongNameTool(provider);
+        var functions = tool.CreateFunctions();
+        var repeated = tool.CreateFunctions();
+
+        Assert.AreEqual(2, functions.Count);
+        Assert.AreEqual(2, functions.Select(function => function.Name).Distinct().Count());
+        CollectionAssert.AreEqual(functions.Select(function => function.Name).ToArray(), repeated.Select(function => function.Name).ToArray());
+        foreach (var function in functions)
+        {
+            Assert.AreEqual(64, function.Name.Length);
+            StringAssert.Matches(function.Name, new System.Text.RegularExpressions.Regex("^[a-zA-Z0-9_-]{64}$"));
+            var result = await function.InvokeAsync(new AIFunctionArguments(), CancellationToken.None);
+            Assert.IsInstanceOfType<JsonElement>(result);
+            if (result is JsonElement element)
+            {
+                Assert.AreEqual(1, element.GetInt32());
+            }
+        }
+    }
+
+    private sealed class LongNameTool(IServiceProvider provider) : ScopedAgentTool(provider)
+    {
+        [Description("Synthetic function with a long name.")]
+        public int QuerySyntheticFunctionWithAnExtremelyLongSharedNameForProviderBoundaryFirst() => 1;
+
+        [Description("Another synthetic function with the same long prefix.")]
+        public int QuerySyntheticFunctionWithAnExtremelyLongSharedNameForProviderBoundarySecond() => 1;
     }
 
     private sealed class EmptyTool(IServiceProvider provider) : ScopedAgentTool(provider);
