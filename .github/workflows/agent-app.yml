@@ -42,7 +42,7 @@ env:
   # ===== EDIT PER INSTALL: naming slots (names: {product}-{env}-{region}-{instance}-{type}) =====
   PRODUCT: "agent"
   REGION: "wus2"
-  INSTANCE: "001"
+  INSTANCE: "100"
   # Same value as MODE in the IaC workflow. standalone: App Insights is in the product RG; any other mode: in the shared management RG.
   MODE: "standalone"
   # Shared management RG and App Insights from platform-shared-mgmt; product is normally 'mgmt'.

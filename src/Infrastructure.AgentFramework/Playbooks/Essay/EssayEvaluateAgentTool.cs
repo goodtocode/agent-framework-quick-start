@@ -6,6 +6,7 @@ using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
 
@@ -17,7 +18,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essa
 /// overall score from the model's per-criterion scores.
 /// </summary>
 [PlaybookTool("essay.agentic.evaluate")]
-public sealed class EssayEvaluateAgentTool(AIAgent agent, EssayKnowledgeHolder knowledgeHolder) : IEvaluateStepTool<EssayEvidence, EssayRubricFinding>
+public sealed class EssayEvaluateAgentTool([FromKeyedServices(InferencePurpose.ToolReasoning)] AIAgent agent, EssayKnowledgeHolder knowledgeHolder) : IEvaluateStepTool<EssayEvidence, EssayRubricFinding>
 {
     private readonly AIAgent _agent = agent;
     private readonly PlaybookKnowledge _knowledge = knowledgeHolder.Knowledge;

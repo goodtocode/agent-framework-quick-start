@@ -80,7 +80,7 @@ dotnet user-secrets set "ApplicationInsights:ConnectionString" "<connection-stri
 ```
 In Azure, the deployment sets the connection string for you.
 
-**Azure OpenAI deployment names:** the committed appsettings use `chat-fast` (Development and local), `chat-balanced` (Production) and `embedding-fast`. These are placeholders for the names of your own Azure OpenAI or AI Foundry model deployments. Replace them in `src/Presentation.Api/appsettings.*.json` to match your deployments (deployment names are not secrets, so they need no GitHub secrets), or pass `-ChatDeploymentName` and `-EmbeddingDeploymentName` to `Initialize-Local.ps1` to override them in your local user-secrets only.
+**Azure OpenAI deployment names:** all committed environments use `chat-fast`, `tool-standard`, `tool-reasoning`, and `embedding-standard`, matching the shared `platform-azure` Foundry deployments. To use different purpose-compatible deployments, update `src/Presentation.Api/appsettings.*.json`, or pass `-ChatDeploymentName`, `-ToolDeploymentName`, `-ToolReasoningDeploymentName`, and `-EmbeddingDeploymentName` to `Initialize-Local.ps1` for local user-secret overrides only. Deployment names are not secrets.
 
 ## Quick-Start: Re-Setup for Existing Entra (no Entra setup scripts)
 ```powershell
@@ -283,7 +283,7 @@ dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project 
 dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Tests.Integration\Tests.Integration.csproj
 dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Tests.Integration\Tests.Integration.csproj
 ```
-The deployment names come from `AzureOpenAI:ChatDeploymentName` and `AzureOpenAI:EmbeddingDeploymentName` in `src/Presentation.Api/appsettings.*.json` (`chat-fast`, `chat-balanced`, `embedding-fast`). Replace them with your own deployment names, or override them with `dotnet user-secrets set` using the same keys.
+Deployment names come from `AzureOpenAI:ChatDeploymentName`, `AzureOpenAI:ToolDeploymentName`, `AzureOpenAI:ToolReasoningDeploymentName`, and `AzureOpenAI:EmbeddingDeploymentName` in `src/Presentation.Api/appsettings.*.json`. Override these same keys with `dotnet user-secrets set` when using different purpose-compatible deployments.
 
 Alternately you can set in Environment variables
 ```
@@ -441,7 +441,7 @@ doc's **UI Changes** and **API Changes** sections for details.
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
 
-The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agent-dev-wus2-001-rg`. Below is a summary of the workflow files, their purposes, and triggers:
+The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agent-dev-wus2-100-rg`. Below is a summary of the workflow files, their purposes, and triggers:
 
 ### Triggers
 All workflow YAML files in this repo are designed to:
@@ -568,3 +568,10 @@ This setup ensures your GitHub Actions workflows can securely deploy to Azure us
 | 1.1.0   | 2026-Jul-27 | AI-ize md/yml, AgentProvider                                     |
 
 This project is licensed with the [MIT license](https://mit-license.org/).
+
+### Shared Foundry deployment configuration
+
+Use `AzureOpenAI:ChatDeploymentName=chat-fast` for text-only Phi chat, `AzureOpenAI:ToolDeploymentName=tool-standard` for Azure-direct Mistral-Large-3 function calls, and `AzureOpenAI:ToolReasoningDeploymentName=tool-reasoning` for MAI playbook inference. Azure-direct Cohere embed-v-4-0 intent embeddings use `AzureOpenAI:EmbeddingDeploymentName=embedding-standard` and `EmbeddingDimension=1536`.
+These names match the `platform-azure` shared Foundry definitions; provision them and verify regional model access/quota before running live AI scenarios. MAI-Thinking-1 remains preview. Existing embedding vectors must be regenerated after switching models.
+All three purpose deployments are required for the selected provider. Old user-secret/environment overrides may need migration; a chat-only override does not select a tool deployment.
+See [semantic intent classification](docs/product/features/feature-semantic-intent-classification.md#purpose-specific-foundry-inference) for routing, governance, and migration details.

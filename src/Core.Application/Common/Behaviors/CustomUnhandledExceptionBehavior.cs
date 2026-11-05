@@ -18,16 +18,15 @@ public class CustomUnhandledExceptionBehavior<TRequest, TResponse>(ILogger<TRequ
         {
             var requestName = typeof(TRequest).Name;
             var clientResultDetails = ClientResultExceptionLogHelper.FormatProperties(ex);
-            await Task.Run(() => logger.LogError(ex,
+            logger.LogError(ex,
                 "Request: ClientResultException for {Name}. Details: {Details}",
                 requestName,
-                clientResultDetails), cancellationToken);
+                clientResultDetails);
             throw;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not (CustomNotFoundException or CustomValidationException or CustomConflictException or CustomForbiddenAccessException))
         {
-            var requestName = typeof(TRequest).Name;
-            await Task.Run(() => logger.LogUnhandledException(ex, requestName), cancellationToken);
+            logger.LogUnhandledException(ex, typeof(TRequest).Name);
             throw;
         }
     }
@@ -47,16 +46,15 @@ public class CustomUnhandledExceptionBehavior<TRequest>(ILogger<TRequest> logger
         {
             var requestName = typeof(TRequest).Name;
             var clientResultDetails = ClientResultExceptionLogHelper.FormatProperties(ex);
-            await Task.Run(() => logger.LogError(ex,
+            logger.LogError(ex,
                 "Request: ClientResultException for {Name}. Details: {Details}",
                 requestName,
-                clientResultDetails), cancellationToken);
+                clientResultDetails);
             throw;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not (CustomNotFoundException or CustomValidationException or CustomConflictException or CustomForbiddenAccessException))
         {
-            var requestName = typeof(TRequest).Name;
-            await Task.Run(() => logger.LogUnhandledException(ex, requestName), cancellationToken);
+            logger.LogUnhandledException(ex, typeof(TRequest).Name);
             throw;
         }
     }

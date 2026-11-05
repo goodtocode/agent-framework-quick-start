@@ -1,5 +1,7 @@
-using System.Text;
-using System.Text.Json;
+using System.ClientModel;
+using System.ClientModel.Primitives;
+using OpenAI;
+using OpenAI.Embeddings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
@@ -8,29 +10,29 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 
 /// <summary>
 /// Implementation of IEmbeddingGenerator using Azure OpenAI (or Azure AI Foundry).
-/// Generates 1536-dimensional vectors via text-embedding-3-small deployment.
+/// Generates configured-dimensional vectors, defaulting to text-embedding-3-small at 1536 dimensions.
 /// Thread-safe; can be registered as scoped or singleton.
 /// </summary>
 public sealed class AzureOpenAiEmbeddingGenerator : IEmbeddingGenerator
 {
-    private readonly string _apiKey;
-    private readonly string _endpoint;
+    private readonly EmbeddingClient _client;
     private readonly string _deploymentName;
     private readonly ILogger<AzureOpenAiEmbeddingGenerator> _logger;
-    private readonly HttpClient _httpClient;
 
     /// <inheritdoc/>
-    public int Dimension => 1536;  // text-embedding-3-small standard dimension
+    public int Dimension { get; }
 
     /// <summary>
     /// Creates a new instance of the Azure OpenAI embedding generator.
     /// Configuration is read from appsettings:
     /// - AzureOpenAI:ApiKey (required)
     /// - AzureOpenAI:Endpoint (required)
-    /// - AzureOpenAI:EmbeddingDeploymentName (optional, default: "embedding-fast")
+    /// - AzureOpenAI:EmbeddingDeploymentName (optional, default: "embedding-standard")
+    /// - AzureOpenAI:EmbeddingDimension (optional, default: 1536)
     /// </summary>
-    /// <param name="config">Configuration provider.</param>
+    /// <param name="options">Configuration provider.</param>
     /// <param name="logger">Structured logger.</param>
+    /// <param name="httpClient">HTTP transport.</param>
     /// <exception cref="InvalidOperationException">If required configuration is missing.</exception>
     public AzureOpenAiEmbeddingGenerator(
         IOptions<AzureOpenAIOptions> options,
@@ -38,13 +40,19 @@ public sealed class AzureOpenAiEmbeddingGenerator : IEmbeddingGenerator
         HttpClient httpClient)
     {
         var config = options?.Value ?? throw new ArgumentNullException(nameof(options));
-        _apiKey = config.ApiKey;
-        _endpoint = config.Endpoint;
-        _deploymentName = config.EmbeddingDeploymentName;
-        if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_endpoint))
+        if (string.IsNullOrWhiteSpace(config.ApiKey) || string.IsNullOrWhiteSpace(config.Endpoint))
             throw new InvalidOperationException("AzureOpenAI ApiKey and Endpoint are required for embedding generation.");
+        if (config.EmbeddingDimension <= 0 || string.IsNullOrWhiteSpace(config.EmbeddingDeploymentName))
+            throw new InvalidOperationException("AzureOpenAI embedding deployment and positive dimension are required.");
+        Dimension = config.EmbeddingDimension;
+        _deploymentName = config.EmbeddingDeploymentName;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        ArgumentNullException.ThrowIfNull(httpClient);
+        _client = new OpenAIClient(new ApiKeyCredential(config.ApiKey), new OpenAIClientOptions
+        {
+            Endpoint = new Uri(ConfigureServices.NormalizeAzureOpenAIEndpoint(config.Endpoint)),
+            Transport = new HttpClientPipelineTransport(httpClient)
+        }).GetEmbeddingClient(config.EmbeddingDeploymentName);
     }
 
     /// <inheritdoc/>
@@ -71,7 +79,7 @@ public sealed class AzureOpenAiEmbeddingGenerator : IEmbeddingGenerator
         IEnumerable<string> texts,
         CancellationToken cancellationToken)
     {
-        var textList = texts.ToList();
+        var textList = texts.Distinct(StringComparer.Ordinal).ToList();
         if (textList.Count == 0)
         {
             _logger.LogDebug("Empty text batch provided to GenerateBatchAsync; returning empty dictionary");
@@ -85,69 +93,24 @@ public sealed class AzureOpenAiEmbeddingGenerator : IEmbeddingGenerator
                 textList.Count,
                 _deploymentName);
 
-            // Build request
-            var requestBody = new
-            {
-                input = textList
-            };
-            var jsonRequest = JsonSerializer.Serialize(requestBody);
-            var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-            // Build URL
-            var url = $"{_endpoint.TrimEnd('/')}/openai/deployments/{_deploymentName}/embeddings?api-version=2024-02-15-preview";
-
-            // Create request with auth header
-            var request = new HttpRequestMessage(HttpMethod.Post, url)
-            {
-                Content = httpContent
-            };
-            request.Headers.Add("api-key", _apiKey);
-
-            // Call Azure OpenAI
             var startTime = DateTime.UtcNow;
-            using var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await _client.GenerateEmbeddingsAsync(textList,
+                new EmbeddingGenerationOptions { Dimensions = Dimension }, cancellationToken);
             var elapsed = DateTime.UtcNow - startTime;
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                _logger.LogError(
-                    "Azure OpenAI embedding request failed: {StatusCode} {Reason}\nDetails: {ErrorContent}",
-                    response.StatusCode,
-                    response.ReasonPhrase,
-                    errorContent);
-                throw new HttpRequestException(
-                    $"Azure OpenAI embedding failed: {response.StatusCode} {response.ReasonPhrase}");
-            }
-
-            // Parse response
-            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            using var jsonDoc = JsonDocument.Parse(responseContent);
-            var root = jsonDoc.RootElement;
-
             var result = new Dictionary<string, float[]>(StringComparer.Ordinal);
-
-            if (root.TryGetProperty("data", out var dataArray))
+            if (response.Value.Count != textList.Count)
             {
-                var embeddingIndex = 0;
-                foreach (var item in dataArray.EnumerateArray())
+                throw new InvalidOperationException("Embedding response count does not match the input count.");
+            }
+            foreach (var embedding in response.Value)
+            {
+                var vector = embedding.ToFloats().ToArray();
+                if (embedding.Index < 0 || embedding.Index >= textList.Count || vector.Length != Dimension
+                    || result.ContainsKey(textList[embedding.Index]))
                 {
-                    if (item.TryGetProperty("embedding", out var embeddingProp) &&
-                        item.TryGetProperty("index", out var indexProp))
-                    {
-                        var index = indexProp.GetInt32();
-                        if (index >= 0 && index < textList.Count)
-                        {
-                            var vector = embeddingProp
-                                .EnumerateArray()
-                                .Select(e => e.GetSingle())
-                                .ToArray();
-
-                            result[textList[index]] = vector;
-                            embeddingIndex++;
-                        }
-                    }
+                    throw new InvalidOperationException("Embedding response contains an invalid index or vector dimension.");
                 }
+                result.Add(textList[embedding.Index], vector);
             }
 
             _logger.LogInformation(

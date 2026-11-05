@@ -12,6 +12,14 @@ public sealed class OpenAIOptions
     [Required]
     public string ChatCompletionModelId { get; set; } = string.Empty;
 
+    /// <summary>Model for interactive function execution.</summary>
+    [Required]
+    public string ToolCompletionModelId { get; set; } = string.Empty;
+
+    /// <summary>Model for reasoning-intensive playbook inference.</summary>
+    [Required]
+    public string ToolReasoningModelId { get; set; } = string.Empty;
+
     [Required]
     public string TextGenerationModelId { get; set; } = string.Empty;
 

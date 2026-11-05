@@ -11,17 +11,19 @@ using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Mediator;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
 
 /// <summary>
-/// Resolves chat replies through deterministic intent routing, forced-tool inference, and finally
-/// the normal open agent turn. All AI and chat-presentation behavior stays here so application
+/// Resolves chat replies through deterministic intent routing and purpose-specific inference.
+/// All AI and chat-presentation behavior stays here so application
 /// handlers depend only on <see cref="IChatMessageRouter"/>.
 /// </summary>
 public sealed class ChatMessageIntentRouter(
     AIAgent agent,
+    [FromKeyedServices(InferencePurpose.Chat)] AIAgent chatAgent,
     ISender sender,
     IAgentFrameworkContext context,
     ChatGovernanceGate governanceGate,
@@ -38,6 +40,12 @@ public sealed class ChatMessageIntentRouter(
     private readonly ChatGovernanceScope _governanceScope = governanceScope;
     private readonly IAgentInstructionsComposer _instructionsComposer = instructionsComposer;
     private readonly AIAgent _agent = agent;
+    private readonly AIAgent _chatAgent = chatAgent;
+    private const string TextOnlyInstructions =
+        "You are a text-only assistant. You have no application tools or access to live product data. " +
+        "Answer from the conversation and general knowledge; do not claim to retrieve, change, or search application data.";
+    private static readonly string[] ChatHistoryIntentPhrases =
+        ["chat sessions", "chat session history", "chat history", "chat messages", "my conversations", "previous conversations"];
     private readonly ISender _sender = sender;
     private readonly IAgentFrameworkContext _context = context;
     private readonly ChatGovernanceGate _governanceGate = governanceGate;
@@ -46,10 +54,6 @@ public sealed class ChatMessageIntentRouter(
     private readonly IIntentClassifier _intentClassifier = intentClassifier;
     private readonly Tools.IAgentChatContextAccessor _chatContextAccessor = chatContextAccessor;
     private readonly ILogger<ChatMessageIntentRouter> _logger = logger;
-    private static readonly Action<ILogger, Exception?> LogForcedToolInferenceFailure = LoggerMessage.Define(
-        LogLevel.Warning,
-        new EventId(1, nameof(LogForcedToolInferenceFailure)),
-        "Level 3 forced-tool inference failed; falling back to the Level 3 open agent turn.");
 
     /// <inheritdoc />
     public async Task<string> ResolveReplyAsync(
@@ -78,25 +82,36 @@ public sealed class ChatMessageIntentRouter(
         {
             var governed = await GovernTurnAsync(chatSessionId, message, cancellationToken);
             var instruction = AgentInstruction.Create(
-                $"{governed.PromptContext.SystemInstruction}\n\n{_instructionsComposer.Compose()}",
+                $"{governed.PromptContext.SystemInstruction}\n\n{(mode == ChatRoutingMode.Direct ? TextOnlyInstructions : _instructionsComposer.Compose())}",
                 InstructionScope.Session);
             using var governedScope = _governanceScope.Begin(_rlsContext.TenantId, instruction);
             var chatHistory = await BuildChatHistoryAsync(chatSessionId, message, cancellationToken);
 
-            if (mode == ChatRoutingMode.Routed)
+            if (mode == ChatRoutingMode.Direct)
             {
-                var forcedToolReply = await TryResolveViaForcedToolInferenceAsync(chatHistory, cancellationToken);
-                if (!string.IsNullOrWhiteSpace(forcedToolReply))
-                {
-                    return await GuardReplyAsync(forcedToolReply, chatHistory, cancellationToken);
-                }
+                chatHistory.Add(new(ChatRole.System, TextOnlyInstructions));
             }
 
-            var agentResponse = await _agent.RunAsync(chatHistory, cancellationToken: cancellationToken);
+            var requiresTool = mode == ChatRoutingMode.Routed
+                && ChatHistoryIntentPhrases.Any(phrase => message.Contains(phrase, StringComparison.OrdinalIgnoreCase));
+            var inferenceAgent = mode == ChatRoutingMode.Direct ? _chatAgent : _agent;
+            var runOptions = requiresTool
+                ? new ChatClientAgentRunOptions(new ChatOptions { ToolMode = ChatToolMode.RequireAny })
+                : null;
+            var agentResponse = await inferenceAgent.RunAsync(chatHistory, options: runOptions, cancellationToken: cancellationToken);
+            if (requiresTool && !agentResponse.Messages.Any(item => item.Contents.OfType<FunctionCallContent>().Any()))
+            {
+                throw new InvalidOperationException("Required-tool inference completed without a function call.");
+            }
+
             var response = agentResponse.Messages.LastOrDefault();
             ChatGuard.GuardAgainstNullAgentResponse(response);
             var reply = response!.Contents.LastOrDefault()?.ToString() ?? string.Empty;
-            return await GuardReplyAsync(reply, chatHistory, cancellationToken);
+            if (requiresTool && string.IsNullOrWhiteSpace(reply))
+            {
+                throw new InvalidOperationException("Required-tool inference completed without a reply.");
+            }
+            return await GuardReplyAsync(reply, chatHistory, governed.PromptContext.SystemInstruction, cancellationToken);
         }
         finally
         {
@@ -112,6 +127,7 @@ public sealed class ChatMessageIntentRouter(
     private async Task<string> GuardReplyAsync(
         string reply,
         List<ChatMessage> chatHistory,
+        string governedInstruction,
         CancellationToken cancellationToken)
     {
         if (!FutureTenseGuard.ContainsFutureTense(reply))
@@ -124,10 +140,14 @@ public sealed class ChatMessageIntentRouter(
         {
             var retryHistory = new List<ChatMessage>(chatHistory)
             {
+                new(ChatRole.Assistant, reply),
+                new(ChatRole.System, TextOnlyInstructions),
                 new(ChatRole.System, ToolRoutingInstructions.NoFutureTensePreamble),
                 new(ChatRole.System, "The previous reply violated the rule above. Produce the final answer now, using only past or present tense and containing results rather than announcements.")
             };
-            var retryResponse = await _agent.RunAsync(retryHistory, cancellationToken: cancellationToken);
+            var retryInstruction = AgentInstruction.Create($"{governedInstruction}\n\n{TextOnlyInstructions}", InstructionScope.Session);
+            using var retryScope = _governanceScope.Begin(_rlsContext.TenantId, retryInstruction);
+            var retryResponse = await _chatAgent.RunAsync(retryHistory, cancellationToken: cancellationToken);
             var retryReply = retryResponse.Messages.LastOrDefault()?.Contents.LastOrDefault()?.ToString();
             if (!string.IsNullOrWhiteSpace(retryReply))
             {
@@ -140,29 +160,6 @@ public sealed class ChatMessageIntentRouter(
         }
 
         return FutureTenseGuard.Enforce(reply);
-    }
-
-    private async Task<string?> TryResolveViaForcedToolInferenceAsync(
-        List<ChatMessage> chatHistory,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var runOptions = new ChatClientAgentRunOptions(new ChatOptions { ToolMode = ChatToolMode.RequireAny });
-            var agentResponse = await _agent.RunAsync(chatHistory, options: runOptions, cancellationToken: cancellationToken);
-            if (!agentResponse.Messages.Any(message => message.Contents.OfType<FunctionCallContent>().Any()))
-            {
-                _logger.LogWarning("Forced-tool inference did not invoke a tool; falling back to an open agent turn.");
-                return null;
-            }
-
-            return agentResponse.Messages.LastOrDefault()?.Contents.LastOrDefault()?.ToString();
-        }
-        catch (Exception exception)
-        {
-            LogForcedToolInferenceFailure(_logger, exception);
-            return null;
-        }
     }
 
     private async Task<GovernedEvaluationResult> GovernTurnAsync(

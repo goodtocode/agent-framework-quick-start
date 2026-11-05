@@ -128,121 +128,138 @@ public static class ConfigureServices
         services.AddEssayPlaybookTools();
         services.AddScoped<IEssayEvaluationRunner, EssayEvaluationRunner>();
 
-        services.AddSingleton(provider =>
+        foreach (var purpose in Enum.GetValues<InferencePurpose>())
         {
-            var providerOptions = provider.GetRequiredService<IOptions<AgentProviderOptions>>().Value;
-            var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("AgentProviderConfiguration");
-
-            if (providerOptions.Kind.Equals("GitHubCopilotSDK", StringComparison.OrdinalIgnoreCase))
+            services.AddKeyedSingleton<ChatClient>(purpose, (provider, _) =>
             {
-                var options = provider.GetRequiredService<IOptions<GitHubCopilotSdkOptions>>().Value;
-                logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. ChatCompletionModelId: {ChatCompletionModelId}",
-                    providerOptions.Kind,
-                    options.Endpoint,
-                    options.ChatCompletionModelId);
+                var providerOptions = provider.GetRequiredService<IOptions<AgentProviderOptions>>().Value;
+                var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("AgentProviderConfiguration");
+                logger.LogInformation("Resolving {Provider} inference purpose {Purpose}", providerOptions.Kind, purpose);
 
-                var client = new OpenAIClient(
-                    new System.ClientModel.ApiKeyCredential(options.ApiKey),
-                    CreateClientOptions(options.Endpoint));
-                return client.GetChatClient(options.ChatCompletionModelId);
-            }
-
-            if (providerOptions.Kind.Equals("AzureOpenAI", StringComparison.OrdinalIgnoreCase))
-            {
-                var options = provider.GetRequiredService<IOptions<AzureOpenAIOptions>>().Value;
-                var normalizedEndpoint = NormalizeAzureOpenAIEndpoint(options.Endpoint);
-                logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. NormalizedEndpoint: {NormalizedEndpoint}. ChatDeploymentName: {ChatDeploymentName}",
-                    providerOptions.Kind,
-                    options.Endpoint,
-                    normalizedEndpoint,
-                    options.ChatDeploymentName);
-
-                var client = new OpenAIClient(
-                    new System.ClientModel.ApiKeyCredential(options.ApiKey),
-                    CreateClientOptions(normalizedEndpoint));
-                return client.GetChatClient(options.ChatDeploymentName);
-            }
-
-            if (providerOptions.Kind.Equals("Ollama", StringComparison.OrdinalIgnoreCase))
-            {
-                var options = provider.GetRequiredService<IOptions<OllamaOptions>>().Value;
-                logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. ChatCompletionModelId: {ChatCompletionModelId}",
-                    providerOptions.Kind,
-                    options.Endpoint,
-                    options.ChatCompletionModelId);
-
-                var client = new OpenAIClient(
-                    new System.ClientModel.ApiKeyCredential(string.IsNullOrWhiteSpace(options.ApiKey) ? "ollama" : options.ApiKey),
-                    CreateClientOptions(options.Endpoint));
-                return client.GetChatClient(options.ChatCompletionModelId);
-            }
-
-            if (providerOptions.Kind.Equals("AzureAIFoundry", StringComparison.OrdinalIgnoreCase))
-            {
-                var options = provider.GetRequiredService<IOptions<AzureAIFoundryOptions>>().Value;
-                logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. ChatCompletionModelId: {ChatCompletionModelId}",
-                    providerOptions.Kind,
-                    options.Endpoint,
-                    options.ChatCompletionModelId);
-
-                var client = new OpenAIClient(
-                    new System.ClientModel.ApiKeyCredential(options.ApiKey),
-                    CreateClientOptions(options.Endpoint));
-                return client.GetChatClient(options.ChatCompletionModelId);
-            }
-
-            var openAIOptions = provider.GetRequiredService<IOptions<OpenAIOptions>>().Value;
-            logger.LogInformation("Agent provider resolved to {Provider}. ChatCompletionModelId: {ChatCompletionModelId}",
-                providerOptions.Kind,
-                openAIOptions.ChatCompletionModelId);
-
-            return new ChatClient(openAIOptions.ChatCompletionModelId, openAIOptions.ApiKey);
-        });
-
-        services.AddSingleton<AIAgent>(provider =>
-        {
-            var chatClient = provider.GetRequiredService<ChatClient>();
-            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-            var governedOptions = provider.GetRequiredService<IOptions<GovernedIntentOptions>>().Value;
-            var searchOptions = provider.GetRequiredService<IOptions<SearchProviderOptions>>().Value;
-            var tools = new List<AITool>
-            {
-                provider.GetRequiredService<MyChatSessionsTool>(),
-                provider.GetRequiredService<ActorsTool>(),
-                provider.GetRequiredService<MyChatMessagesTool>()
-            };
-
-            if (searchOptions.IsAvailable)
-            {
-                tools.Add(provider.GetRequiredService<WebSearchTool>());
-            }
-
-            var agentOptions = new ChatClientAgentOptions
-            {
-                Name = "CopilotAgent",
-                Description = "GoodToCode AgentFramework Copilot",
-                ChatOptions = new Microsoft.Extensions.AI.ChatOptions
+                if (providerOptions.Kind.Equals("GitHubCopilotSDK", StringComparison.OrdinalIgnoreCase))
                 {
-                    Tools = tools
-                }
-            };
+                    var options = provider.GetRequiredService<IOptions<GitHubCopilotSdkOptions>>().Value;
+                    logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. Model: {Model}",
+                        providerOptions.Kind,
+                        options.Endpoint,
+                        SelectModel(purpose, options.ChatCompletionModelId, options.ToolCompletionModelId, options.ToolReasoningModelId));
 
-            return chatClient.AsAIAgent(
-                options: agentOptions,
-                clientFactory: inner => new ChatClientBuilder(inner)
-                    .UseGovernedIntent(new GovernedChatClientOptions
+                    var client = new OpenAIClient(
+                        new System.ClientModel.ApiKeyCredential(options.ApiKey),
+                        CreateClientOptions(options.Endpoint));
+                    return client.GetChatClient(SelectModel(purpose, options.ChatCompletionModelId, options.ToolCompletionModelId, options.ToolReasoningModelId));
+                }
+
+                if (providerOptions.Kind.Equals("AzureOpenAI", StringComparison.OrdinalIgnoreCase))
+                {
+                    var options = provider.GetRequiredService<IOptions<AzureOpenAIOptions>>().Value;
+                    var normalizedEndpoint = NormalizeAzureOpenAIEndpoint(options.Endpoint);
+                    logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. NormalizedEndpoint: {NormalizedEndpoint}. Model: {Model}",
+                        providerOptions.Kind,
+                        options.Endpoint,
+                        normalizedEndpoint,
+                        SelectModel(purpose, options.ChatDeploymentName, options.ToolDeploymentName, options.ToolReasoningDeploymentName));
+
+                    var client = new OpenAIClient(
+                        new System.ClientModel.ApiKeyCredential(options.ApiKey),
+                        CreateClientOptions(normalizedEndpoint));
+                    return client.GetChatClient(SelectModel(purpose, options.ChatDeploymentName, options.ToolDeploymentName, options.ToolReasoningDeploymentName));
+                }
+
+                if (providerOptions.Kind.Equals("Ollama", StringComparison.OrdinalIgnoreCase))
+                {
+                    var options = provider.GetRequiredService<IOptions<OllamaOptions>>().Value;
+                    logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. Model: {Model}",
+                        providerOptions.Kind,
+                        options.Endpoint,
+                        SelectModel(purpose, options.ChatCompletionModelId, options.ToolCompletionModelId, options.ToolReasoningModelId));
+
+                    var client = new OpenAIClient(
+                        new System.ClientModel.ApiKeyCredential(string.IsNullOrWhiteSpace(options.ApiKey) ? "ollama" : options.ApiKey),
+                        CreateClientOptions(options.Endpoint));
+                    return client.GetChatClient(SelectModel(purpose, options.ChatCompletionModelId, options.ToolCompletionModelId, options.ToolReasoningModelId));
+                }
+
+                if (providerOptions.Kind.Equals("AzureAIFoundry", StringComparison.OrdinalIgnoreCase))
+                {
+                    var options = provider.GetRequiredService<IOptions<AzureAIFoundryOptions>>().Value;
+                    logger.LogInformation("Agent provider resolved to {Provider}. Endpoint: {Endpoint}. Model: {Model}",
+                        providerOptions.Kind,
+                        options.Endpoint,
+                        SelectModel(purpose, options.ChatCompletionModelId, options.ToolCompletionModelId, options.ToolReasoningModelId));
+
+                    var client = new OpenAIClient(
+                        new System.ClientModel.ApiKeyCredential(options.ApiKey),
+                        CreateClientOptions(options.Endpoint));
+                    return client.GetChatClient(SelectModel(purpose, options.ChatCompletionModelId, options.ToolCompletionModelId, options.ToolReasoningModelId));
+                }
+
+                var openAIOptions = provider.GetRequiredService<IOptions<OpenAIOptions>>().Value;
+                logger.LogInformation("Agent provider resolved to {Provider}. Model: {Model}",
+                    providerOptions.Kind,
+                    SelectModel(purpose, openAIOptions.ChatCompletionModelId, openAIOptions.ToolCompletionModelId, openAIOptions.ToolReasoningModelId));
+
+                return new ChatClient(SelectModel(purpose, openAIOptions.ChatCompletionModelId, openAIOptions.ToolCompletionModelId, openAIOptions.ToolReasoningModelId), openAIOptions.ApiKey);
+            });
+
+            services.AddKeyedSingleton<AIAgent>(purpose, (provider, _) =>
+            {
+                var chatClient = provider.GetRequiredKeyedService<ChatClient>(purpose);
+                var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+                var governedOptions = provider.GetRequiredService<IOptions<GovernedIntentOptions>>().Value;
+                var searchOptions = provider.GetRequiredService<IOptions<SearchProviderOptions>>().Value;
+                var tools = new List<AITool>();
+                if (purpose == InferencePurpose.Tool)
+                {
+                    tools.AddRange(provider.GetRequiredService<MyChatSessionsTool>().CreateFunctions());
+                    tools.AddRange(provider.GetRequiredService<ActorsTool>().CreateFunctions());
+                    tools.AddRange(provider.GetRequiredService<MyChatMessagesTool>().CreateFunctions());
+
+                    if (searchOptions.IsAvailable)
                     {
-                        IntentRequired = governedOptions.IntentRequired,
-                        PreambleMode = governedOptions.PreambleMode
-                    })
-                    .Build(provider),
-                loggerFactory: loggerFactory,
-                services: provider
-            );
-        });
+                        tools.AddRange(provider.GetRequiredService<WebSearchTool>().CreateFunctions());
+                    }
+                }
+
+                var agentOptions = new ChatClientAgentOptions
+                {
+                    Name = $"CopilotAgent{purpose}",
+                    Description = "GoodToCode AgentFramework Copilot",
+                    ChatOptions = new Microsoft.Extensions.AI.ChatOptions
+                    {
+                        Tools = tools
+                    }
+                };
+
+                return chatClient.AsAIAgent(
+                    options: agentOptions,
+                    clientFactory: inner => new ChatClientBuilder(inner)
+                        .UseGovernedIntent(new GovernedChatClientOptions
+                        {
+                            IntentRequired = governedOptions.IntentRequired,
+                            PreambleMode = governedOptions.PreambleMode
+                        })
+                        .Build(provider),
+                    loggerFactory: loggerFactory,
+                    services: provider
+                );
+            });
+        }
+
+        services.AddSingleton(provider => provider.GetRequiredKeyedService<ChatClient>(InferencePurpose.Chat));
+        services.AddSingleton(provider => provider.GetRequiredKeyedService<AIAgent>(InferencePurpose.Tool));
 
         return services;
     }
+
+    private static string SelectModel(InferencePurpose purpose, string chat, string tool, string reasoning)
+        => purpose switch
+        {
+            InferencePurpose.Chat => chat,
+            InferencePurpose.Tool => tool,
+            InferencePurpose.ToolReasoning => reasoning,
+            _ => throw new ArgumentOutOfRangeException(nameof(purpose))
+        };
 
     public static IServiceCollection AddWebSearchProviders(this IServiceCollection services, IConfiguration configuration)
     {
@@ -295,6 +312,8 @@ public static class ConfigureServices
 
     private static bool HasRequiredOpenAI(OpenAIOptions options)
         => HasValue(options.ChatCompletionModelId)
+           && HasValue(options.ToolCompletionModelId)
+           && HasValue(options.ToolReasoningModelId)
            && HasValue(options.TextGenerationModelId)
            && HasValue(options.TextEmbeddingModelId)
            && HasValue(options.TextModerationModelId)
@@ -304,6 +323,8 @@ public static class ConfigureServices
 
     private static bool HasRequiredGitHubCopilotSdk(GitHubCopilotSdkOptions options)
         => HasValue(options.ChatCompletionModelId)
+           && HasValue(options.ToolCompletionModelId)
+           && HasValue(options.ToolReasoningModelId)
            && HasValue(options.TextGenerationModelId)
            && HasValue(options.TextEmbeddingModelId)
            && HasValue(options.TextModerationModelId)
@@ -313,11 +334,14 @@ public static class ConfigureServices
            && HasUri(options.Endpoint);
 
     private static bool HasRequiredAzureOpenAI(AzureOpenAIOptions options)
-        => HasValue(options.ChatDeploymentName)
+        => HasValidAnnotations(options)
+           && HasValue(options.ChatDeploymentName)
+           && HasValue(options.ToolDeploymentName)
+           && HasValue(options.ToolReasoningDeploymentName)
            && HasValue(options.ApiKey)
            && HasUri(options.Endpoint);
 
-    private static string NormalizeAzureOpenAIEndpoint(string endpoint)
+    internal static string NormalizeAzureOpenAIEndpoint(string endpoint)
     {
         var trimmed = endpoint.Trim();
 
@@ -343,10 +367,15 @@ public static class ConfigureServices
 
     private static bool HasRequiredOllama(OllamaOptions options)
         => HasValue(options.ChatCompletionModelId)
+           && HasValue(options.ToolCompletionModelId)
+           && HasValue(options.ToolReasoningModelId)
            && HasUri(options.Endpoint);
 
     private static bool HasRequiredAzureAIFoundry(AzureAIFoundryOptions options)
-        => HasValue(options.ChatCompletionModelId)
+        => HasValidAnnotations(options)
+           && HasValue(options.ChatCompletionModelId)
+           && HasValue(options.ToolCompletionModelId)
+           && HasValue(options.ToolReasoningModelId)
            && HasValue(options.TextGenerationModelId)
            && HasValue(options.TextEmbeddingModelId)
            && HasValue(options.TextModerationModelId)
@@ -377,6 +406,10 @@ public static class ConfigureServices
 
     private static bool HasValue(string value)
         => !string.IsNullOrWhiteSpace(value);
+
+    private static bool HasValidAnnotations(object options)
+        => System.ComponentModel.DataAnnotations.Validator.TryValidateObject(
+            options, new System.ComponentModel.DataAnnotations.ValidationContext(options), null, validateAllProperties: true);
 
     private static bool HasUri(string value)
         => Uri.TryCreate(value, UriKind.Absolute, out _);
