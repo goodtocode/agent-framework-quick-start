@@ -26,6 +26,44 @@ Agent Framework is an SDK that integrates Large Language Models (LLMs) like Open
 # Quick-Start Steps
 Use one of the two copy/paste options below.
 
+Local installation/debugging is unchanged: `Initialize-Local.ps1` still targets LocalDB and
+the existing AI/External ID user-secrets. It does not provision Azure managed identities.
+
+## Azure SQL resource contract (Sequence 1 foundation)
+
+The [workload template](.azure/templates/workload-digitalproduct.bicep) supports independently
+created or referenced SQL servers through `sql.server.kind`: `EntraOnly` requires an existing
+workload-tenant administrator group; `Existing` creates only the product database on an
+owner-approved Entra-only server. Hosted SQL-password authentication is not supported.
+Standalone parameters select Entra-only SQL and a dedicated API UAMI. LocalDB continues
+to use Windows authentication independently.
+
+Set `api.userAssignedIdentityName` for a dedicated workload-owned UAMI on a reviewed Entra
+deployment. Outputs distinguish Azure RBAC object IDs from SQL/SqlClient client IDs.
+After resource deployment, an authorized SQL administrator runs
+[Set-AzureSqlManagedIdentityUsers.ps1](.azure/scripts/sql/Set-AzureSqlManagedIdentityUsers.ps1)
+with distinct runtime and migration client IDs; it grants DML to runtime and DML/DDL to
+migration without `db_owner` or Graph name lookup.
+
+The hosted workflows read named deployment outputs and use the GitHub OIDC identity for
+migrations. Configure `SQL_ENTRA_ADMIN_GROUP_OBJECT_ID` in IaC YAML `env` (or an environment
+secret when YAML is empty) and the existing
+OIDC tenant/subscription/client IDs, deploy IaC, provision contained users as the administrator,
+then run app CD. Verify SQL-backed behavior, sign-in, least privilege and redeployment.
+IaC enforces the final authentication policy immediately on owned servers, with no transition
+mode. Referenced servers must already be Entra-only. Deployment locks prevent overlapping
+mutations, not workflow ordering. No live installation is implied by local validation.
+
+Choose the administrator group in the deployment owner's workload tenant; customer deployments
+must not automatically grant publisher access. The current contract requires an administrator
+group, not a no-human-access model. Routine operator access should use separate least-privilege
+database grants. Cloud prototype resets must be separate, explicitly targeted destructive
+operations; local EF resets must not implicitly reset Azure. Rewritten migration baselines
+require an approved disposable cloud database rebuild and contained-user provisioning.
+
+AI authentication and web app secrets remain separate follow-up changes, not extra requirements
+for a local clone. AI test credentials are environment inputs, not baked into published settings.
+
 ## Quick-Start: Full Setup (new or first-time environment)
 ```powershell
 # Clone repository
@@ -495,8 +533,6 @@ $secrets = @{
 	AZURE_TENANT_ID      = "<azure-tenant-id>"
 	EEID_INSTANCE        = "<eeid-instance-url>"
 	EEID_TENANT_ID       = "<eeid-tenant-id>"
-	SQL_ADMIN_PASSWORD   = "<sql-admin-password>"
-	SQL_ADMIN_USER       = "<sql-admin-user>"
 	WEB_CLIENT_ID        = "<web-app-client-id>"
 	WEB_CLIENT_SECRET    = "<web-app-client-secret>"
 }

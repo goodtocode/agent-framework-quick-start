@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Logging;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
 using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Embeddings;
 
