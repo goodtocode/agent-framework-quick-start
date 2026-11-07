@@ -48,7 +48,7 @@ env:
   MODE: "standalone"
   IAC_DEPLOYMENT_NAME: "workload-digitalproduct"
   AZURE_RESOURCE_GROUP_NAME: "" # Optional explicit RG; otherwise naming slots above.
-  SQL_ENTRA_ADMIN_GROUP_OBJECT_ID: "" # Set here or in the GitHub environment secret.
+  SQL_ENTRA_ADMIN_GROUP_OBJECT_ID: "d41d48d2-8152-416c-a6af-cbac98a3e2a5"
   # ===============================================================================================
   DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: "true"
 
