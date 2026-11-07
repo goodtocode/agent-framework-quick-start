@@ -1,19 +1,19 @@
-﻿using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+﻿using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+using Goodtocode.AgentFramework.Core.Application.Governance;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
 using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
-using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
-using Goodtocode.AgentFramework.Core.Application.Governance;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Prompting.Governance;
 using Microsoft.Agents.AI;
@@ -115,7 +115,7 @@ public static class ConfigureServices
         services.AddScoped<ChatMessageIntentRouter>();
         services.AddScoped<IChatMessageRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
         services.AddScoped<IIntentRouter>(provider => provider.GetRequiredService<ChatMessageIntentRouter>());
-        
+
         services.AddSingleton<MyChatSessionsTool>();
         services.AddSingleton<ActorsTool>();
         services.AddSingleton<MyChatMessagesTool>();

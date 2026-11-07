@@ -1,10 +1,10 @@
 using System.ClientModel;
 using System.ClientModel.Primitives;
-using OpenAI;
-using OpenAI.Embeddings;
+using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using OpenAI;
+using OpenAI.Embeddings;
 
 namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
 

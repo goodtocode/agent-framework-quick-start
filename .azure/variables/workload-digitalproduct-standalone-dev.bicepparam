@@ -1,7 +1,7 @@
 using '../templates/workload-digitalproduct.bicep'
 
 // Phase 1 (mode 1, standalone): plan, Log Analytics, App Insights, web, API and SQL all live in this RG.
-// RG: {product}-{env}-{region}-{instance}-rg. Secrets: set SQL_ADMIN_USER and SQL_ADMIN_PASSWORD in the environment before running az deployment group.
+// RG: {product}-{env}-{region}-{instance}-rg. Set SQL_ENTRA_ADMIN_GROUP_OBJECT_ID and AZURE_TENANT_ID to workload-tenant IDs before deployment.
 // Deploy: az deployment group create -g agent-dev-wus2-100-rg -f .azure/templates/workload-digitalproduct.bicep -p .azure/variables/workload-digitalproduct-standalone-dev.bicepparam
 
 var productIac = 'agent'
@@ -24,11 +24,17 @@ param hosting = {
 
 // Components: delete a line to skip that component.
 param web = { name: '${prefix}-web' }
-param api = { name: '${prefix}-api' }
+param api = { name: '${prefix}-api', userAssignedIdentityName: '${prefix}-api-id' }
 param sql = {
   serverName: '${prefix}-sql'
   databaseName: '${prefix}-sqldb'
   databaseSku: 'Basic'
-  adminLogin: readEnvironmentVariable('SQL_ADMIN_USER', 'LocalAdmin')
-  adminPassword: readEnvironmentVariable('SQL_ADMIN_PASSWORD', 'PASS_FROM_CLI_PARAMETERS')
+  server: {
+    kind: 'EntraOnly'
+    administrator: {
+      login: 'Workload SQL administrators'
+      objectId: readEnvironmentVariable('SQL_ENTRA_ADMIN_GROUP_OBJECT_ID', '00000000-0000-0000-0000-000000000000')
+      tenantId: readEnvironmentVariable('AZURE_TENANT_ID', '00000000-0000-0000-0000-000000000000')
+    }
+  }
 }
