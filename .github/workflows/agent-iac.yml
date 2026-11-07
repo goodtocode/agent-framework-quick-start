@@ -42,7 +42,7 @@ env:
   # ===== EDIT PER INSTALL: naming slots (RG: {product}-{env}-{region}-{instance}-rg) =====
   PRODUCT: "agent"
   REGION: "wus2"
-  INSTANCE: "101"
+  INSTANCE: "100"
   LOCATION: "westus2"
   # standalone | shared | network | zerotrust
   MODE: "standalone"

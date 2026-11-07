@@ -44,7 +44,7 @@ env:
   # ===== EDIT PER INSTALL: naming slots (names: {product}-{env}-{region}-{instance}-{type}) =====
   PRODUCT: "agent"
   REGION: "wus2"
-  INSTANCE: "101"
+  INSTANCE: "100"
   IAC_DEPLOYMENT_NAME: "workload-digitalproduct"
   AZURE_RESOURCE_GROUP_NAME: "" # Match IaC when overriding its naming slots.
   BACKEND_API_BASE_URL: "" # Required only for web-only deployments.

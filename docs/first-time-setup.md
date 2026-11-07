@@ -84,7 +84,7 @@ For `SqlAuth`, configure four environment secrets before the first IaC run: `SQL
 automatically provision restricted migration and runtime database users. The runtime password is
 generated and reused from the API App Service connection string; no runtime secrets or manual SQL
 resource changes are needed. The administrator is used only for provisioning, not migrations or runtime.
-Product parameters and both workflows use instance `101`; mode changes require a replacement,
+Product parameters and both workflows use instance `100`; mode changes require a replacement,
 not a pipeline conversion or automatic deletion. Entra-only remains the default.
 
 Choose the administrator group in the deployment owner's workload tenant; customer deployments
