@@ -44,6 +44,10 @@ No commits, pushes, database resets, or authentication-mode conversions occur.
 
 See [First-time setup](docs/first-time-setup.md) for phases and troubleshooting.
 
+Standalone prototype development uses F1 to minimize idle compute cost. Move to B1 when CPU
+quotas, cold starts or dedicated hosting features require it. Front Door is optional; the shared
+edge template defaults to Standard custom-rule WAF and skips creation when no origins are configured.
+
 ## Rebrand a clone for your organization
 After cloning, `Update-Branding.ps1` replaces the original organization and Quick-start product branding across the whole repo (source, solution files, GitHub Actions, Azure DevOps, IaC, docs). It is a dry run unless `-Apply` is given, never replaces the repo's NuGet package dependencies, Entra scopes, user-secrets keys or the `AgentFramework` EF context/database names, and regenerates the `UserSecretsId` values.
 
