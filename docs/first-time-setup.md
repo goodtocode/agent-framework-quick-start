@@ -26,6 +26,12 @@ Pass `-SignInTenantId`, `-SignInInstanceUrl`, `-WorkloadTenantId`, `-Subscriptio
 `-Environment` and `-Instance` for Prepare and Complete. Production requires corresponding IaC
 parameter files and workflow planning to be enabled first; this script does not invent them.
 
+GitHub federation defaults to one `github-agent` application shared across environments. Pass
+`-GitHubPrincipalName` to reuse a differently named application; Prepare stores that name for
+Complete. Existing matching issuer, subject, and audience credentials are reused, including
+main and pull request subjects, and unrelated credentials are not deleted. Each environment
+still needs its own GitHub environment and deployment permissions in its subscription.
+
 Existing registrations/secrets are reused. On a new machine, privately enter missing existing
 client secrets; automatic retrieval from Entra/GitHub is impossible. `-RotateSecrets` is explicit
 and requires updating all consumers. State stays in local user-secrets per environment/instance;

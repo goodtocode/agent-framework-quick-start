@@ -4,7 +4,102 @@ BeforeAll {
     $script:selector = Join-Path $PSScriptRoot '..\cd\Get-WorkloadSqlCreateMode.ps1'
     $script:passwordProvisioner = Join-Path $PSScriptRoot '..\cd\Set-AzureSqlPasswordUsers.ps1'
     $script:initializer = Join-Path $PSScriptRoot '..\setup\Initialize-Product.ps1'
+    $script:federation = Join-Path $PSScriptRoot '..\cd\New-Github-Azure-Federation.ps1'
     $script:testPassword = [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+}
+
+Describe 'Federation context selection' {
+    BeforeEach {
+        Mock Set-ExecutionPolicy { }
+        Mock Get-AzADApplication { throw 'Stopped before directory changes.' }
+        Mock Set-AzContext { }
+        Mock Connect-AzAccount { }
+    }
+
+    It 'skips tenant-only contexts and selects a matching saved subscription' {
+        Mock Get-AzContext {
+            if ($ListAvailable) {
+                [pscustomobject]@{ Subscription = $null; Tenant = [pscustomobject]@{ Id = '11111111-1111-1111-1111-111111111111' } }
+                [pscustomobject]@{ Subscription = [pscustomobject]@{ Id = '22222222-2222-2222-2222-222222222222' }; Tenant = [pscustomobject]@{ Id = '11111111-1111-1111-1111-111111111111' } }
+            }
+            else { [pscustomobject]@{ Subscription = $null; Tenant = [pscustomobject]@{ Id = '11111111-1111-1111-1111-111111111111' } } }
+        }
+        Set-StrictMode -Version Latest
+        { & $federation -TenantId '11111111-1111-1111-1111-111111111111' -SubscriptionId '22222222-2222-2222-2222-222222222222' -PrincipalName 'test' -Organization 'test' -Repository 'test' -Environment 'development' } | Should -Throw '*Stopped before directory changes*'
+        Should -Invoke Set-AzContext -Times 1 -Exactly
+        Should -Invoke Connect-AzAccount -Times 0 -Exactly
+    }
+
+    It 'signs in when no saved context has the requested subscription' {
+        Mock Get-AzContext { [pscustomobject]@{ Subscription = $null; Tenant = [pscustomobject]@{ Id = '11111111-1111-1111-1111-111111111111' } } }
+        Set-StrictMode -Version Latest
+        { & $federation -TenantId '11111111-1111-1111-1111-111111111111' -SubscriptionId '22222222-2222-2222-2222-222222222222' -PrincipalName 'test' -Organization 'test' -Repository 'test' -Environment 'development' } | Should -Throw '*Stopped before directory changes*'
+        Should -Invoke Connect-AzAccount -Times 1 -Exactly
+        Should -Invoke Set-AzContext -Times 0 -Exactly
+    }
+}
+
+Describe 'Federated credential reconciliation' {
+    BeforeAll {
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($federation, [ref]$null, [ref]$null)
+        $definition = $ast.Find({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Set-FederatedCredential' }, $true)
+        Invoke-Expression $definition.Extent.Text
+        $script:appObjectId = 'synthetic-app'
+    }
+    BeforeEach {
+        Mock New-AzADAppFederatedCredential { }
+        Mock Remove-AzADAppFederatedCredential { throw 'Existing credentials must not be deleted.' }
+    }
+    It 'reuses a matching subject even when its credential name differs' {
+        Mock Get-AzADAppFederatedCredential { [pscustomobject]@{ Name = 'existing'; Subject = 'repo:owner/repo:pull_request'; Issuer = 'https://token.actions.githubusercontent.com'; Audience = @('api://AzureADTokenExchange') } }
+        Set-FederatedCredential 'other-name' 'repo:owner/repo:pull_request'
+        Should -Invoke New-AzADAppFederatedCredential -Times 0 -Exactly
+        Should -Invoke Remove-AzADAppFederatedCredential -Times 0 -Exactly
+    }
+    It 'creates a separate deterministic credential when the name belongs to another repository' {
+        Mock Get-AzADAppFederatedCredential { [pscustomobject]@{ Name = 'github-main'; Subject = 'repo:owner/other:ref:refs/heads/main'; Issuer = 'https://token.actions.githubusercontent.com'; Audience = @('api://AzureADTokenExchange') } }
+        Set-FederatedCredential 'github-main' 'repo:owner/repo:ref:refs/heads/main'
+        Should -Invoke New-AzADAppFederatedCredential -Times 1 -Exactly -ParameterFilter { $Name -match '^github-main-[0-9a-f]{12}$' }
+        Should -Invoke Remove-AzADAppFederatedCredential -Times 0 -Exactly
+    }
+    It 'rejects a matching subject with a different audience' {
+        Mock Get-AzADAppFederatedCredential { [pscustomobject]@{ Name = 'existing'; Subject = 'repo:owner/repo:pull_request'; Issuer = 'https://token.actions.githubusercontent.com'; Audience = @('other') } }
+        { Set-FederatedCredential 'github-PR' 'repo:owner/repo:pull_request' } | Should -Throw '*incompatible audience*'
+        Should -Invoke New-AzADAppFederatedCredential -Times 0 -Exactly
+    }
+}
+
+Describe 'Shared federation across environments' {
+    It 'reuses main and pull request subjects when preparing and rerunning environments' {
+        $global:FederationTestCredentials = [System.Collections.Generic.List[object]]::new()
+        Mock Set-ExecutionPolicy { }
+        Mock Get-AzContext { [pscustomobject]@{ Subscription = [pscustomobject]@{ Id = '22222222-2222-2222-2222-222222222222'; TenantId = '11111111-1111-1111-1111-111111111111' }; Tenant = [pscustomobject]@{ Id = '11111111-1111-1111-1111-111111111111' } } }
+        Mock Get-AzADApplication { [pscustomobject]@{ DisplayName = 'github-test'; AppId = '33333333-3333-3333-3333-333333333333'; Id = '44444444-4444-4444-4444-444444444444' } }
+        Mock New-AzADApplication { throw 'Existing application must be reused.' }
+        Mock Get-AzADServicePrincipal { [pscustomobject]@{ Id = '55555555-5555-5555-5555-555555555555' } }
+        Mock New-AzADServicePrincipal { throw 'Existing service principal must be reused.' }
+        Mock Get-AzRoleAssignment { [pscustomobject]@{ Id = 'role' } }
+        Mock New-AzRoleAssignment { throw 'Existing role must be reused.' }
+        Mock Get-AzADAppFederatedCredential { $global:FederationTestCredentials.ToArray() }
+        Mock New-AzADAppFederatedCredential {
+            $global:FederationTestCredentials.Add([pscustomobject]@{ Name = $Name; Subject = $Subject; Issuer = $Issuer; Audience = @($Audience) })
+        }
+        Mock Remove-AzADAppFederatedCredential { throw 'Existing credentials must not be deleted.' }
+        Mock gh { $global:LASTEXITCODE = 0; '{"sub_claim_prefix":"repo:owner/repo","use_default":true,"use_immutable_subject":false}' }
+        try {
+            Set-StrictMode -Version Latest
+            foreach ($environment in @('development', 'production', 'development')) {
+                & $federation -TenantId '11111111-1111-1111-1111-111111111111' -SubscriptionId '22222222-2222-2222-2222-222222222222' `
+                    -PrincipalName 'github-test' -Organization 'owner' -Repository 'repo' -Environment $environment -PassThru | Out-Null
+            }
+            $global:FederationTestCredentials.Count | Should -Be 4
+            @($global:FederationTestCredentials | Where-Object Subject -eq 'repo:owner/repo:ref:refs/heads/main').Count | Should -Be 1
+            @($global:FederationTestCredentials | Where-Object Subject -eq 'repo:owner/repo:pull_request').Count | Should -Be 1
+            Should -Invoke New-AzADAppFederatedCredential -Times 4 -Exactly
+            Should -Invoke Remove-AzADAppFederatedCredential -Times 0 -Exactly
+        }
+        finally { Remove-Variable -Name FederationTestCredentials -Scope Global }
+    }
 }
 
 Describe 'Workload deployment targets' {
@@ -335,6 +430,15 @@ Describe 'Root setup orchestration' {
         $source | Should -Match 'Setup:\$\{Environment\}:\$\{Instance\}'
         $source | Should -Match 'Existing protection settings were not changed'
         $source | Should -Not -Match 'git (commit|push)|Remove-AzSql|DROP DATABASE'
+    }
+
+    It 'uses one configurable deployment identity across environments' {
+        $source = Get-Content $initializer -Raw
+        $source | Should -Match '\[string\]\$GitHubPrincipalName'
+        $source | Should -Match 'else \{ "github-\$product" \}'
+        $source | Should -Match '"\$\{setupPrefix\}:GitHubPrincipalName" = \$GitHubPrincipalName'
+        $source | Should -Match '-PrincipalName \$GitHubPrincipalName'
+        $source | Should -Match 'az ad app list --display-name \$GitHubPrincipalName'
     }
 }
 

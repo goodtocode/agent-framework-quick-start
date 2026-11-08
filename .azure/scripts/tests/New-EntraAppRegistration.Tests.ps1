@@ -1,5 +1,6 @@
 BeforeAll {
     $path = Join-Path $PSScriptRoot '..\entra\New-EntraAppRegistration.ps1'
+    $script:registrationPath = $path
     $ast = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$null, [ref]$null)
     $wanted = 'ConvertTo-ScopeSpec', 'New-ScopeSpec', 'ConvertTo-RoleSpec', 'New-RoleSpec', 'ConvertTo-ClaimSpec', 'Get-MergedOptionalClaims', 'Get-MergedResourceAccess'
 
@@ -8,6 +9,84 @@ BeforeAll {
     foreach ($a in $assignments) { Invoke-Expression $a.Extent.Text }
     $functions = $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -in $wanted }, $false)
     foreach ($f in $functions) { Invoke-Expression $f.Extent.Text }
+
+    $script:identifierUriAssignment = $ast.Find({
+        param($node)
+        $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -eq '$identifierUri'
+    }, $false).Extent.Text
+    $script:claimDefaults = @($ast.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.IfStatementAst] -and
+            ($node.Extent.Text.StartsWith("if (-not `$PSBoundParameters.ContainsKey('IdTokenClaims'))") -or
+             $node.Extent.Text.StartsWith("if (-not `$PSBoundParameters.ContainsKey('AccessTokenClaims'))"))
+    }, $false))
+    function Get-ClaimDefaultCounts {
+        param([string]$Type, [string[]]$IdTokenClaims, [string[]]$AccessTokenClaims)
+        Set-StrictMode -Version Latest
+        foreach ($statement in $script:claimDefaults) { Invoke-Expression $statement.Extent.Text }
+        return @($IdTokenClaims.Count, $AccessTokenClaims.Count)
+    }
+}
+
+Describe 'identifier URI under strict mode' {
+    It 'handles an existing registration with no identifier URI' {
+        Set-StrictMode -Version Latest
+        $app = [pscustomobject]@{ IdentifierUris = @() }
+        Invoke-Expression $script:identifierUriAssignment
+        $identifierUri | Should -BeNullOrEmpty
+    }
+    It 'returns the first configured identifier URI' {
+        Set-StrictMode -Version Latest
+        $app = [pscustomobject]@{ IdentifierUris = @('api://first', 'api://second') }
+        Invoke-Expression $script:identifierUriAssignment
+        $identifierUri | Should -Be 'api://first'
+    }
+}
+
+Describe 'existing web registration under strict mode' {
+    It 'reconciles an existing web registration with no identifier URI' {
+        $global:EntraRegistrationTestWebApp = [pscustomobject]@{
+            Id = 'web-object'; AppId = 'web-client'; IdentifierUris = @()
+            AppRoles = @([pscustomobject]@{ Id = 'role'; Value = 'Asset.Admin'; DisplayName = 'Admin'; Description = 'Admin'; IsEnabled = $true; AllowedMemberTypes = @('User') })
+            Web = [pscustomobject]@{ RedirectUris = @('https://localhost/signin-oidc'); LogoutUrl = 'https://localhost/signout-callback-oidc' }
+            RequiredResourceAccess = @()
+            OptionalClaims = [pscustomobject]@{
+                IdToken = @('email', 'family_name', 'given_name', 'preferred_username', 'upn', 'ctry', 'ipaddr' | ForEach-Object {
+                    [pscustomobject]@{ Name = $_; Source = ''; Essential = $false; AdditionalProperties = @{} }
+                })
+                AccessToken = @(); Saml2Token = @()
+            }
+        }
+        Mock Get-AzContext { [pscustomobject]@{ Tenant = [pscustomobject]@{ Id = 'tenant' } } }
+        Mock Get-MgContext { [pscustomobject]@{ TenantId = 'tenant'; Scopes = @('Application.ReadWrite.All', 'Directory.ReadWrite.All') } }
+        Mock Get-MgApplication { $global:EntraRegistrationTestWebApp }
+        Mock Get-MgServicePrincipal { [pscustomobject]@{ Id = 'service-principal'; Oauth2PermissionScopes = @() } }
+        Mock Update-MgApplication { throw 'Unexpected registration update.' }
+        Mock Start-Sleep { }
+
+        try {
+            Set-StrictMode -Version Latest
+            $result = & $script:registrationPath -Type Web -TenantId 'tenant' -AppRegistrationName 'web' -SkipPrerequisites `
+                -RedirectUris 'https://localhost/signin-oidc' -LogoutUri 'https://localhost/signout-callback-oidc' -GraphPermissions @()
+            $result.AppId | Should -Be 'web-client'
+            $result.IdentifierUri | Should -BeNullOrEmpty
+            $result.Created | Should -BeFalse
+        }
+        finally { Remove-Variable -Name EntraRegistrationTestWebApp -Scope Global }
+    }
+}
+
+Describe 'claim defaults under strict mode' {
+    It 'keeps empty defaults as arrays for <type>' -TestCases @(
+        @{ type = 'Api'; idCount = 0; accessCount = 4 }
+        @{ type = 'Web'; idCount = 7; accessCount = 0 }
+        @{ type = 'E2E'; idCount = 0; accessCount = 0 }
+    ) {
+        param($type, $idCount, $accessCount)
+        $counts = Get-ClaimDefaultCounts -Type $type
+        $counts[0] | Should -Be $idCount
+        $counts[1] | Should -Be $accessCount
+    }
 }
 
 Describe 'Get-MergedOptionalClaims' {
