@@ -151,16 +151,51 @@ Describe 'Workload deployment targets' {
 
     It 'fails explicitly when the deployment cannot be read' {
         Mock az { $global:LASTEXITCODE = 1 }
-        { & $reader -ResourceGroupName rg -DeploymentName deployment } | Should -Throw '*Deploy infrastructure first*'
+        { & $reader -ResourceGroupName rg -DeploymentName deployment } | Should -Throw "*deployment*rg*exit code 1*"
     }
 
     It 'rejects failed or unfinished infrastructure before consuming outputs' {
-        Mock az { $global:LASTEXITCODE = 0; '{"provisioningState":"Failed","outputs":{}}' }
-        { & $reader -ResourceGroupName rg -DeploymentName deployment } | Should -Throw '*has not succeeded*'
+        Mock az {
+            $global:LASTEXITCODE = 0
+            if ($args[1] -eq 'operation') {
+                '[{"target":"/resources/sql-server","error":{"code":"DeploymentFailed","message":"Deployment failed.","details":[{"code":"InvalidParameterValue","message":"Invalid value given for parameter Login."}]}}]'
+            }
+            else { '{"provisioningState":"Failed","outputs":{}}' }
+        }
+        { & $reader -ResourceGroupName rg -DeploymentName deployment } | Should -Throw '*deployment*rg*state: Failed*/resources/sql-server*InvalidParameterValue*Invalid value given for parameter Login*'
+    }
+
+    It 'does not expose potentially sensitive Azure error text' {
+        Mock az {
+            $global:LASTEXITCODE = 0
+            if ($args[1] -eq 'operation') { '[{"target":"/resources/sql-server","error":{"code":"InvalidParameterValue","message":"The password was rejected."}}]' }
+            else { '{"provisioningState":"Failed","outputs":{}}' }
+        }
+        { & $reader -ResourceGroupName rg -DeploymentName deployment } | Should -Throw '*potentially sensitive Azure error detail omitted*'
+    }
+
+    It 'reports an unfinished deployment without reading failed operations' {
+        Mock az { $global:LASTEXITCODE = 0; '{"provisioningState":"Running","outputs":{}}' }
+        { & $reader -ResourceGroupName rg -DeploymentName deployment } | Should -Throw '*deployment*rg*state: Running*'
+        Should -Invoke az -Times 1 -Exactly
     }
 }
 
 Describe 'Deployment scripts' {
+    It 'reconciles an Entra administrator only for existing workload-owned servers' {
+        $sqlModule = Join-Path $PSScriptRoot '..\..\..\.azure\modules\sql-sqlserver.bicep'
+        $component = Join-Path $PSScriptRoot '..\..\..\.azure\modules\sqldb-workloaddatabase.bicep'
+        $compiled = az bicep build --stdout --file $sqlModule
+        $LASTEXITCODE | Should -Be 0
+        $template = ($compiled -join "`n") | ConvertFrom-Json
+        $administrator = $template.resources.sqlServerEntraAdministrator
+        $administrator.type | Should -Be 'Microsoft.Sql/servers/administrators'
+        $administrator.condition | Should -Be "[and(not(parameters('createServer')), equals(parameters('authentication'), 'EntraOnly'))]"
+        $administrator.properties.sid | Should -Be "[parameters('entraAdministrator').objectId]"
+        $administrator.properties.tenantId | Should -Be "[parameters('entraAdministrator').tenantId]"
+        (Get-Content $component -Raw) | Should -Match "module serverModule 'sql-sqlserver\.bicep' = if \(!existing\)"
+    }
+
     It 'uses YAML or secret SQL inputs without GitHub Variables dependencies' {
         $iac = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agent-iac.yml" -Raw
         $app = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agent-app.yml" -Raw
@@ -422,6 +457,22 @@ Describe 'Root setup orchestration' {
         $readPrivate = [scriptblock]::Create('param($Name, $Values, $Key)' + $body.Substring(1, $body.Length - 2))
         (& $readPrivate 'Synthetic fixture' @{ Existing = 'synthetic-example' } 'Existing') | Should -Be 'synthetic-example'
         Should -Invoke Read-Host -Times 0 -Exactly
+    }
+
+    It 'validates the SQL administrator group in the workload tenant' {
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($initializer, [ref]$null, [ref]$null)
+        $definition = $ast.Find({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Confirm-SqlAdministratorGroup' }, $true)
+        Invoke-Expression $definition.Extent.Text
+        Mock Get-AzContext { [pscustomobject]@{ Tenant = [pscustomobject]@{ Id = 'tenant' } } }
+        Mock Get-AzADGroup { [pscustomobject]@{ SecurityEnabled = $true } }
+        { Confirm-SqlAdministratorGroup -ObjectId '11111111-1111-1111-1111-111111111111' -TenantId 'tenant' } | Should -Not -Throw
+        Mock Get-AzADGroup { [pscustomobject]@{ SecurityEnabled = $false } }
+        { Confirm-SqlAdministratorGroup -ObjectId '11111111-1111-1111-1111-111111111111' -TenantId 'tenant' } | Should -Throw '*existing security group*'
+        Mock Get-AzADGroup { throw 'Directory lookup failed' }
+        { Confirm-SqlAdministratorGroup -ObjectId '11111111-1111-1111-1111-111111111111' -TenantId 'tenant' } | Should -Throw '*workload tenant*'
+        { Confirm-SqlAdministratorGroup -ObjectId 'not-a-guid' -TenantId 'tenant' } | Should -Throw '*nonempty GUID*'
+        Mock Get-AzContext { [pscustomobject]@{ Tenant = [pscustomobject]@{ Id = 'other-tenant' } } }
+        { Confirm-SqlAdministratorGroup -ObjectId '11111111-1111-1111-1111-111111111111' -TenantId 'tenant' } | Should -Throw '*Sign in to workload tenant*'
     }
 
     It 'verifies deployment before SQL provisioning and scopes state per environment and instance' {
