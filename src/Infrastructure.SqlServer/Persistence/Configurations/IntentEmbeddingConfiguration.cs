@@ -1,6 +1,6 @@
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities;
 using System.Text.Json;
+using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
 

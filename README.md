@@ -23,100 +23,30 @@ Agent Framework is an SDK that integrates Large Language Models (LLMs) like Open
 
 ---
 
-# Quick-Start Steps
-Use one of the two copy/paste options below.
+# First-Time Setup
+Run PowerShell 7 from the clone root. Supply an External ID sign-in tenant and an approved
+Azure OpenAI endpoint/key. Local development requires Windows and LocalDB; cloud setup needs
+a workload subscription and permission to create registrations and GitHub federation.
 
-## Quick-Start: Full Setup (new or first-time environment)
 ```powershell
-# Clone repository
-git clone https://github.com/goodtocode/agent-framework-quick-start.git
-
-# Enter repository root
-cd agent-framework-quick-start
-
-# Install .NET SDK 10
-winget install Microsoft.DotNet.SDK.10 --silent
-
-# Trust local ASP.NET Core HTTPS development certificate (first-time machine setup)
-dotnet dev-certs https --trust
-
-# Install EF CLI
-dotnet tool install --global dotnet-ef
-
-# Fill in the values below, then run the local install script. It creates the Entra app registrations and grants consent,
-# sets the user-secrets for Presentation.Api, Presentation.Web and Tests.Integration, and applies the EF migrations to
-# your local SQL Server (LocalDB). No copy/paste between steps. Omit AzureOpenAIApiKey to be prompted without echo.
-$install = @{
-    EntraInstanceUrl    = "https://<your-tenant-name>.ciamlogin.com"
-    EntraTenantId       = "<entra-tenant-id>"
-    AzureOpenAIEndpoint = "https://<resource>.openai.azure.com/openai/v1"
-    AzureOpenAIApiKey   = "<azure-openai-api-key>"
-}
-./Initialize-Local.ps1 @install
-
-# Run integration tests
-cd src/Tests.Integration
-dotnet test
-
-# Return to src and run API
-cd ../
-dotnet run --project Presentation.Api/Presentation.Api.csproj
-
-# Run Web app in a second terminal
-dotnet run --project Presentation.Web/Presentation.Web.csproj
+./Initialize-Installation.ps1 -Mode Local -InstallPrerequisites
+./Initialize-Installation.ps1 -Mode Cloud -SqlAuthentication SqlAuth -InstallPrerequisites
+# Run agent-iac.yml with runcd=true, then resume
+./Initialize-Installation.ps1 -Mode Cloud -Stage Complete
 ```
 
-## What the local install script does
-`Initialize-Local.ps1` sets up localhost only. It never touches GitHub, Azure Pipelines or Azure resources; see "Setting up GitHub Actions to Deploy to Azure" below for CI/CD.
-- **Entra:** creates `agent-api-dev-001` and `agent-web-dev-001` (rename with `-ProductName`, `-EnvironmentShort`, `-Instance`), grants admin consent, and writes the Entra user-secrets. The Web redirect and logout URIs are read from the HTTPS URL in `Presentation.Web/Properties/launchSettings.json`, so they always match your local port.
-- **User-secrets:** `AzureOpenAI:Endpoint` and `AzureOpenAI:ApiKey` for `Presentation.Api` and `Tests.Integration`, and an empty `ApplicationInsights:ConnectionString` for `Presentation.Api` and `Presentation.Web`.
-- **Database:** installs `dotnet-ef` if missing and applies the EF migrations to LocalDB (`Initial Catalog=AgentFramework`). Use `-DatabaseConnectionString` for another SQL Server, or `-SkipDatabase` to skip it.
-- **Existing Entra registrations:** add `-SkipEntra` to skip the first step, or use the re-setup block below.
+Then run `agent-app.yml` with `runcd=true`. Entra-only SQL uses
+`-SqlAuthentication EntraOnly`; resume as a member of its SQL administrator group.
+Rerun the same commands for an existing installation. `-Mode Both` prepares local and cloud;
+`-Environment production` selects production when its workflow/parameters are enabled;
+`-Stage Check` is read-only. Missing secrets are prompted privately, never silently rotated.
+No commits, pushes, database resets, or authentication-mode conversions occur.
 
-**Application Insights:** the apps start without a connection string, with no Azure telemetry (a warning is logged). The connection string only exists after the infrastructure PR deploys. Then set it for both apps from the repo root:
-```powershell
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "<connection-string>" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "<connection-string>" --project .\src\Presentation.Web\Presentation.Web.csproj
-```
-In Azure, the deployment sets the connection string for you.
+See [First-time setup](docs/first-time-setup.md) for phases and troubleshooting.
 
-**Azure OpenAI deployment names:** all committed environments use `chat-fast`, `tool-standard`, `tool-reasoning`, and `embedding-standard`, matching the shared `platform-azure` Foundry deployments. To use different purpose-compatible deployments, update `src/Presentation.Api/appsettings.*.json`, or pass `-ChatDeploymentName`, `-ToolDeploymentName`, `-ToolReasoningDeploymentName`, and `-EmbeddingDeploymentName` to `Initialize-Local.ps1` for local user-secret overrides only. Deployment names are not secrets.
-
-## Quick-Start: Re-Setup for Existing Entra (no Entra setup scripts)
-```powershell
-# Enter repository root
-cd <path-to-repo-root>
-
-# Set API secrets (run from the repository root)
-dotnet user-secrets set "EntraExternalId:Instance" "https://<your-tenant-name>.ciamlogin.com" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "EntraExternalId:TenantId" "<entra-tenant-id>" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "EntraExternalId:ClientId" "<api-client-id>" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Presentation.Api\Presentation.Api.csproj
-
-# Set Web secrets
-dotnet user-secrets set "BackendApi:ClientId" "<api-client-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:Instance" "https://<your-tenant-name>.ciamlogin.com" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:TenantId" "<entra-tenant-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:ClientId" "<web-client-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:ClientSecret" "<web-client-secret>" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "" --project .\src\Presentation.Web\Presentation.Web.csproj
-
-# Set integration test Azure OpenAI secrets
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Tests.Integration\Tests.Integration.csproj
-dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Tests.Integration\Tests.Integration.csproj
-
-# Optional: EntraExternalId:PasswordResetUrl (Web), and AzureOpenAI:ChatDeploymentName / AzureOpenAI:EmbeddingDeploymentName
-# (Api and Tests.Integration) only when you need to override the appsettings values.
-
-# Create or update SQL schema
-dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
-```
-
-For detailed alternatives and troubleshooting, see the Authentication section below.
+Standalone prototype development uses F1 to minimize idle compute cost. Move to B1 when CPU
+quotas, cold starts or dedicated hosting features require it. Front Door is optional; the shared
+edge template defaults to Standard custom-rule WAF and skips creation when no origins are configured.
 
 ## Rebrand a clone for your organization
 After cloning, `Update-Branding.ps1` replaces the original organization and Quick-start product branding across the whole repo (source, solution files, GitHub Actions, Azure DevOps, IaC, docs). It is a dry run unless `-Apply` is given, never replaces the repo's NuGet package dependencies, Entra scopes, user-secrets keys or the `AgentFramework` EF context/database names, and regenerates the `UserSecretsId` values.
@@ -495,8 +425,6 @@ $secrets = @{
 	AZURE_TENANT_ID      = "<azure-tenant-id>"
 	EEID_INSTANCE        = "<eeid-instance-url>"
 	EEID_TENANT_ID       = "<eeid-tenant-id>"
-	SQL_ADMIN_PASSWORD   = "<sql-admin-password>"
-	SQL_ADMIN_USER       = "<sql-admin-user>"
 	WEB_CLIENT_ID        = "<web-app-client-id>"
 	WEB_CLIENT_SECRET    = "<web-app-client-secret>"
 }

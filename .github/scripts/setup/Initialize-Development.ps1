@@ -18,11 +18,11 @@ $install = @{
     EntraTenantId       = "<entra-tenant-id>"
     AzureOpenAIEndpoint = "https://<resource>.openai.azure.com/openai/v1"
 }
-./Initialize-Local.ps1 @install
+./.github/scripts/setup/Initialize-Development.ps1 @install
 
 .EXAMPLE
 # Existing Entra registrations: skip Entra and only (re)write the Azure OpenAI and Application Insights secrets:
-./Initialize-Local.ps1 -SkipEntra -AzureOpenAIEndpoint "https://<resource>.openai.azure.com/openai/v1" -ApplicationInsightsConnectionString "<connection-string>"
+./.github/scripts/setup/Initialize-Development.ps1 -SkipEntra -AzureOpenAIEndpoint "https://<resource>.openai.azure.com/openai/v1" -ApplicationInsightsConnectionString "<connection-string>"
 #>
 [CmdletBinding()]
 param(
@@ -51,7 +51,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$repoRoot = $PSScriptRoot
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
 . "$repoRoot\.azure\scripts\lib\Dotnet.Common.ps1"
 
 $apiProject = Join-Path $repoRoot 'src\Presentation.Api'
