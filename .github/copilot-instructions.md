@@ -18,7 +18,7 @@
 - **Test:** Run `dotnet test src/Tests.Integration/Tests.Integration.csproj`; integration behavior uses Reqnroll Gherkin specifications.
 - **Run:** Launch via Visual Studio or `dotnet run` from solution root.
 - **CI/CD:** Managed by GitHub Actions (`.github/workflows/`).
-- **IaC Deploy:** See `agent-iac.yml` for infrastructure deployment.
+- **IaC Deploy:** See `agentframework-iac.yml` for infrastructure deployment.
 
 ## Non-Negotiable Architecture
 - Preserve dependency direction: Presentation -> Application -> Domain; Infrastructure depends on Application and Domain as required; Domain has no project dependencies.

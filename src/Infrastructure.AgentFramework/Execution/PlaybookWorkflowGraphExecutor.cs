@@ -13,8 +13,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 /// <see cref="ICollectStepTool{TCollectInput,TEvidence}"/>, <see cref="IEvaluateStepTool{TEvidence,TFinding}"/>,
 /// and <see cref="IRecordStepTool{TFinding,TMaterialization}"/> instances supplied to
 /// <see cref="ExecuteAsync"/> vary - deterministic for the hybrid workflow, agentic for the
-/// fully agentic workflow - mirroring the pattern already proven in crucible-web's
-/// PipelineWorkflowStepExecutor. Each node calls the shared
+/// fully agentic workflow. Each node calls the shared
 /// <see cref="IPlaybookStepActivityRecorder{TEvidence,TFinding,TMaterialization}"/> after its
 /// stage completes, so governance capture is identical regardless of orchestration model. When an
 /// optional <see cref="PlaybookExecutionRequest{TEvidence,TFinding}"/> skips any stage, the full

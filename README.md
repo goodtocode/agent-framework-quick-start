@@ -3,11 +3,11 @@
 
 **Azure Bicep Infrastucture as Standalone Landing Zone**
 
-[![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-iac.yml)
+[![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentframework-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentframework-iac.yml)
 
 **Clean Architecture C# Blazor Microapp and Web API Microservice**
 
-[![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-app.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-app.yml)
+[![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentframework-app.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentframework-app.yml)
 
 Microsoft Agent Framework Quick-start is a enterprise-ready starter kit for building modern, agentic applications with C#, Blazor (Fluent UI), and ASP.NET Core Web API. This solution demonstrates how to use the Microsoft Agent Framework to create a Copilot-style chat client, fully integrated with SQL Server for persistent storage of authors, chat sessions, and messages—all orchestrated through a clean architecture pattern. 
 
@@ -31,11 +31,11 @@ a workload subscription and permission to create registrations and GitHub federa
 ```powershell
 ./Initialize-Installation.ps1 -Mode Local -InstallPrerequisites
 ./Initialize-Installation.ps1 -Mode Cloud -SqlAuthentication SqlAuth -InstallPrerequisites
-# Run agent-iac.yml with runcd=true, then resume
+# Run agentframework-iac.yml with runcd=true, then resume
 ./Initialize-Installation.ps1 -Mode Cloud -Stage Complete
 ```
 
-Then run `agent-app.yml` with `runcd=true`. Entra-only SQL uses
+Then run `agentframework-app.yml` with `runcd=true`. Entra-only SQL uses
 `-SqlAuthentication EntraOnly`; resume as a member of its SQL administrator group.
 Rerun the same commands for an existing installation. `-Mode Both` prepares local and cloud;
 `-Environment production` selects production when its workflow/parameters are enabled;
@@ -49,17 +49,21 @@ quotas, cold starts or dedicated hosting features require it. Front Door is opti
 edge template defaults to Standard custom-rule WAF and skips creation when no origins are configured.
 
 ## Rebrand a clone for your organization
-After cloning, `Update-Branding.ps1` replaces the original organization and Quick-start product branding across the whole repo (source, solution files, GitHub Actions, Azure DevOps, IaC, docs). It is a dry run unless `-Apply` is given, never replaces the repo's NuGet package dependencies, Entra scopes, user-secrets keys or the `AgentFramework` EF context/database names, and regenerates the `UserSecretsId` values.
+After cloning, `Update-Branding.ps1` replaces organization and product branding across source, solution files, GitHub Actions, IaC, scripts, and docs. It is a dry run unless `-Apply` is given. Both `-NewCompany` and `-NewProduct` are required; missing values fail before any writes. EF contexts, databases, migration filenames, workflow filenames and resource prefixes are rebranded. `Infrastructure.AgentFramework`, Microsoft SDK/package names, library dependencies, Entra scopes and user-secrets keys are preserved. `UserSecretsId` values are regenerated unless `-KeepUserSecretsIds` is supplied.
 
 ```powershell
 # Preview (no changes)
-pwsh -File ./Update-Branding.ps1 -NewCompany "Contoso" -NewProduct "Contoso Assist" -Namespace "Contoso.Assist"
+pwsh -File ./Update-Branding.ps1 -NewCompany Contoso -NewProduct Assist
 
 # Apply on a clean working tree, then review the diff
-pwsh -File ./Update-Branding.ps1 -NewCompany "Contoso" -NewProduct "Contoso Assist" -Namespace "Contoso.Assist" -Apply
+pwsh -File ./Update-Branding.ps1 -NewCompany Contoso -NewProduct Assist -Apply
 ```
 
-See `branding.sample.json` (use with `-ConfigFile`) for all values. Rules are in `branding.map.json`. Afterwards, run the Entra setup steps above for the new product.
+The namespace defaults to `Company.Product`. For display names containing spaces, supply an explicit `-Namespace Contoso.Assist`; its company and product identifiers become the setup defaults. See `branding.sample.json` (use with `-ConfigFile`) for all values. Rules are in `branding.map.json`.
+
+Rebranding writes the company/product defaults into the root `Initialize-Installation.ps1`, which passes them explicitly to the shared initializer. Run it afterward without brand arguments; it is now locked to the clone's brand. Explicit `-CompanyName` / `-ProductName` overrides must match its solution. The shared initializer never guesses a product from known customer names. Installation does not run rebranding.
+
+The template's workflow/resource prefix is now `agentframework` (formerly `agent`). Existing AFQS cloud installations must explicitly reuse their existing resource group and review IaC naming before deployment; this is not a resource migration. Rebranding a fresh clone changes that prefix to the new product identifier in lowercase.
 
 ---
 
@@ -371,7 +375,7 @@ doc's **UI Changes** and **API Changes** sections for details.
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
 
-The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agent-dev-wus2-100-rg`. Below is a summary of the workflow files, their purposes, and triggers:
+The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agentframework-dev-wus2-100-rg`. Below is a summary of the workflow files, their purposes, and triggers:
 
 ### Triggers
 All workflow YAML files in this repo are designed to:
@@ -380,8 +384,8 @@ All workflow YAML files in this repo are designed to:
 
 | Workflow File                        | Purpose                                                                                 | CI Trigger (PR)         | CD Trigger (Push to main) |
 |--------------------------------------|-----------------------------------------------------------------------------------------|-------------------------|---------------------------|
-| `agent-app.yml`                      | Build, test and deploy the Blazor web, Web API and SQL migrations to Azure App Service   | Yes                    | Yes                      |
-| `agent-iac.yml`                      | Deploy the standalone Azure infrastructure (`.azure/templates/workload-digitalproduct.bicep`) | Yes (what-if)     | Yes                      |
+| `agentframework-app.yml`             | Build, test and deploy the Blazor web, Web API and SQL migrations to Azure App Service   | Yes                    | Yes                      |
+| `agentframework-iac.yml`             | Deploy the standalone Azure infrastructure (`.azure/templates/workload-digitalproduct.bicep`) | Yes (what-if)     | Yes                      |
 
 To add a production environment, add a `production` entry to the plan job of both workflows, add `.azure/variables/workload-digitalproduct-standalone-prod.bicepparam`, and require reviewers on the `production` GitHub environment.
 ---

@@ -477,9 +477,9 @@ A journey provider should not return a success-shaped empty response when it fai
 the catalog. If no definitions exist at all, the failure must be explicit in telemetry and the
 API should return the repository-standard error or a documented safe fallback.
 
-## Crucible Product Instantiation
+## Example Pipeline Product Instantiation
 
-Crucible currently instantiates this architecture as a progressive journey through pipeline
+A template-derived pipeline product can instantiate this architecture as a progressive journey through pipeline
 runtime evidence:
 
 ```text
@@ -498,7 +498,7 @@ Chronicle and Timelines are co-equal views of the same execution:
 - **Timelines** provide CER-aware operational event groups and can be selected independently.
 - **Timeline Events** provide bounded, ordered events scoped to the selected timeline code.
 
-This supports the primary Crucible actors:
+This supports the following example actors:
 
 - **Operator** — asks what is running, what happened, and what is next; typically enters through
   the latest pipeline or timeline snapshot.
@@ -507,7 +507,7 @@ This supports the primary Crucible actors:
 - **Platform Administrator and Solution Builder** — use the same journey to diagnose failures
   and validate pipeline narrative and timeline output.
 
-### Crucible journey levels
+### Example journey levels
 
 | Product level | Context transition | Typical next prompts |
 | --- | --- | --- |
@@ -523,7 +523,7 @@ but it must establish the same validated active pipeline context as chip selecti
 
 ### Product-specific cross-cutting actions
 
-Crucible offers these actions independently of the pipeline hierarchy:
+A pipeline product can offer these actions independently of the pipeline hierarchy:
 
 - **Actor profile lookup** uses the authenticated actor scope and is available as an orientation
   action.
@@ -541,7 +541,7 @@ Timeline level can inspect their chat messages and then return to the same pipel
 
 ### Current implementation and known gaps
 
-The Crucible implementation uses a deterministic journey catalog and provider, with
+The example uses a deterministic journey catalog and provider, with
 `ChatJourneyContext` resolving the deepest selected level and `GetChatJourneyStepQuery`
 returning suggested prompts plus action options parsed from the latest assistant/system reply.
 Selection tokens provide clickable pipeline, execution, and timeline transitions while retaining
@@ -618,4 +618,4 @@ tests together.
 - [Deterministic journey provider](../../src/Infrastructure.AgentFramework/Journeys/RuleChatJourneyProvider.cs)
 - [Journey catalog](../../src/Infrastructure.AgentFramework/Journeys/ChatJourneyCatalog.cs)
 - [Selection-token parser](../../src/Core.Application/Chats/Journeys/ChatSelectionTokenParser.cs)
-- [Crucible chat journey feature](../product/features/feature-chat-journey.md)
+- [Example pipeline chat journey feature](../product/features/feature-chat-journey.md)

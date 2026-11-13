@@ -1,9 +1,9 @@
 # Feature: Pipeline Workspace Chat Journey
 
 ## Status
-This document describes an already-implemented customer/user journey in Crucible-specific terms:
+This document describes an example customer/user journey for a template-derived pipeline product:
 using the AI agent chat surface to progressively browse Pipeline Kits → Pipelines → Executions →
-(Chronicle + Timelines, viewed in parallel) → Timeline Events. It is the Crucible instantiation of
+(Chronicle + Timelines, viewed in parallel) → Timeline Events. It is a product-specific instantiation of
 two universal governance patterns and should be read alongside them, not instead of them:
 
 - `docs/governance/design-ux-progressive-selection-chat.md` — the AI agent chat protocol pattern
@@ -27,7 +27,7 @@ implementation boundaries.
 
 A user lands on `/chat`, and without needing to know any identifiers, can:
 
-1. **List Pipeline Kits/Pipelines** — "Query our pipeline list in Censic Crucible."
+1. **List Pipeline Kits/Pipelines** — "Query our pipeline list."
 2. **Select a Pipeline** — click a `pipeline` chip (or type "Select pipeline `<id>`").
 3. **List Executions for that Pipeline** — the assistant now implicitly scopes to the selected
    pipeline.
@@ -46,7 +46,7 @@ selected.
 
 ## Journey Actors
 
-Per `docs/product/sprint-0/crucible-ux-journeys.md`, the primary actors for this chat journey are
+The primary actors for this example chat journey are
 the **Operator** (day-to-day: "what's running, what happened, what's next") and the **Auditor /
 Reviewer** (historical: "what happened, why, what evidence"). The **Platform Administrator** and
 **Solution Builder** use this same journey when triaging failures or validating a pipeline's
@@ -58,7 +58,7 @@ narrative/timeline output during iteration.
 - Tool: `QueryOurPipelineListAsync` ("list pipelines", "show our pipelines", "browse pipelines").
 - Returns a markdown table of tenant pipelines plus one `[selection|pipeline|...]` token per row.
 - Suggested prompts (no context selected):
-  - "Query our pipeline list in Censic Crucible"
+  - "Query our pipeline list"
   - "Query my actor user profile details by current authenticated user scope"
   - "Show how to select a pipeline and inspect executions, chronicles, and timelines"
   - "List my chat sessions"
@@ -108,8 +108,8 @@ requires visiting the other first:
   timeline groups, each carrying a `timeline` selection token (`[selection|timeline|<code>|...]`).
   Its next suggested action points to timeline events for the selected timeline.
 
-This parallel framing matches the Crucible value flow (`Scope → Plan → Runtime → Actions →
-Statements` in `docs/product/sprint-0/crucible-ux-journeys.md`): Chronicle is the explainable
+This parallel framing matches the example value flow (`Scope → Plan → Runtime → Actions →
+Statements`): Chronicle is the explainable
 narrative/statement view of a run; Timelines is the CER-aware, event-level operational view of the
 same run. An Auditor typically starts from Chronicle; an Operator typically starts from Timelines —
 the journey supports both entry points equally.

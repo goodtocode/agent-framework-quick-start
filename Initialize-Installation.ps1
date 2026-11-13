@@ -10,6 +10,8 @@ Initializes local development, CI/CD configuration, and Azure identity dependenc
 #>
 [CmdletBinding()]
 param(
+    [ValidatePattern('^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$')][string]$CompanyName = 'Goodtocode',
+    [ValidatePattern('^[A-Za-z_][A-Za-z0-9_]*$')][string]$ProductName = 'AgentFramework',
     [ValidateSet('Local', 'Cloud', 'Both')][string]$Mode = 'Local',
     [ValidateSet('Prepare', 'Complete', 'Check')][string]$Stage = 'Prepare',
     [ValidateSet('development', 'production')][string]$Environment = 'development',
@@ -30,4 +32,7 @@ param(
     [switch]$RotateSecrets,
     [switch]$InstallPrerequisites
 )
-& "$PSScriptRoot/.github/scripts/setup/Initialize-Product.ps1" -RepositoryRoot $PSScriptRoot @PSBoundParameters
+$setupArguments = @{} + $PSBoundParameters
+$setupArguments.CompanyName = $CompanyName
+$setupArguments.ProductName = $ProductName
+& "$PSScriptRoot/.github/scripts/setup/Initialize-Product.ps1" -RepositoryRoot $PSScriptRoot @setupArguments

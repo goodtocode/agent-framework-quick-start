@@ -5,7 +5,7 @@ trigger:
       - main
   paths:
     include:
-      - .azuredevops/pipelines/gtc-agent-standalone-web-api-sql-aoai.yml
+      - .azuredevops/pipelines/gtc-agentframework-standalone-web-api-sql-aoai.yml
       - src/**
 
 pr:
@@ -14,7 +14,7 @@ pr:
       - main
   paths:
     include:
-      - .azuredevops/pipelines/gtc-agent-standalone-web-api-sql-aoai.yml
+      - .azuredevops/pipelines/gtc-agentframework-standalone-web-api-sql-aoai.yml
       - src/**
 
 pool:
@@ -57,9 +57,9 @@ variables:
   - name: sqlPassword
     value: ''
   - ${{ if eq(parameters.Environment, 'development') }}:
-      - group: gtc-agent-dev
+      - group: gtc-agentframework-dev
   - ${{ if eq(parameters.Environment, 'production') }}:
-      - group: gtc-agent-prod
+      - group: gtc-agentframework-prod
   - name: API_ARTIFACT_OUTPUT
     value: publish_output
   - name: WEB_ARTIFACT_OUTPUT
@@ -109,17 +109,17 @@ variables:
     value: true
   # Manual environment resource mapping for CD (update if IaC names change)
   - name: appiName
-    value: agent-dev-wus2-001-appi
+    value: agentframework-dev-wus2-001-appi
   - name: azureApiAppName
-    value: agent-dev-wus2-001-api
+    value: agentframework-dev-wus2-001-api
   - name: azureWebAppName
-    value: agent-dev-wus2-001-web
+    value: agentframework-dev-wus2-001-web
   - name: azureRgName
-    value: agent-dev-wus2-001-rg
+    value: agentframework-dev-wus2-001-rg
   - name: sqlName
-    value: agent-dev-wus2-001-sql
+    value: agentframework-dev-wus2-001-sql
   - name: sqlDbName
-    value: agent-dev-wus2-001-sqldb
+    value: agentframework-dev-wus2-001-sqldb
   - name: versionMajor
     value: '2'
   - name: versionMinor

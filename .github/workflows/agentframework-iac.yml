@@ -1,4 +1,4 @@
-name: 'agent IaC'
+name: 'AgentFramework IaC'
 
 # One pipeline for every mode and phase. The mode picks the parameter file; the environment matrix
 # runs development first, then production behind the 'production' environment's required reviewers.
@@ -12,7 +12,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/agent-iac.yml
+      - .github/workflows/agentframework-iac.yml
       - .azure/**/*.bicep
       - .azure/**/*.bicepparam
       - .github/scripts/cd/**
@@ -20,7 +20,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/agent-iac.yml
+      - .github/workflows/agentframework-iac.yml
       - .azure/**/*.bicep
       - .azure/**/*.bicepparam
       - .github/scripts/cd/**
@@ -40,7 +40,7 @@ on:
 
 env:
   # ===== EDIT PER INSTALL: naming slots (RG: {product}-{env}-{region}-{instance}-rg) =====
-  PRODUCT: "agent"
+  PRODUCT: "agentframework"
   REGION: "wus2"
   INSTANCE: "100"
   LOCATION: "westus2"

@@ -1,4 +1,4 @@
-name: 'Agent App CI/CD'
+name: 'AgentFramework App CI/CD'
 
 # One pipeline for web, API and SQL migrations. Turn components on or off with HAS_WEB, HAS_API and HAS_SQL.
 # CI builds and tests once; CD deploys to the development environment.
@@ -11,14 +11,14 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/agent-app.yml
+      - .github/workflows/agentframework-app.yml
       - src/**
       - .github/scripts/cd/**
   push:
     branches:
       - main
     paths:
-      - .github/workflows/agent-app.yml
+      - .github/workflows/agentframework-app.yml
       - src/**
       - .github/scripts/cd/**
   workflow_dispatch:
@@ -42,7 +42,7 @@ permissions:
 
 env:
   # ===== EDIT PER INSTALL: naming slots (names: {product}-{env}-{region}-{instance}-{type}) =====
-  PRODUCT: "agent"
+  PRODUCT: "agentframework"
   REGION: "wus2"
   INSTANCE: "100"
   IAC_DEPLOYMENT_NAME: "workload-digitalproduct"
