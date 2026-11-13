@@ -1,6 +1,6 @@
 using Goodtocode.Agents.Governance.Domain;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Governance;
 
 /// <summary>
 /// Small, readable, tenant-agnostic sample Agentic Intent policy. Replace it by registering your own

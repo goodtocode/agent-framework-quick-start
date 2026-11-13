@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Common.Auth;
+﻿namespace Goodtocode.AgentStart.Core.Application.Common.Auth;
 
 public struct UserRoles
 {

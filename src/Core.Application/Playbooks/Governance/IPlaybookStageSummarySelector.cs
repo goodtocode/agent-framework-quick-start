@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 
 /// <summary>
 /// Projects a playbook's typed Collect/Evaluate/Record outputs into short, human-readable

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using Goodtocode.AgentFramework.Core.Application.Actors;
+using Goodtocode.AgentStart.Core.Application.Actors;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 
 public class ActorResponse : IActorResponse
 {

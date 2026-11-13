@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Abstractions;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
+using Goodtocode.AgentStart.Core.Application.Abstractions;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Providers;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public sealed class WebSearchProviderRegistrationTests

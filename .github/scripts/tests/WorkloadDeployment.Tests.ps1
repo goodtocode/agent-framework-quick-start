@@ -197,8 +197,8 @@ Describe 'Deployment scripts' {
     }
 
     It 'uses YAML or secret SQL inputs without GitHub Variables dependencies' {
-        $iac = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentframework-iac.yml" -Raw
-        $app = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentframework-app.yml" -Raw
+        $iac = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentstart-iac.yml" -Raw
+        $app = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentstart-app.yml" -Raw
         $selection = '${{ secrets.SQL_ENTRA_ADMIN_GROUP_OBJECT_ID || env.SQL_ENTRA_ADMIN_GROUP_OBJECT_ID }}'
         ([regex]::Matches($iac, [regex]::Escape($selection))).Count | Should -Be 4
         $iac | Should -Not -Match '\$\{\{\s*vars\.'
@@ -342,8 +342,8 @@ Describe 'Deployment scripts' {
 
     Describe 'Entra deployment workflow ordering' {
         It 'provisions password users after infrastructure and before migrations without runtime secrets' {
-            $iac = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentframework-iac.yml" -Raw
-            $app = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentframework-app.yml" -Raw
+            $iac = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentstart-iac.yml" -Raw
+            $app = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentstart-app.yml" -Raw
             $iac.IndexOf('name: Provision SQL-auth database access') | Should -BeGreaterThan $iac.IndexOf('name: Deploy ${{ env.PRODUCT_RG_NAME }}')
             $app.IndexOf('name: Provision SQL-auth database access') | Should -BeGreaterThan $app.IndexOf('name: Read exact infrastructure deployment targets')
             $app.IndexOf('name: Deploy SQL script') | Should -BeGreaterThan $app.IndexOf('name: Provision SQL-auth database access')
@@ -355,7 +355,7 @@ Describe 'Deployment scripts' {
         }
 
         It 'configures application settings and database access before deploying binaries' {
-            $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentframework-app.yml" -Raw
+            $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentstart-app.yml" -Raw
             foreach ($component in @('API', 'WEB')) {
                 $settings = $workflow.IndexOf('name: ${{ env.AZURE_' + $component + 'APP_NAME }} app settings')
                 $deploy = $workflow.IndexOf('name: Deploy ${{ env.AZURE_' + $component + 'APP_NAME }}')
@@ -370,7 +370,7 @@ Describe 'Deployment scripts' {
         }
 
         It 'compiles and checks identity inputs before mutating Azure resources' {
-            $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentframework-iac.yml" -Raw
+            $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentstart-iac.yml" -Raw
             $compile = $workflow.IndexOf('name: Compile workload contract and parameters')
             $identity = $workflow.IndexOf('name: Check Entra-only SQL administrator inputs')
             $create = $workflow.IndexOf('name: Create ${{ env.PRODUCT_RG_NAME }}')
@@ -385,7 +385,7 @@ Describe 'Deployment scripts' {
         }
 
         It 'deploys the selected authentication policy without mode transition paths' {
-            $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentframework-iac.yml" -Raw
+            $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentstart-iac.yml" -Raw
             $workflow | Should -Not -Match 'prepareSqlBootstrap|SQL_ENTRA_CUTOVER_READY|sqlEntraOnlyAuthentication|Resolve-AzureSqlAuthentication'
             $workflow | Should -Match 'sqlCreateServer=\$env:SQL_CREATE_SERVER'
             $workflow | Should -Match 'secrets.SQL_ADMIN_PASSWORD'
@@ -393,7 +393,7 @@ Describe 'Deployment scripts' {
         }
 
         It 'serializes resource and application mutations for each environment' {
-            foreach ($file in @('agentframework-app.yml', 'agentframework-iac.yml')) {
+            foreach ($file in @('agentstart-app.yml', 'agentstart-iac.yml')) {
                 $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\$file" -Raw
                 $workflow | Should -Match 'group: workload-deployment-\$\{\{ matrix.environment \}\}'
                 $workflow | Should -Match 'cancel-in-progress: false'
@@ -401,7 +401,7 @@ Describe 'Deployment scripts' {
         }
 
         It 'keeps artifacts environment-neutral and remaining authentication configuration explicit' {
-            $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentframework-app.yml" -Raw
+            $workflow = Get-Content -LiteralPath "$PSScriptRoot\..\..\workflows\agentstart-app.yml" -Raw
             $workflow | Should -Not -Match 'variable-substitution|azure/sql-action'
             $workflow | Should -Match 'AzureOpenAI__Endpoint'
             $workflow | Should -Match 'EntraExternalId:Instance'
@@ -427,7 +427,7 @@ Describe 'Root setup orchestration' {
     It 'checks the explicitly supplied brand without changing configuration' -ForEach @(
         @{ Solution = 'Contoso.Assist.slnx'; Company = 'Contoso'; Product = 'Assist' },
         @{ Solution = 'Fabrikam.Portal.Web.slnx'; Company = 'Fabrikam'; Product = 'Portal' },
-        @{ Solution = 'Goodtocode.AgentFramework.Web.slnx'; Company = 'Goodtocode'; Product = 'AgentFramework' }
+        @{ Solution = 'Goodtocode.AgentStart.Web.slnx'; Company = 'Goodtocode'; Product = 'AgentStart' }
     ) {
         Set-Content (Join-Path $setupRoot $Solution) 'synthetic solution fixture'
         $output = & $initializer -RepositoryRoot $setupRoot -CompanyName $Company -ProductName $Product -Mode Both -Stage Check 6>&1

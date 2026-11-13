@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
 
 /// <summary>
 /// A readable, regex-free replacement for parameterized "select X {value}"/"search the web for

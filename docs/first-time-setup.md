@@ -3,8 +3,8 @@
 For a fresh clone, run `Update-Branding.ps1 -NewCompany Contoso -NewProduct Assist -Apply`
 after reviewing its dry run. Both brand values are required. The root entry point retains those
 defaults and passes them explicitly to the shared initializer; installation never runs branding.
-Without rebranding, the defaults are `Goodtocode` / `AgentFramework`, including the local
-database name and lowercase `agentframework` workflow/resource prefix.
+Without rebranding, the defaults are `Goodtocode` / `AgentStart`, including the local
+database name and lowercase `agentstart` workflow/resource prefix.
 
 Run PowerShell 7 from the clone root. Existing sign-in/workload tenants, a workload subscription,
 an approved Azure OpenAI deployment/key, and Windows LocalDB for local development are prerequisites.
@@ -13,9 +13,9 @@ sign-in tenant or Azure OpenAI deployment, and CI tests require the AI endpoint 
 
 ```powershell
 ./Initialize-Installation.ps1 -Mode Cloud -Stage Prepare -Environment development -SqlAuthentication EntraOnly -InstallPrerequisites
-# Publish reviewed source and workflows, then run agentframework-iac.yml with environment=development and runcd=true.
+# Publish reviewed source and workflows, then run agentstart-iac.yml with environment=development and runcd=true.
 ./Initialize-Installation.ps1 -Mode Cloud -Stage Complete -Environment development
-# Run agentframework-app.yml with environment=development and runcd=true.
+# Run agentstart-app.yml with environment=development and runcd=true.
 ```
 
 Prepare reconciles sign-in registrations and GitHub federation/environment/secrets. It needs a
@@ -38,7 +38,7 @@ Pass `-SignInTenantId`, `-SignInInstanceUrl`, `-WorkloadTenantId`, `-Subscriptio
 `-Environment` and `-Instance` for Prepare and Complete. Production requires corresponding IaC
 parameter files and workflow planning to be enabled first; this script does not invent them.
 
-GitHub federation defaults to one `github-agentframework` application shared across environments. Pass
+GitHub federation defaults to one `github-agentstart` application shared across environments. Pass
 `-GitHubPrincipalName` to reuse a differently named application; Prepare stores that name for
 Complete. Existing matching issuer, subject, and audience credentials are reused, including
 main and pull request subjects, and unrelated credentials are not deleted. Each environment
@@ -160,9 +160,9 @@ dotnet run --project Presentation.Web/Presentation.Web.csproj
 
 ## What the local install script does
 `.github/scripts/setup/Initialize-Development.ps1` sets up localhost only. It never touches GitHub, Azure Pipelines or Azure resources; see "Setting up GitHub Actions to Deploy to Azure" below for CI/CD.
-- **Entra:** registration names use the selected product prefix, for example `agentframework-api-dev-100` and `agentframework-web-dev-100` for the template root entry point. The script grants admin consent and writes the Entra user-secrets. The Web redirect and logout URIs are read from the HTTPS URL in `Presentation.Web/Properties/launchSettings.json`, so they always match your local port.
+- **Entra:** registration names use the selected product prefix, for example `agentstart-api-dev-100` and `agentstart-web-dev-100` for the template root entry point. The script grants admin consent and writes the Entra user-secrets. The Web redirect and logout URIs are read from the HTTPS URL in `Presentation.Web/Properties/launchSettings.json`, so they always match your local port.
 - **User-secrets:** `AzureOpenAI:Endpoint` and `AzureOpenAI:ApiKey` for `Presentation.Api` and `Tests.Integration`, and an empty `ApplicationInsights:ConnectionString` for `Presentation.Api` and `Presentation.Web`.
-- **Database:** installs `dotnet-ef` if missing and applies the EF migrations to LocalDB (`Initial Catalog=AgentFramework`). Use `-DatabaseConnectionString` for another SQL Server, or `-SkipDatabase` to skip it.
+- **Database:** installs `dotnet-ef` if missing and applies the EF migrations to LocalDB (`Initial Catalog=AgentStart`). Use `-DatabaseConnectionString` for another SQL Server, or `-SkipDatabase` to skip it.
 - **Existing Entra registrations:** add `-SkipEntra` to skip the first step, or use the re-setup block below.
 
 **Application Insights:** the apps start without a connection string, with no Azure telemetry (a warning is logged). The connection string only exists after the infrastructure PR deploys. Then set it for both apps from the repo root:
@@ -205,7 +205,7 @@ dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project 
 # (Api and Tests.Integration) only when you need to override the appsettings values.
 
 # Create or update SQL schema
-dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context ApplicationDbContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentStart;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
 ```
 
 For detailed alternatives and troubleshooting, see the Authentication section below.

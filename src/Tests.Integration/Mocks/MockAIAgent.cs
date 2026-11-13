@@ -2,7 +2,7 @@
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Mocks;
+namespace Goodtocode.AgentStart.Tests.Integration.Mocks;
 
 public class MockAIAgent : AIAgent
 {

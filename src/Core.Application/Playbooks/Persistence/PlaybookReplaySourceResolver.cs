@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Common.Exceptions;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Persistence;
 
 /// <summary>
 /// Resolves the prior <see cref="PlaybookExecutionEntity"/> a Recall or Replay request should run
@@ -12,7 +12,7 @@ namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
 public static class PlaybookReplaySourceResolver
 {
     public static async Task<PlaybookExecutionEntity> ResolveAsync(
-        IAgentFrameworkContext context,
+        IApplicationDbContext context,
         string playbookKey,
         Guid ownerId,
         Guid tenantId,

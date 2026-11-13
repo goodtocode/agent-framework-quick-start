@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+using Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
 
 /// <summary>
 /// All known <see cref="ChatJourneyDefinition"/>s. Mirrors <c>IntentCatalog</c>: declarative data

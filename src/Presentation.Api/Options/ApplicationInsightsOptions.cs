@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Api.Options;
+namespace Goodtocode.AgentStart.Presentation.Api.Options;
 
 /// <summary>
 /// Application Insights (Azure Monitor) settings. The section is required; the connection string may be empty.

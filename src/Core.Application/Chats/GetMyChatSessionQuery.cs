@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Chats;
+﻿namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class GetMyChatSessionQuery : UserScopedRequest, IRequest<ChatSessionDto?>
 {
@@ -6,9 +6,9 @@ public class GetMyChatSessionQuery : UserScopedRequest, IRequest<ChatSessionDto?
 
 }
 
-public class GetMyChatSessionQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyChatSessionQuery, ChatSessionDto?>
+public class GetMyChatSessionQueryHandler(IApplicationDbContext context) : IRequestHandler<GetMyChatSessionQuery, ChatSessionDto?>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<ChatSessionDto?> Handle(GetMyChatSessionQuery request, CancellationToken cancellationToken)
     {

@@ -1,6 +1,6 @@
 using Goodtocode.Agents.Governance.Domain;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 
 /// <summary>
 /// Options for the governed Agentic Intent chat client.

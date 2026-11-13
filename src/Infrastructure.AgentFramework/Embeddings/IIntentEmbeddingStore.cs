@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
 
 /// <summary>
 /// Abstraction for intent embedding storage and semantic similarity search.

@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+namespace Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
 /// <summary>
 /// The accumulated selections a customer has made during a chat journey. The deepest populated

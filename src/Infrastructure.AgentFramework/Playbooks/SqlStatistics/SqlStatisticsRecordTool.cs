@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
 using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
 
 /// <summary>
 /// Deterministic Record stage for the SQL Statistics Classification example playbook: shapes the

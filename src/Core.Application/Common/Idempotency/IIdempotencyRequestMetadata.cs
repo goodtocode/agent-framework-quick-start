@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
+namespace Goodtocode.AgentStart.Core.Application.Common.Idempotency;
 
 public interface IIdempotencyRequestMetadata
 {

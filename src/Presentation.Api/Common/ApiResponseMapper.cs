@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Api.Common;
+namespace Goodtocode.AgentStart.Presentation.Api.Common;
 
 /// <summary>
 /// Maps application-layer query and command results to consistent HTTP API responses.

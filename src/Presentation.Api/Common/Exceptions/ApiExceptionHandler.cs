@@ -1,6 +1,6 @@
 using System.ClientModel;
 
-namespace Goodtocode.AgentFramework.Presentation.Api.Common.Exceptions;
+namespace Goodtocode.AgentStart.Presentation.Api.Common.Exceptions;
 
 /// <summary>
 /// Handles unhandled API exceptions and maps them to HTTP problem responses.

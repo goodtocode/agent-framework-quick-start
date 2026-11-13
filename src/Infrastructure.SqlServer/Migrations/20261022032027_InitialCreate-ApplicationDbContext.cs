@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Migrations
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreateAgentFrameworkContext : Migration
+    public partial class InitialCreateApplicationDbContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,7 +1,7 @@
 using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
 
 /// <summary>
 /// SQL Statistics Classification example playbook (Workflow Type 1): a fully deterministic,

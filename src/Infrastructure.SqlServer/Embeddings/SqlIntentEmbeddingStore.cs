@@ -1,9 +1,9 @@
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
+using Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence;
+using Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Entities;
 using Microsoft.Extensions.Logging;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Embeddings;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Embeddings;
 
 /// <summary>
 /// SQL Server implementation of IIntentEmbeddingStore.
@@ -12,7 +12,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Embeddings;
 /// </summary>
 public sealed class SqlIntentEmbeddingStore : IIntentEmbeddingStore
 {
-    private readonly AgentFrameworkContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly ILogger<SqlIntentEmbeddingStore> _logger;
 
     /// <summary>
@@ -21,7 +21,7 @@ public sealed class SqlIntentEmbeddingStore : IIntentEmbeddingStore
     /// <param name="context">EF Core database context.</param>
     /// <param name="logger">Structured logger.</param>
     public SqlIntentEmbeddingStore(
-        AgentFrameworkContext context,
+        ApplicationDbContext context,
         ILogger<SqlIntentEmbeddingStore> logger)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));

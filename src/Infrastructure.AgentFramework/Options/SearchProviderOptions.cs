@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 
 public sealed class SearchProviderOptions
 {

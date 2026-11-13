@@ -1,9 +1,9 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Repeatability;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Persistence;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Repeatability;
 using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
 
 /// <summary>
 /// API-facing command for running the Essay Rubric Evaluation example playbook directly against

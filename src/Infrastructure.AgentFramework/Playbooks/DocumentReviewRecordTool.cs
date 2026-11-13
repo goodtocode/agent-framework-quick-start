@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
 using Goodtocode.Agents.Playbook.Tools;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks;
 
 /// <summary>
 /// Deterministic Record stage for the Document Review example playbook: shapes the finding into a

@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+namespace Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
 /// <summary>
 /// The depth a customer has reached within a chat journey. A journey starts at

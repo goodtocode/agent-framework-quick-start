@@ -1,10 +1,10 @@
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Azure.Monitor.OpenTelemetry.Exporter;
-using Goodtocode.AgentFramework.Presentation.Api.Options;
+using Goodtocode.AgentStart.Presentation.Api.Options;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
-namespace Goodtocode.AgentFramework.Presentation.Api;
+namespace Goodtocode.AgentStart.Presentation.Api;
 
 /// <summary>
 /// Presentation Layer telemetry configuration

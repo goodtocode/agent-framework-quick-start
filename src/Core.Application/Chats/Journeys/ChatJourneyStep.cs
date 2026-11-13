@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+namespace Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
 /// <summary>
 /// The current position in a chat journey: the resolved level, the suggested prompts that can

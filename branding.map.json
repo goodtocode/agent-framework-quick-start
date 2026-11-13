@@ -33,13 +33,13 @@
     { "id": "company-domain",   "find": "(?<![A-Za-z0-9-])goodtocode\\.com", "kind": "regex", "value": "{Domain}",
       "tokens": { "DotnetNew": "__COMPANY_DOMAIN__", "Vsix": null } },
 
-    { "id": "namespace-prefix", "find": "Goodtocode.AgentFramework", "kind": "literal", "value": "{Namespace}",
+    { "id": "namespace-prefix", "find": "Goodtocode.AgentStart", "kind": "literal", "value": "{Namespace}",
       "tokens": { "DotnetNew": null, "Vsix": null } },
     { "id": "setup-company", "find": "$CompanyName = 'Goodtocode'", "kind": "literal", "value": "$CompanyName = '{CompanyName}'",
       "tokens": { "DotnetNew": null, "Vsix": null } },
-    { "id": "product-identifier", "find": "AgentFramework", "kind": "literal", "value": "{ProductName}",
+    { "id": "product-identifier", "find": "AgentStart", "kind": "literal", "value": "{ProductName}",
       "tokens": { "DotnetNew": null, "Vsix": null } },
-    { "id": "product-slug", "find": "agentframework", "kind": "literal", "value": "{ProductSlug}",
+    { "id": "product-slug", "find": "agentstart", "kind": "literal", "value": "{ProductSlug}",
       "tokens": { "DotnetNew": null, "Vsix": null } },
     { "id": "company-short", "find": "(?<![A-Za-z0-9])gtc(?=-)", "kind": "regex", "value": "{CompanyShort}",
       "tokens": { "DotnetNew": "__COMPANY_SLUG__", "Vsix": null } },
@@ -53,9 +53,9 @@
   ],
 
   "renames": [
-    { "find": "Goodtocode.AgentFramework", "value": "{Namespace}" },
-    { "find": "AgentFramework", "value": "{ProductName}" },
-    { "find": "agentframework", "value": "{ProductSlug}" },
+    { "find": "Goodtocode.AgentStart", "value": "{Namespace}" },
+    { "find": "AgentStart", "value": "{ProductName}" },
+    { "find": "agentstart", "value": "{ProductSlug}" },
     { "find": "gtc-", "value": "{CompanyShort}-" }
   ],
 
@@ -69,16 +69,11 @@
     "access_as_user",
     "assets.read",
     "assets.edit",
-    "assets.delete",
-    "Infrastructure.AgentFramework",
-    "Microsoft.AgentFramework",
-    "Microsoft.Agents",
-    "Microsoft.Extensions.AI",
-    "Goodtocode.Agents.Playbook.AgentFramework"
+    "assets.delete"
   ],
 
   "protectForTokens": [
-    "Goodtocode.AgentFramework"
+    "Goodtocode.AgentStart"
   ],
 
   "leftover": {

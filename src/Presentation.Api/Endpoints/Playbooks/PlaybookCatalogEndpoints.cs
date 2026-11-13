@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 
-namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints.Playbooks;
+namespace Goodtocode.AgentStart.Presentation.Api.Endpoints.Playbooks;
 
 /// <summary>
 /// Maps the Playbook catalog CRUD endpoints: query, create, update, and delete a Playbook and its

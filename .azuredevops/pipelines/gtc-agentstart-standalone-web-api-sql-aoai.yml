@@ -5,7 +5,7 @@ trigger:
       - main
   paths:
     include:
-      - .azuredevops/pipelines/gtc-agentframework-standalone-web-api-sql-aoai.yml
+      - .azuredevops/pipelines/gtc-agentstart-standalone-web-api-sql-aoai.yml
       - src/**
 
 pr:
@@ -14,7 +14,7 @@ pr:
       - main
   paths:
     include:
-      - .azuredevops/pipelines/gtc-agentframework-standalone-web-api-sql-aoai.yml
+      - .azuredevops/pipelines/gtc-agentstart-standalone-web-api-sql-aoai.yml
       - src/**
 
 pool:
@@ -57,9 +57,9 @@ variables:
   - name: sqlPassword
     value: ''
   - ${{ if eq(parameters.Environment, 'development') }}:
-      - group: gtc-agentframework-dev
+      - group: gtc-agentstart-dev
   - ${{ if eq(parameters.Environment, 'production') }}:
-      - group: gtc-agentframework-prod
+      - group: gtc-agentstart-prod
   - name: API_ARTIFACT_OUTPUT
     value: publish_output
   - name: WEB_ARTIFACT_OUTPUT
@@ -78,7 +78,7 @@ variables:
   - name: srcPath
     value: $(System.DefaultWorkingDirectory)/src
   - name: srcSolution
-    value: $(System.DefaultWorkingDirectory)/Goodtocode.AgentFramework.Web.slnx
+    value: $(System.DefaultWorkingDirectory)/Goodtocode.AgentStart.Web.slnx
   - name: apiPath
     value: Presentation.Api
   - name: apiProject
@@ -96,7 +96,7 @@ variables:
   - name: infraProject
     value: Infrastructure.SqlServer.csproj
   - name: infraDbContext
-    value: AgentFrameworkContext
+    value: ApplicationDbContext
   - name: runtimeEnv
     value: Development
   - name: buildConfiguration
@@ -109,17 +109,17 @@ variables:
     value: true
   # Manual environment resource mapping for CD (update if IaC names change)
   - name: appiName
-    value: agentframework-dev-wus2-001-appi
+    value: agentstart-dev-wus2-001-appi
   - name: azureApiAppName
-    value: agentframework-dev-wus2-001-api
+    value: agentstart-dev-wus2-001-api
   - name: azureWebAppName
-    value: agentframework-dev-wus2-001-web
+    value: agentstart-dev-wus2-001-web
   - name: azureRgName
-    value: agentframework-dev-wus2-001-rg
+    value: agentstart-dev-wus2-001-rg
   - name: sqlName
-    value: agentframework-dev-wus2-001-sql
+    value: agentstart-dev-wus2-001-sql
   - name: sqlDbName
-    value: agentframework-dev-wus2-001-sqldb
+    value: agentstart-dev-wus2-001-sqldb
   - name: versionMajor
     value: '2'
   - name: versionMinor

@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Tests.Integration.Mocks;
+namespace Goodtocode.AgentStart.Tests.Integration.Mocks;
 
 internal sealed class MockClaimsReader : IClaimsReader
 {

@@ -1,19 +1,19 @@
-﻿using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
-using Goodtocode.AgentFramework.Core.Application.Governance;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+﻿using Goodtocode.AgentStart.Core.Application.Chats.Journeys;
+using Goodtocode.AgentStart.Core.Application.Governance;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Governance;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Essay;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Providers;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Prompting.Governance;
 using Microsoft.Agents.AI;
@@ -25,7 +25,7 @@ using Microsoft.Extensions.Options;
 using OpenAI;
 using OpenAI.Chat;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework;
 
 public static class ConfigureServices
 {
@@ -224,7 +224,7 @@ public static class ConfigureServices
                 var agentOptions = new ChatClientAgentOptions
                 {
                     Name = $"CopilotAgent{purpose}",
-                    Description = "GoodToCode AgentFramework Copilot",
+                    Description = "GoodToCode AgentStart Copilot",
                     ChatOptions = new Microsoft.Extensions.AI.ChatOptions
                     {
                         Tools = tools

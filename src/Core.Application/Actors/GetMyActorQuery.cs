@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Actors;
+﻿namespace Goodtocode.AgentStart.Core.Application.Actors;
 
 public class GetMyActorQuery : UserScopedRequest, IRequest<ActorDto?>
 {
@@ -6,9 +6,9 @@ public class GetMyActorQuery : UserScopedRequest, IRequest<ActorDto?>
 
 }
 
-public class GetActorByOwnerIdQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyActorQuery, ActorDto?>
+public class GetActorByOwnerIdQueryHandler(IApplicationDbContext context) : IRequestHandler<GetMyActorQuery, ActorDto?>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<ActorDto?> Handle(GetMyActorQuery request, CancellationToken cancellationToken)
     {

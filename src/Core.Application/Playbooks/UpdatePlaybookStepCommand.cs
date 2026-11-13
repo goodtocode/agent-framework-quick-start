@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 /// <summary>
 /// Updates one CER step's persisted processing/action content on an existing Playbook - the
@@ -16,9 +16,9 @@ public class UpdatePlaybookStepCommand : IRequest<PlaybookDto>
     public string? ActionDefinition { get; init; }
 }
 
-public class UpdatePlaybookStepCommandHandler(IAgentFrameworkContext context) : IRequestHandler<UpdatePlaybookStepCommand, PlaybookDto>
+public class UpdatePlaybookStepCommandHandler(IApplicationDbContext context) : IRequestHandler<UpdatePlaybookStepCommand, PlaybookDto>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<PlaybookDto> Handle(UpdatePlaybookStepCommand request, CancellationToken cancellationToken)
     {

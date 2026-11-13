@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Mocks;
+namespace Goodtocode.AgentStart.Tests.Integration.Mocks;
 
 /// <summary>
 /// Deterministic test double for <see cref="ISqlDatabaseStatisticsProvider"/>, configurable per

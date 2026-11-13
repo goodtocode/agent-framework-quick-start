@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Presentation.Api.Common.Auth;
+﻿namespace Goodtocode.AgentStart.Presentation.Api.Common.Auth;
 
 /// <summary>
 /// Pipeline behavior that automatically injects authenticated user context into requests

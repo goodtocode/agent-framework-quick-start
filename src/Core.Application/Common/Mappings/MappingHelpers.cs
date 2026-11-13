@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Goodtocode.AgentFramework.Core.Application.Common.Mappings;
+namespace Goodtocode.AgentStart.Core.Application.Common.Mappings;
 
 public static class MappingHelpers
 {

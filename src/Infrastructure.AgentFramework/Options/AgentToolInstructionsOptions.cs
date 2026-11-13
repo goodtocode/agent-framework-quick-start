@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 
 /// <summary>
 /// Defines the routing instructions for one registered agent tool.

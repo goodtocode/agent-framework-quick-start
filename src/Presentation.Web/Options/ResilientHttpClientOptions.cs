@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Web.Options;
+namespace Goodtocode.AgentStart.Presentation.Web.Options;
 
 public class ResilientHttpClientOptions
 {

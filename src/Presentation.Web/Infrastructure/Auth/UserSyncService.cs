@@ -1,10 +1,10 @@
 ﻿using System.Security.Authentication;
 using System.Security.Claims;
-using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http;
-using Goodtocode.AgentFramework.Presentation.Web.Library.Auth;
-using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;
+using Goodtocode.AgentStart.Presentation.Web.Infrastructure.Http;
+using Goodtocode.AgentStart.Presentation.Web.Library.Auth;
+using Goodtocode.AgentStart.Presentation.Web.Library.Auth.Services;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Auth;
+namespace Goodtocode.AgentStart.Presentation.Web.Infrastructure.Auth;
 
 public class UserSyncService(BackendApiClient apiClient, IClaimsReader userInfo) : ApiService, IUserSyncService
 {

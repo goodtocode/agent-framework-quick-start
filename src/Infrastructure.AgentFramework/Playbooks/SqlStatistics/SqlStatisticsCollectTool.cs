@@ -1,9 +1,9 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
 using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
 
 /// <summary>
 /// Deterministic Collect stage for the SQL Statistics Classification example playbook: takes the

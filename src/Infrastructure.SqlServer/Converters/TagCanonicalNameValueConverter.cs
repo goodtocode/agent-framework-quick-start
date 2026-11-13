@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Converters;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Converters;
 
 public class TagCanonicalNameValueConverter : ValueConverter<Dictionary<string, string>, string>
 {

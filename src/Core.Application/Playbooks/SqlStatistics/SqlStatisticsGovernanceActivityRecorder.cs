@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Auth;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+using Goodtocode.AgentStart.Core.Application.Common.Auth;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 using Goodtocode.Agents.Governance.Application;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
 
 /// <summary>
 /// SQL Statistics Classification example playbook's governance activity recorder: a thin

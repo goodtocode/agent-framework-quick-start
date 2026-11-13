@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Common.Auth;
+namespace Goodtocode.AgentStart.Core.Application.Common.Auth;
 
 /// <summary>
 /// Provides the current user context by reading from HTTP authentication claims.

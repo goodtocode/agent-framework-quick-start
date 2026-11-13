@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.Governance;
+using Goodtocode.AgentStart.Core.Domain.Governance;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Configurations;
 
 public class ChatGovernanceConfig : IEntityTypeConfiguration<ChatGovernanceEntity>
 {

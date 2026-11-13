@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities;
+using Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Entities;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Configurations;
 
 /// <summary>
 /// EF Core entity configuration for <see cref="IntentEmbeddingEntity"/>.

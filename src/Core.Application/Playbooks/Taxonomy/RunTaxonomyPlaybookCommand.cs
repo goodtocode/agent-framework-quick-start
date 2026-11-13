@@ -1,9 +1,9 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Repeatability;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Persistence;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Repeatability;
 using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
 
 /// <summary>
 /// API-facing command for running the Taxonomy Extraction and Classification example playbook end

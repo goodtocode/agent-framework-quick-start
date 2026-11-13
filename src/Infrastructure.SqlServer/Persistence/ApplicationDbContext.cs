@@ -1,16 +1,16 @@
 ﻿using System.Reflection;
-using Goodtocode.AgentFramework.Core.Application.Abstractions;
-using Goodtocode.AgentFramework.Core.Domain.Actors;
-using Goodtocode.AgentFramework.Core.Domain.Chats;
-using Goodtocode.AgentFramework.Core.Domain.Common;
-using Goodtocode.AgentFramework.Core.Domain.Governance;
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities;
+using Goodtocode.AgentStart.Core.Application.Abstractions;
+using Goodtocode.AgentStart.Core.Domain.Actors;
+using Goodtocode.AgentStart.Core.Domain.Chats;
+using Goodtocode.AgentStart.Core.Domain.Common;
+using Goodtocode.AgentStart.Core.Domain.Governance;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Entities;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence;
 
-public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     private readonly IRlsContext? CurrentRlsContext;
 
@@ -24,10 +24,10 @@ public class AgentFrameworkContext : DbContext, IAgentFrameworkContext
     public DbSet<PlaybookStepEntity> PlaybookSteps => Set<PlaybookStepEntity>();
     public DbSet<PlaybookExecutionEntity> PlaybookExecutions => Set<PlaybookExecutionEntity>();
 
-    protected AgentFrameworkContext() { }
+    protected ApplicationDbContext() { }
 
-    public AgentFrameworkContext(
-        DbContextOptions<AgentFrameworkContext> options,
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
         IRlsContext currentRlsContext) : base(options)
     {
         CurrentRlsContext = currentRlsContext;

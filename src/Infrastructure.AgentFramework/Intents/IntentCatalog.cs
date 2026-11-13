@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
 
 /// <summary>
 /// The ordered collection of all known deterministic chat intents. Replaces inline conditional logic

@@ -1,15 +1,15 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Auth;
+using Goodtocode.AgentStart.Core.Application.Common.Auth;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 
 /// <summary>
 /// Generic <see cref="IPlaybookStepActivityRecorder{TEvidence,TFinding,TMaterialization}"/> that
 /// produces a real, validated <see cref="EvaluationGovernanceRecord"/> after each CER stage for
 /// any example playbook, reusing the same governance pillar shape
-/// <see cref="Goodtocode.AgentFramework.Core.Application.Governance.ChatGovernanceGate"/> builds
+/// <see cref="Goodtocode.AgentStart.Core.Application.Governance.ChatGovernanceGate"/> builds
 /// for chat, so playbook execution and chat inference share one governance contract.
 /// </summary>
 /// <remarks>

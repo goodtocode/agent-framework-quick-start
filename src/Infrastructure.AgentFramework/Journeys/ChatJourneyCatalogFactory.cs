@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
 
 /// <summary>
 /// Aggregates every registered <see cref="IChatJourneyCatalogContributor"/> into a single

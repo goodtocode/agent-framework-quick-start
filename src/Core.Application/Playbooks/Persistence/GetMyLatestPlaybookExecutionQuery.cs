@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Persistence;
 
 /// <summary>
 /// Fetches the current user's most recently completed execution of one Playbook, so a Playbook
@@ -10,10 +10,10 @@ public class GetMyLatestPlaybookExecutionQuery : UserScopedRequest, IRequest<Pla
     public required string PlaybookKey { get; init; }
 }
 
-public class GetMyLatestPlaybookExecutionQueryHandler(IAgentFrameworkContext context)
+public class GetMyLatestPlaybookExecutionQueryHandler(IApplicationDbContext context)
     : IRequestHandler<GetMyLatestPlaybookExecutionQuery, PlaybookExecutionResultDto?>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<PlaybookExecutionResultDto?> Handle(GetMyLatestPlaybookExecutionQuery request, CancellationToken cancellationToken)
     {

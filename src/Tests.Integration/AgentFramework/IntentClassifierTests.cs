@@ -1,10 +1,10 @@
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public sealed class IntentClassifierTests

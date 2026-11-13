@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Tests.Integration.Mocks;
+namespace Goodtocode.AgentStart.Tests.Integration.Mocks;
 
 /// <summary>
 /// Pipeline behavior that automatically injects authenticated user context into requests

@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+namespace Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
 /// <summary>
 /// A clickable follow-up selection presented after a journey step, parsed from the selection

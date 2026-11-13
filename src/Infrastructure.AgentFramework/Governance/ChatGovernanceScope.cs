@@ -1,7 +1,7 @@
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Prompting.Governance;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Governance;
 
 /// <summary>
 /// Ambient governed scope read by the singleton governed chat client. The chat router opens it once per

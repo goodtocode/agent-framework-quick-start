@@ -44,7 +44,7 @@ variables:
   - name: DOTNET_SYSTEM_GLOBALIZATION_INVARIANT
     value: 'true'
   - name: productRgName
-    value: agentframework-dev-wus2-001-rg
+    value: agentstart-dev-wus2-001-rg
   - name: productRgLocation
     value: westus2
   - name: productBicepTemplate

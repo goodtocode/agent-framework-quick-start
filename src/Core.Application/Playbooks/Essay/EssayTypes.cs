@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
 
 /// <summary>
 /// Shared, versioned evaluation criteria for the Essay Rubric Evaluation example playbook,

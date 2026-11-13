@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 /// <summary>
 /// Creates a new Playbook catalog entry with its three required CER steps. Playbooks are shared
@@ -26,9 +26,9 @@ public sealed class PlaybookStepInput
     public required string ActionDefinition { get; init; }
 }
 
-public class CreatePlaybookCommandHandler(IAgentFrameworkContext context) : IRequestHandler<CreatePlaybookCommand, PlaybookDto>
+public class CreatePlaybookCommandHandler(IApplicationDbContext context) : IRequestHandler<CreatePlaybookCommand, PlaybookDto>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<PlaybookDto> Handle(CreatePlaybookCommand request, CancellationToken cancellationToken)
     {

@@ -1,5 +1,5 @@
-﻿global using Goodtocode.AgentFramework.Core.Application.Common.Auth;
-global using Goodtocode.AgentFramework.Core.Application.Common.Pagination;
+﻿global using Goodtocode.AgentStart.Core.Application.Common.Auth;
+global using Goodtocode.AgentStart.Core.Application.Common.Pagination;
 global using Goodtocode.Assertion;
 global using Goodtocode.Mediator;
 global using Goodtocode.Validation;

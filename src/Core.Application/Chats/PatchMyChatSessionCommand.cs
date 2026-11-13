@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Chats;
+﻿namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class PatchMyChatSessionCommand : UserScopedRequest, IRequest<CommandResult>
 {
@@ -7,9 +7,9 @@ public class PatchMyChatSessionCommand : UserScopedRequest, IRequest<CommandResu
 
 }
 
-public class PatchChatSessionCommandHandler(IAgentFrameworkContext context) : IRequestHandler<PatchMyChatSessionCommand, CommandResult>
+public class PatchChatSessionCommandHandler(IApplicationDbContext context) : IRequestHandler<PatchMyChatSessionCommand, CommandResult>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<CommandResult> Handle(PatchMyChatSessionCommand request, CancellationToken cancellationToken)
     {

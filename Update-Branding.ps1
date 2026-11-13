@@ -220,13 +220,12 @@ if ($isValues) {
     } | Sort-Object { $_.FullName.Length } -Descending
 
     foreach ($item in $items) {
-        $newName = Protect-Text $item.Name
+        $newName = $item.Name
         foreach ($r in $map.renames) {
             $to = $r.value
             foreach ($key in $values.Keys) { $to = $to.Replace("{$key}", $values[$key]) }
             $newName = $newName.Replace($r.find, $to)
         }
-        $newName = Restore-Text $newName
         if ($newName -ne $item.Name) {
             $renames.Add([pscustomobject]@{ From = $item.FullName.Substring($rootLen); To = $newName })
             if ($Apply) { Rename-Item -LiteralPath $item.FullName -NewName $newName }

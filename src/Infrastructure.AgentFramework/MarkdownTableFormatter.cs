@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework;
 
 public static class MarkdownTableFormatter
 {

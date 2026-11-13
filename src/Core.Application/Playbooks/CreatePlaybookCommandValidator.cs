@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 public class CreatePlaybookCommandValidator : Validator<CreatePlaybookCommand>
 {

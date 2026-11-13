@@ -1,10 +1,10 @@
-using Goodtocode.AgentFramework.Core.Application.Chats;
-using Goodtocode.AgentFramework.Core.Application.Abstractions;
-using Goodtocode.AgentFramework.Core.Domain.Actors;
-using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentStart.Core.Application.Chats;
+using Goodtocode.AgentStart.Core.Application.Abstractions;
+using Goodtocode.AgentStart.Core.Domain.Actors;
+using Goodtocode.AgentStart.Core.Domain.Chats;
 using Microsoft.Extensions.AI;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Governance;
+namespace Goodtocode.AgentStart.Tests.Integration.Governance;
 
 [TestClass]
 public class ChatGovernanceInvocationTests : TestBase

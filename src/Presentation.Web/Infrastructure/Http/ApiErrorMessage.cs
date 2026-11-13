@@ -1,7 +1,7 @@
 using Polly.CircuitBreaker;
 using Polly.Timeout;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http;
+namespace Goodtocode.AgentStart.Presentation.Web.Infrastructure.Http;
 
 /// <summary>
 /// Translates failures from Presentation.Api calls into messages that are safe to show to the user.

@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Storage;
+namespace Goodtocode.AgentStart.Presentation.Web.Infrastructure.Storage;
 
 public static class LocalStorageFunctions
 {

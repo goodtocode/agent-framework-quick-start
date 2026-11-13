@@ -1,16 +1,16 @@
 ﻿using System.Reflection;
-using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Auth;
-using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Storage;
-using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services;
-using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Formatting;
-using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services;
+using Goodtocode.AgentStart.Presentation.Web.Infrastructure.Auth;
+using Goodtocode.AgentStart.Presentation.Web.Infrastructure.Storage;
+using Goodtocode.AgentStart.Presentation.Web.Features.Chats.Services;
+using Goodtocode.AgentStart.Presentation.Web.Features.Chats.Formatting;
+using Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.FluentUI.AspNetCore.Components;
-using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;
-using Goodtocode.AgentFramework.Presentation.Web.Library.Auth;
-using Goodtocode.AgentFramework.Presentation.Web.Options;
+using Goodtocode.AgentStart.Presentation.Web.Library.Auth.Services;
+using Goodtocode.AgentStart.Presentation.Web.Library.Auth;
+using Goodtocode.AgentStart.Presentation.Web.Options;
 
-namespace Goodtocode.AgentFramework.Presentation.Web;
+namespace Goodtocode.AgentStart.Presentation.Web;
 
 public static class ConfigureServices
 {

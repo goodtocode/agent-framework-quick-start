@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Application.Actors;
+using Goodtocode.AgentStart.Core.Application.Actors;
 
-namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints.Actors;
+namespace Goodtocode.AgentStart.Presentation.Api.Endpoints.Actors;
 
 /// <summary>
 /// Maps identity actor endpoints.

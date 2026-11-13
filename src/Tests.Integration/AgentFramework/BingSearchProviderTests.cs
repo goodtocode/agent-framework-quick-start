@@ -1,11 +1,11 @@
 using System.Net;
 using System.Text;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Providers;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public class BingSearchProviderTests

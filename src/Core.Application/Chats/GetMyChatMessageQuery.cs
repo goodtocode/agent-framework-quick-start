@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Chats;
+﻿namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class GetMyChatMessageQuery : UserScopedRequest, IRequest<ChatMessageDto?>
 {
@@ -6,9 +6,9 @@ public class GetMyChatMessageQuery : UserScopedRequest, IRequest<ChatMessageDto?
 
 }
 
-public class GetMyChatMessageQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyChatMessageQuery, ChatMessageDto?>
+public class GetMyChatMessageQueryHandler(IApplicationDbContext context) : IRequestHandler<GetMyChatMessageQuery, ChatMessageDto?>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<ChatMessageDto?> Handle(GetMyChatMessageQuery request,
                                 CancellationToken cancellationToken)

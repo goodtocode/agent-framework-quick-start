@@ -1,6 +1,6 @@
 ﻿using Microsoft.OpenApi;
 
-namespace Goodtocode.AgentFramework.Presentation.Api;
+namespace Goodtocode.AgentStart.Presentation.Api;
 
 /// <summary>
 /// Presentation Layer WebApi Configuration
@@ -112,7 +112,7 @@ public static class ConfigureServices
         {
             var info = new OpenApiInfo
             {
-                Title = $"Quick-start for Microsoft Agent Framework API ({Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")})",
+                Title = $"AgentStart API ({Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")})",
                 Version = description.ApiVersion.ToString(),
                 Description = "An API to interact with this application",
                 Contact = new OpenApiContact

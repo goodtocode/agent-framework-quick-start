@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Entities;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Entities;
 
 /// <summary>
 /// EF Core entity representing a single intent embedding vector stored in SQL Server.

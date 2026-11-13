@@ -3,17 +3,17 @@
 
 **Azure Bicep Infrastucture as Standalone Landing Zone**
 
-[![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentframework-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentframework-iac.yml)
+[![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentstart-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentstart-iac.yml)
 
 **Clean Architecture C# Blazor Microapp and Web API Microservice**
 
-[![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentframework-app.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentframework-app.yml)
+[![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentstart-app.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentstart-app.yml)
 
 Microsoft Agent Framework Quick-start is a enterprise-ready starter kit for building modern, agentic applications with C#, Blazor (Fluent UI), and ASP.NET Core Web API. This solution demonstrates how to use the Microsoft Agent Framework to create a Copilot-style chat client, fully integrated with SQL Server for persistent storage of authors, chat sessions, and messages—all orchestrated through a clean architecture pattern. 
 
 With built-in tools (plugins) for querying and managing your own data, automated Azure infrastructure (Bicep), and seamless CI/CD (GitHub Actions), this repo provides everything you need to build, deploy, and extend real-world AI-powered apps on a traditional .NET stack—no JavaScript, no raw HTML, just pure Blazor and Fluent UI. Perfect for teams looking to modernize with AI while leveraging familiar, pragmatic enterprise patterns.
 
-![Microsoft Agent Framework Quick-start Blazor](./docs/AgentFramework-Quick-start-Blazor-Side-by-Side.png)
+![Microsoft Agent Framework Quick-start Blazor](./docs/AgentStart-Quick-start-Blazor-Side-by-Side.png)
 
 Agent Framework is an SDK that integrates Large Language Models (LLMs) like OpenAI, Azure OpenAI, and Hugging Face with conventional programming languages like C#, Python, and Java. Agent Framework allows developers to define plugins that can be chained together in just a few lines of code.
 
@@ -31,11 +31,11 @@ a workload subscription and permission to create registrations and GitHub federa
 ```powershell
 ./Initialize-Installation.ps1 -Mode Local -InstallPrerequisites
 ./Initialize-Installation.ps1 -Mode Cloud -SqlAuthentication SqlAuth -InstallPrerequisites
-# Run agentframework-iac.yml with runcd=true, then resume
+# Run agentstart-iac.yml with runcd=true, then resume
 ./Initialize-Installation.ps1 -Mode Cloud -Stage Complete
 ```
 
-Then run `agentframework-app.yml` with `runcd=true`. Entra-only SQL uses
+Then run `agentstart-app.yml` with `runcd=true`. Entra-only SQL uses
 `-SqlAuthentication EntraOnly`; resume as a member of its SQL administrator group.
 Rerun the same commands for an existing installation. `-Mode Both` prepares local and cloud;
 `-Environment production` selects production when its workflow/parameters are enabled;
@@ -49,7 +49,9 @@ quotas, cold starts or dedicated hosting features require it. Front Door is opti
 edge template defaults to Standard custom-rule WAF and skips creation when no origins are configured.
 
 ## Rebrand a clone for your organization
-After cloning, `Update-Branding.ps1` replaces organization and product branding across source, solution files, GitHub Actions, IaC, scripts, and docs. It is a dry run unless `-Apply` is given. Both `-NewCompany` and `-NewProduct` are required; missing values fail before any writes. EF contexts, databases, migration filenames, workflow filenames and resource prefixes are rebranded. `Infrastructure.AgentFramework`, Microsoft SDK/package names, library dependencies, Entra scopes and user-secrets keys are preserved. `UserSecretsId` values are regenerated unless `-KeepUserSecretsIds` is supplied.
+AgentStart is the internal product identity (`Goodtocode.AgentStart`, database `AgentStart`, resource prefix `agentstart`). The repository and package display names remain Agent Framework Quick Start for Blazor/WebApi.
+
+After cloning, `Update-Branding.ps1` replaces organization and product branding across source, solution files, GitHub Actions, IaC, scripts, Swagger/OpenAPI titles, NSwag namespaces, and docs. It is a dry run unless `-Apply` is given. Both `-NewCompany` and `-NewProduct` are required; missing values fail before any writes. `IApplicationDbContext`, `ApplicationDbContext`, and their migration/snapshot filenames are deliberately brand-neutral and do not change during rebranding; their namespaces do. The replacement token is `AgentStart`, not `AgentFramework`, so `Infrastructure.AgentFramework` and Microsoft SDK names need no special-case exclusions. Library dependencies, Entra scopes and user-secrets keys are preserved. `UserSecretsId` values are regenerated unless `-KeepUserSecretsIds` is supplied.
 
 ```powershell
 # Preview (no changes)
@@ -63,7 +65,7 @@ The namespace defaults to `Company.Product`. For display names containing spaces
 
 Rebranding writes the company/product defaults into the root `Initialize-Installation.ps1`, which passes them explicitly to the shared initializer. Run it afterward without brand arguments; it is now locked to the clone's brand. Explicit `-CompanyName` / `-ProductName` overrides must match its solution. The shared initializer never guesses a product from known customer names. Installation does not run rebranding.
 
-The template's workflow/resource prefix is now `agentframework` (formerly `agent`). Existing AFQS cloud installations must explicitly reuse their existing resource group and review IaC naming before deployment; this is not a resource migration. Rebranding a fresh clone changes that prefix to the new product identifier in lowercase.
+The template's workflow/resource prefix is now `agentstart` (formerly `agent` / `agentframework`) and its default local database is `AgentStart`. Existing AFQS installations must explicitly reuse their existing database/resource group and review IaC naming before deployment; this is not a database or resource migration. Rebranding a fresh clone changes that prefix to the new product identifier in lowercase.
 
 ---
 
@@ -155,7 +157,7 @@ If you already have app registrations, re-run the orchestrator. It only adds wha
 pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api"
 ```
 ```
-pwsh -File ./.azure/scripts/dotnet/Sync-DotnetUserSecretKeyVault.ps1 -Direction FromKeyVault -TenantId "<your-tenant-id>" -SubscriptionId "<your-subscription-id>" -KeyVaultName "<key-vault-name>" -ProductName "agentframework" -ProjectName "Web" -ProjectPath "./src/Presentation.Web"
+pwsh -File ./.azure/scripts/dotnet/Sync-DotnetUserSecretKeyVault.ps1 -Direction FromKeyVault -TenantId "<your-tenant-id>" -SubscriptionId "<your-subscription-id>" -KeyVaultName "<key-vault-name>" -ProductName "agentstart" -ProjectName "Web" -ProjectPath "./src/Presentation.Web"
 ```
 
 **3. OR: Configure everything manually:**
@@ -253,12 +255,12 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" "YOUR_SQL_CONNECTI
 3. Deploy new entities and configurations to database
    
 	```	
-	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context ApplicationDbContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentStart;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
 	```
 4. When an entity changes, is created or deleted, create a new migration. Suggest doing this each new version.
 	```
-	dotnet ef migrations add v1.1.1 --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext
-	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+	dotnet ef migrations add v1.1.1 --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context ApplicationDbContext
+	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context ApplicationDbContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentStart;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
 	```
 
 # Running the Application
@@ -375,7 +377,7 @@ doc's **UI Changes** and **API Changes** sections for details.
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
 
-The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agentframework-dev-wus2-100-rg`. Below is a summary of the workflow files, their purposes, and triggers:
+The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agentstart-dev-wus2-100-rg`. Below is a summary of the workflow files, their purposes, and triggers:
 
 ### Triggers
 All workflow YAML files in this repo are designed to:
@@ -384,8 +386,8 @@ All workflow YAML files in this repo are designed to:
 
 | Workflow File                        | Purpose                                                                                 | CI Trigger (PR)         | CD Trigger (Push to main) |
 |--------------------------------------|-----------------------------------------------------------------------------------------|-------------------------|---------------------------|
-| `agentframework-app.yml`             | Build, test and deploy the Blazor web, Web API and SQL migrations to Azure App Service   | Yes                    | Yes                      |
-| `agentframework-iac.yml`             | Deploy the standalone Azure infrastructure (`.azure/templates/workload-digitalproduct.bicep`) | Yes (what-if)     | Yes                      |
+| `agentstart-app.yml`             | Build, test and deploy the Blazor web, Web API and SQL migrations to Azure App Service   | Yes                    | Yes                      |
+| `agentstart-iac.yml`             | Deploy the standalone Azure infrastructure (`.azure/templates/workload-digitalproduct.bicep`) | Yes (what-if)     | Yes                      |
 
 To add a production environment, add a `production` entry to the plan job of both workflows, add `.azure/variables/workload-digitalproduct-standalone-prod.bicepparam`, and require reviewers on the `production` GitHub environment.
 ---

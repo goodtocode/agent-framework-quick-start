@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
 
 /// <summary>
 /// Single source of truth for the "don't announce intent, call the tool now" instruction. This is

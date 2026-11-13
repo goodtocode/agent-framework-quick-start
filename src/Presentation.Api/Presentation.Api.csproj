@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
-		<RootNamespace>Goodtocode.AgentFramework.Presentation.Api</RootNamespace>
-		<AssemblyName>Goodtocode.AgentFramework.Presentation.Api</AssemblyName>
+		<RootNamespace>Goodtocode.AgentStart.Presentation.Api</RootNamespace>
+		<AssemblyName>Goodtocode.AgentStart.Presentation.Api</AssemblyName>
 		<Version>1.0.0</Version>
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>

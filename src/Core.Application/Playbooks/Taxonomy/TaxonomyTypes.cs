@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
 
 /// <summary>
 /// Shared, versioned evaluation criteria for the Taxonomy Extraction and Classification example

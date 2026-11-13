@@ -1,5 +1,5 @@
 ﻿
-namespace Goodtocode.AgentFramework.Core.Application.Common.Behaviors;
+namespace Goodtocode.AgentStart.Core.Application.Common.Behaviors;
 
 public class CustomValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>

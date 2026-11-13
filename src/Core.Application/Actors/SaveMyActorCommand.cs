@@ -1,6 +1,6 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
+﻿using Goodtocode.AgentStart.Core.Domain.Actors;
 
-namespace Goodtocode.AgentFramework.Core.Application.Actors;
+namespace Goodtocode.AgentStart.Core.Application.Actors;
 
 public class SaveMyActorCommand : UserScopedRequest, IRequest<ActorDto>
 {
@@ -10,9 +10,9 @@ public class SaveMyActorCommand : UserScopedRequest, IRequest<ActorDto>
 
 }
 
-public class SaveMyActorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<SaveMyActorCommand, ActorDto>
+public class SaveMyActorCommandHandler(IApplicationDbContext context) : IRequestHandler<SaveMyActorCommand, ActorDto>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<ActorDto> Handle(SaveMyActorCommand request, CancellationToken cancellationToken)
     {

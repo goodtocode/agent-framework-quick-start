@@ -1,6 +1,6 @@
 ﻿using Microsoft.Agents.AI;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Mocks;
+namespace Goodtocode.AgentStart.Tests.Integration.Mocks;
 
 public class MockAgentSession : AgentSession
 {

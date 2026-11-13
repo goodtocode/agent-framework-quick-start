@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
 
 /// <summary>
 /// Performs lightweight, deterministic token normalization and intent-rule matching.

@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks;
 
 /// <summary>
 /// Shared helper for agentic Playbook stage tools: validates and deserializes a model's raw text

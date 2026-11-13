@@ -4,7 +4,7 @@ using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Steps;
 using Microsoft.Agents.AI.Workflows;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
 
 /// <summary>
 /// Builds and runs the shared three-node Collect -&gt; Evaluate -&gt; Record Microsoft Agent

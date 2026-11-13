@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+using Goodtocode.AgentStart.Core.Application.Chats.Journeys;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public sealed class ChatJourneyProviderTests

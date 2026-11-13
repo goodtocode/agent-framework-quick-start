@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+namespace Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
 /// <summary>
 /// Pure, deterministic implementation of <see cref="IChatSelectionTokenParser"/>. Has no AI or

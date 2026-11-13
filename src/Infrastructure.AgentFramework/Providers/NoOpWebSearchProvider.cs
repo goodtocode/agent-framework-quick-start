@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Providers;
 
 public sealed class NoOpWebSearchProvider(ILogger<NoOpWebSearchProvider> logger) : IWebSearchProvider
 {

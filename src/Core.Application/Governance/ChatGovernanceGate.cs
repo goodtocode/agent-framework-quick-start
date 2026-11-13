@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Domain.Governance;
+using Goodtocode.AgentStart.Core.Domain.Governance;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Governance.Domain;
 
-namespace Goodtocode.AgentFramework.Core.Application.Governance;
+namespace Goodtocode.AgentStart.Core.Application.Governance;
 
 public sealed class ChatGovernanceGate
 {

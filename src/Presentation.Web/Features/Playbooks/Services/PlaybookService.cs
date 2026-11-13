@@ -1,9 +1,9 @@
-using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models;
-using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http;
-using ClientReplayMode = Goodtocode.AgentFramework.Api.Clients.RepeatMode;
-using UiReplayMode = Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models.PlaybookReplayMode;
+using Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Models;
+using Goodtocode.AgentStart.Presentation.Web.Infrastructure.Http;
+using ClientReplayMode = Goodtocode.AgentStart.Api.Clients.RepeatMode;
+using UiReplayMode = Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Models.PlaybookReplayMode;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Services;
 
 /// <summary>
 /// Runs the three example Playbooks (SQL Statistics, Taxonomy, Essay) through the shared

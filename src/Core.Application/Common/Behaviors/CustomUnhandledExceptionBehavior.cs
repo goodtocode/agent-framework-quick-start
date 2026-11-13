@@ -2,7 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 
-namespace Goodtocode.AgentFramework.Core.Application.Common.Behaviors;
+namespace Goodtocode.AgentStart.Core.Application.Common.Behaviors;
 
 public class CustomUnhandledExceptionBehavior<TRequest, TResponse>(ILogger<TRequest> logger) : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {

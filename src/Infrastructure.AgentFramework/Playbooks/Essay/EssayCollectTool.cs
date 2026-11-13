@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
 using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Essay;
 
 /// <summary>
 /// Deterministic Collect stage for the Essay Rubric Evaluation example playbook: a thin

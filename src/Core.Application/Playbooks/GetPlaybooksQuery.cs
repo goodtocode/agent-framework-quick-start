@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 /// <summary>
 /// Lists every Playbook catalog entry, including their CER steps, ordered by name.
@@ -7,9 +7,9 @@ public class GetPlaybooksQuery : IRequest<ICollection<PlaybookDto>>
 {
 }
 
-public class GetPlaybooksQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetPlaybooksQuery, ICollection<PlaybookDto>>
+public class GetPlaybooksQueryHandler(IApplicationDbContext context) : IRequestHandler<GetPlaybooksQuery, ICollection<PlaybookDto>>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<ICollection<PlaybookDto>> Handle(GetPlaybooksQuery request, CancellationToken cancellationToken)
     {

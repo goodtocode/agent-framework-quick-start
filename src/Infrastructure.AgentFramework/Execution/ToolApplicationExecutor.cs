@@ -1,6 +1,6 @@
 using Goodtocode.Mediator;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
 
 /// <summary>
 /// Default mediator-backed executor used by AI tools for application commands and queries.

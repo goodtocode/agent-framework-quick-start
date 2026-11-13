@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
 
 /// <summary>
 /// Projects the SQL Statistics Classification playbook's CER outputs into governance summaries,

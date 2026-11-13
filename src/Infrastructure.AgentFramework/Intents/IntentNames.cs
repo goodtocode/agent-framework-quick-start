@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
 
 /// <summary>
 /// Stable names for every deterministic chat intent. Used both by <see cref="IntentCatalog"/> entries

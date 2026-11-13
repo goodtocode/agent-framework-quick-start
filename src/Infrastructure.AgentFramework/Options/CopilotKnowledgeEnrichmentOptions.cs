@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 
 /// <summary>
 /// Configuration for Copilot SDK-backed knowledge enrichment.
@@ -16,7 +16,7 @@ public sealed class CopilotKnowledgeEnrichmentOptions
     /// Source metadata value emitted in enrichment results.
     /// </summary>
     [Required]
-    public string Source { get; set; } = "copilot-sdk-agentframework";
+    public string Source { get; set; } = "copilot-sdk-agentstart";
 
     /// <summary>
     /// Timeout in seconds for each enrichment invocation.

@@ -1,6 +1,6 @@
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
 
 /// <summary>
 /// Framework-agnostic abstraction over running the Taxonomy Extraction and Classification example

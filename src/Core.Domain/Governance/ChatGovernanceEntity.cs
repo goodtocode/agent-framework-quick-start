@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Governance;
+namespace Goodtocode.AgentStart.Core.Domain.Governance;
 
 public class ChatGovernanceEntity : SecuredEntity<ChatGovernanceEntity>
 {

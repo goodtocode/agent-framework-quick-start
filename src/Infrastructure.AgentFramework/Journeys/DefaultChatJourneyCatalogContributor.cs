@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+using Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
 
 /// <summary>
 /// The built-in chat journey: top-level prompts start a journey at an aggregate, and each

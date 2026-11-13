@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Actors;
+﻿namespace Goodtocode.AgentStart.Core.Application.Actors;
 
 public class GetOurActorQueryValidator : SecuredValidator<GetOurActorQuery>
 {

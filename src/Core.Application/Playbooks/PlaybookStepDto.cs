@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 /// <summary>
 /// Transport shape for one <see cref="PlaybookStepEntity"/>: its identity plus the persisted

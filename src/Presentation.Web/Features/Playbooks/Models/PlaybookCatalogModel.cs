@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Models;
 
 /// <summary>
 /// UI-facing projection of a <c>PlaybookDto</c>: the persisted, slow-moving catalog definition

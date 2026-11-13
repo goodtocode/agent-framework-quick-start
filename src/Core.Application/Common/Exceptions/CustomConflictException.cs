@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
+﻿namespace Goodtocode.AgentStart.Core.Application.Common.Exceptions;
 
 public class CustomConflictException : Exception
 {

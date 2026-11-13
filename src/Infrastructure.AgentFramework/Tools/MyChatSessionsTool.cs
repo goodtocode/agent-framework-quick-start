@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
-using Goodtocode.AgentFramework.Core.Application.Chats;
+using Goodtocode.AgentStart.Core.Application.Chats;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 
 public sealed class MyChatSessionsTool(IServiceProvider serviceProvider) : ScopedAgentTool(serviceProvider), IMyChatSessionsTool
 {

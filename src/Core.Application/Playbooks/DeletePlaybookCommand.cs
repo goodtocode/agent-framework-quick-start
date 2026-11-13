@@ -1,13 +1,13 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 public class DeletePlaybookCommand : IRequest<CommandResult>
 {
     public required Guid Id { get; init; }
 }
 
-public class DeletePlaybookCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeletePlaybookCommand, CommandResult>
+public class DeletePlaybookCommandHandler(IApplicationDbContext context) : IRequestHandler<DeletePlaybookCommand, CommandResult>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<CommandResult> Handle(DeletePlaybookCommand request, CancellationToken cancellationToken)
     {

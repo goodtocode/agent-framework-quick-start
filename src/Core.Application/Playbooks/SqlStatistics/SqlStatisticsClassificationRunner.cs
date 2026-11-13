@@ -1,6 +1,6 @@
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
 
 /// <summary>
 /// Framework-agnostic entry point for running the SQL Statistics Classification example playbook.

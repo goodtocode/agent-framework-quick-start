@@ -1,10 +1,10 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Tools;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Essay;
 
 /// <summary>
 /// MAF-backed implementation of <see cref="IEssayEvaluationRunner"/>: resolves the deterministic

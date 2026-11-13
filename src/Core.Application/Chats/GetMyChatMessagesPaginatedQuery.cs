@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Chats;
+﻿namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class GetMyChatMessagesPaginatedQuery : UserScopedRequest, IRequest<IPaginatedList<ChatMessageDto>>
 {
@@ -9,9 +9,9 @@ public class GetMyChatMessagesPaginatedQuery : UserScopedRequest, IRequest<IPagi
 
 }
 
-public class GetMyChatMessagesPaginatedQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetMyChatMessagesPaginatedQuery, IPaginatedList<ChatMessageDto>>
+public class GetMyChatMessagesPaginatedQueryHandler(IApplicationDbContext context) : IRequestHandler<GetMyChatMessagesPaginatedQuery, IPaginatedList<ChatMessageDto>>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<IPaginatedList<ChatMessageDto>> Handle(GetMyChatMessagesPaginatedQuery request, CancellationToken cancellationToken)
     {

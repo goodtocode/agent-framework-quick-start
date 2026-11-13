@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 /// <summary>
 /// Example Collect input: raw document content to review.

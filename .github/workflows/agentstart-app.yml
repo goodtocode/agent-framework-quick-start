@@ -1,4 +1,4 @@
-name: 'AgentFramework App CI/CD'
+name: 'AgentStart App CI/CD'
 
 # One pipeline for web, API and SQL migrations. Turn components on or off with HAS_WEB, HAS_API and HAS_SQL.
 # CI builds and tests once; CD deploys to the development environment.
@@ -11,14 +11,14 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/agentframework-app.yml
+      - .github/workflows/agentstart-app.yml
       - src/**
       - .github/scripts/cd/**
   push:
     branches:
       - main
     paths:
-      - .github/workflows/agentframework-app.yml
+      - .github/workflows/agentstart-app.yml
       - src/**
       - .github/scripts/cd/**
   workflow_dispatch:
@@ -42,7 +42,7 @@ permissions:
 
 env:
   # ===== EDIT PER INSTALL: naming slots (names: {product}-{env}-{region}-{instance}-{type}) =====
-  PRODUCT: "agentframework"
+  PRODUCT: "agentstart"
   REGION: "wus2"
   INSTANCE: "100"
   IAC_DEPLOYMENT_NAME: "workload-digitalproduct"
@@ -75,7 +75,7 @@ jobs:
     env:
       SCRIPTS_PATH: "./.github/scripts"
       SRC_PATH: "./src"
-      SRC_SLN: "Goodtocode.AgentFramework.Web.slnx"
+      SRC_SLN: "Goodtocode.AgentStart.Web.slnx"
       API_PATH: "Presentation.Api"
       API_PROJECT: "Presentation.Api.csproj"
       TEST_PATH: "Tests.Integration"
@@ -84,7 +84,7 @@ jobs:
       WEB_PROJECT: "Presentation.Web.csproj"
       INFRA_PATH: 'Infrastructure.SqlServer'
       INFRA_PROJECT: 'Infrastructure.SqlServer.csproj'
-      INFRA_DBCONTEXT: 'AgentFrameworkContext'
+      INFRA_DBCONTEXT: 'ApplicationDbContext'
       RUNTIME_ENV: "Development"
       CONFIGURATION: "Release"
       VERSION_MAJOR: '2'

@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+namespace Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
 /// <summary>
 /// A single suggested prompt offered to the customer. A suggested prompt is submitted through the

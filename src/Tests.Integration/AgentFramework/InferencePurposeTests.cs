@@ -4,11 +4,11 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Governance;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Essay;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Taxonomy;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Governance.Domain;
 using Microsoft.Agents.AI;
@@ -17,7 +17,7 @@ using Microsoft.Extensions.Options;
 using OpenAI;
 using OpenAI.Chat;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public sealed class InferencePurposeTests

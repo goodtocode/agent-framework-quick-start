@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public class McpNotFoundSemanticsTests : TestBase

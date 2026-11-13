@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
+namespace Goodtocode.AgentStart.Core.Application.Common.Idempotency;
 
 public static partial class IdempotencyData
 {

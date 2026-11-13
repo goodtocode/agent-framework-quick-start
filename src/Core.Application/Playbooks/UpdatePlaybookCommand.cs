@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 /// <summary>
 /// Updates a Playbook's name/description. Key, WorkflowType, and Version are immutable identity
@@ -11,9 +11,9 @@ public class UpdatePlaybookCommand : IRequest<PlaybookDto>
     public string? Description { get; init; }
 }
 
-public class UpdatePlaybookCommandHandler(IAgentFrameworkContext context) : IRequestHandler<UpdatePlaybookCommand, PlaybookDto>
+public class UpdatePlaybookCommandHandler(IApplicationDbContext context) : IRequestHandler<UpdatePlaybookCommand, PlaybookDto>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<PlaybookDto> Handle(UpdatePlaybookCommand request, CancellationToken cancellationToken)
     {

@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
 
 /// <summary>
 /// Discovers and registers the SQL Statistics Classification example playbook's

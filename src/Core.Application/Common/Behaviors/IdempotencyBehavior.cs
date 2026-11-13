@@ -1,13 +1,13 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
-using Goodtocode.AgentFramework.Core.Domain.Common;
+using Goodtocode.AgentStart.Core.Application.Common.Idempotency;
+using Goodtocode.AgentStart.Core.Domain.Common;
 
-namespace Goodtocode.AgentFramework.Core.Application.Common.Behaviors;
+namespace Goodtocode.AgentStart.Core.Application.Common.Behaviors;
 
-public sealed class IdempotencyBehavior<TRequest, TResponse>(IAgentFrameworkContext context)
+public sealed class IdempotencyBehavior<TRequest, TResponse>(IApplicationDbContext context)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<TResponse> Handle(
         TRequest request,

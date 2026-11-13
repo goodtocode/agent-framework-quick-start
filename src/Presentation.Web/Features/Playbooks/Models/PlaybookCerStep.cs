@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Models;
 
 /// <summary>
 /// The three Playbook CER stages a user can toggle between in the result panel: Collect,
