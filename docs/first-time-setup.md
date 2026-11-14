@@ -21,6 +21,8 @@ sign-in tenant or Azure OpenAI deployment, and CI tests require the AI endpoint 
 Prepare reconciles sign-in registrations and GitHub federation/environment/secrets. It needs a
 user authorized to create or update app registrations, grant consent, and assign the deployment
 identity its Azure role. It prompts privately for missing existing credentials and exits at the IaC checkpoint.
+Secret publishing rejects empty values and fails if any repository/environment is inaccessible
+or any upload fails; a skipped target is not a successful Prepare.
 Complete verifies successful named deployment outputs, adds hosted redirects and provisions
 Entra database users as the authorized signed-in SQL administrator. SQL-auth pipelines provision
 database users automatically. No resource deletion, database reset or authentication conversion occurs.
