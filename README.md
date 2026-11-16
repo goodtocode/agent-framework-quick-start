@@ -389,7 +389,13 @@ All workflow YAML files in this repo are designed to:
 | `agentstart-app.yml`             | Build, test and deploy the Blazor web, Web API and SQL migrations to Azure App Service   | Yes                    | Yes                      |
 | `agentstart-iac.yml`             | Deploy the standalone Azure infrastructure (`.azure/templates/workload-digitalproduct.bicep`) | Yes (what-if)     | Yes                      |
 
-To add a production environment, add a `production` entry to the plan job of both workflows, add `.azure/variables/workload-digitalproduct-standalone-prod.bicepparam`, and require reviewers on the `production` GitHub environment.
+Cloud Prepare and the repository bootstrap create development and production environments
+if needed and add the authenticated GitHub user as a production reviewer when none exists.
+Existing reviewers are preserved. Private repositories require GitHub Enterprise for
+required reviewers; review administrator bypass settings before deploying.
+
+To deploy to production, also add a `production` entry to the plan job of both workflows
+and add `.azure/variables/workload-digitalproduct-standalone-prod.bicepparam`.
 ---
 
 ### Setting up GitHub Actions to Deploy to Azure
