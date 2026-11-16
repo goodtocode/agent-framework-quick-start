@@ -38,7 +38,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Identity.Web" Version="4.18.0" />
 		<PackageReference Include="Microsoft.Identity.Web.UI" Version="4.18.0" />
-		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.20.1" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.21.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.3.1" />
 		<!-- Remove when Microsoft.Identity.Web and Microsoft.Data.SqlClient resolve Pkcs >= 10.0.13 (GHSA-846f-f764-76mx, GHSA-2fmv-rv2c-59x7). -->
