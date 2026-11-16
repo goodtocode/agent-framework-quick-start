@@ -18,9 +18,9 @@
 		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.14" />
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.14" />
 		<PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.14" />
-		<PackageReference Include="Microsoft.Agents.AI" Version="1.27.0" />
-		<PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.27.0" />
-		<PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.27.0" />
+		<PackageReference Include="Microsoft.Agents.AI" Version="1.28.0" />
+		<PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.28.0" />
+		<PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.28.0" />
 		<PackageReference Include="Goodtocode.Agents.Playbook.Prompting" Version="2.1.14" />
 	</ItemGroup>
 
