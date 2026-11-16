@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Infrastructure.SqlServer;
+﻿namespace Goodtocode.AgentStart.Infrastructure.SqlServer;
 
 public static class ColumnTypes
 {

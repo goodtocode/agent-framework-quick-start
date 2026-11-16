@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
-using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
-using Goodtocode.AgentFramework.Core.Domain.Actors;
-using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentStart.Core.Application.Common.Idempotency;
+using Goodtocode.AgentStart.Core.Domain.Actors;
+using Goodtocode.AgentStart.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Core.Application.Chats;
+namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class CreateMyChatSessionCommand : IdempotentUserScopedRequest, IRequest<ChatSessionDto>, IIdempotencyRequestMetadata
 {
@@ -25,11 +25,11 @@ public class CreateMyChatSessionCommand : IdempotentUserScopedRequest, IRequest<
 }
 
 public class CreateMyChatSessionCommandHandler(
-    IAgentFrameworkContext context,
+    IApplicationDbContext context,
     ISender sender,
     IIdempotencyDuplicateWindowPolicy duplicateWindowPolicy) : IRequestHandler<CreateMyChatSessionCommand, ChatSessionDto>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
     private readonly ISender _sender = sender;
     private readonly IIdempotencyDuplicateWindowPolicy _duplicateWindowPolicy = duplicateWindowPolicy;
 

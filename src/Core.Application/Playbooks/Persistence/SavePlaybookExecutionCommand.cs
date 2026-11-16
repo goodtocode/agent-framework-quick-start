@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Persistence;
 
 /// <summary>
 /// Persists one actual run of a Playbook - the user's Collect-stage input plus each stage's
@@ -26,9 +26,9 @@ public sealed class SavePlaybookExecutionCommand : UserScopedRequest, IRequest<G
     public required DateTimeOffset CompletedUtc { get; init; }
 }
 
-public sealed class SavePlaybookExecutionCommandHandler(IAgentFrameworkContext context) : IRequestHandler<SavePlaybookExecutionCommand, Guid>
+public sealed class SavePlaybookExecutionCommandHandler(IApplicationDbContext context) : IRequestHandler<SavePlaybookExecutionCommand, Guid>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<Guid> Handle(SavePlaybookExecutionCommand request, CancellationToken cancellationToken)
     {

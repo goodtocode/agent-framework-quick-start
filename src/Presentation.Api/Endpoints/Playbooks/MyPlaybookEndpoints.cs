@@ -1,10 +1,10 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Persistence;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
 
-namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints.Playbooks;
+namespace Goodtocode.AgentStart.Presentation.Api.Endpoints.Playbooks;
 
 /// <summary>
 /// Maps the three example Playbook "run" endpoints (SQL Statistics, Taxonomy, Essay). Each takes

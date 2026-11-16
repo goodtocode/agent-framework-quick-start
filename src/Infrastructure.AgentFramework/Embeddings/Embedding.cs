@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
 
 /// <summary>
 /// Immutable value type representing a single embedding vector and its metadata.

@@ -4,12 +4,8 @@
 
 Add embedding-based intent classification as a controlled second tier between deterministic rule matching and the general Microsoft Agent Framework (MAF) fallback. The feature improves recognition of novel user phrasing while preserving deterministic routing, typed tool boundaries, authorization, observability, and a disabled-by-default rollout.
 
-This feature applies to both template-derived products:
-
-- `crucible-web`
-- `agent-framework-quick-start`
-
-The implementations share the same contracts and behavior. Their embedding initialization triggers differ because Crucible has a StateOfYour business-seeding workflow while the quick-start application owns its startup lifecycle.
+This feature applies to `agent-framework-quick-start` and its template-derived products.
+The quick-start application owns embedding initialization through its startup lifecycle.
 
 ## Business Problem
 
@@ -131,22 +127,7 @@ Azure embedding settings are bound through `AzureOpenAIOptions`, including `Embe
 
 `SqlIntentEmbeddingStore` stores example vectors in the `Chat.IntentEmbeddings` table and performs cosine-similarity search. The store is behind `IIntentEmbeddingStore` so a future vector backend can replace SQL without changing the classifier contract.
 
-## Project Implementations
-
-### crucible-web
-
-Crucible seeds embeddings through `Seed.StateOfYour`:
-
-1. `StateOfYourSqlServerRuntimeScenario` invokes the seeder during product-data setup.
-2. The seeder exits without work when semantic classification is disabled.
-3. When enabled, it reads the current `IntentCatalog`.
-4. It batches each intent's examples through the configured Azure embedding deployment.
-5. It upserts the generated vectors into the Crucible SQL database.
-6. Non-cancellation failures are logged and do not disable rule-based execution.
-
-This path is intended for the StateOfYour SQL-backed business scenario and requires a real SQL connection and embedding deployment when enabled.
-
-### agent-framework-quick-start
+## Application Initialization
 
 The quick-start application seeds embeddings through `IntentEmbeddingInitializationService`:
 

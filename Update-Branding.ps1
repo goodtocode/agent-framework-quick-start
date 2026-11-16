@@ -61,11 +61,16 @@ if ($isValues) {
             }
         }
     }
-    foreach ($required in 'NewCompany', 'NewProduct', 'Namespace') {
+    foreach ($required in 'NewCompany', 'NewProduct') {
         if ([string]::IsNullOrWhiteSpace((Get-Variable -Name $required -ValueOnly))) {
             throw "-$required is required for -Target Values (or supply it in -ConfigFile)."
         }
     }
+    if (-not $Namespace) { $Namespace = "$NewCompany.$NewProduct" }
+    if ($Namespace -cnotmatch '^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)+$') {
+        throw '-Namespace must be a dotted .NET identifier. Supply it explicitly when company or product display names contain spaces.'
+    }
+    $namespaceParts = $Namespace.Split('.')
     if (-not $CompanySlug)  { $CompanySlug = (ConvertTo-Slug $NewCompany).Replace('-', '') }
     if (-not $CompanyShort) { $CompanyShort = $CompanySlug }
     if (-not $Domain)       { $Domain = "$CompanySlug.com" }
@@ -77,6 +82,8 @@ if ($isValues) {
         NewCompany = $NewCompany; NewProduct = $NewProduct; Namespace = $Namespace
         CompanySlug = $CompanySlug; CompanyShort = $CompanyShort; Domain = $Domain
         ContactEmail = $ContactEmail; RepoOwner = $RepoOwner; RepoName = $RepoName; TenantHost = $TenantHost
+        CompanyName = ($namespaceParts[0..($namespaceParts.Length - 2)] -join '.')
+        ProductName = $namespaceParts[-1]; ProductSlug = $namespaceParts[-1].ToLowerInvariant()
     }
 
     if ($Apply -and -not $Force -and (Get-Command git -ErrorAction SilentlyContinue)) {

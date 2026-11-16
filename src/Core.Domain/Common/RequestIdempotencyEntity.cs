@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Common;
+namespace Goodtocode.AgentStart.Core.Domain.Common;
 
 public class RequestIdempotencyEntity : SecuredEntity<RequestIdempotencyEntity>
 {

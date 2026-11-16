@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Chats;
-using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentStart.Core.Application.Chats;
+using Goodtocode.AgentStart.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Chats
+namespace Goodtocode.AgentStart.Tests.Integration.Chats
 {
     [Binding]
     [Scope(Tag = "deleteChatSessionCommand")]

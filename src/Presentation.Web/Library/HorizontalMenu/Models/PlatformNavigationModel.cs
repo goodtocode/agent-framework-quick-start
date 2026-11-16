@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Web.Library.HorizontalMenu.Models;
+namespace Goodtocode.AgentStart.Presentation.Web.Library.HorizontalMenu.Models;
 
 public sealed class PlatformNavigationModel
 {
@@ -8,7 +8,7 @@ public sealed class PlatformNavigationModel
     public bool Center { get; init; }
     public required IReadOnlyList<HorizontalMenuItem> Items { get; init; }
 
-    public static PlatformNavigationModel AgentFramework { get; } = new()
+    public static PlatformNavigationModel AgentStart { get; } = new()
     {
         Prefix = "agent-framework",
         Title = "Navigation",
@@ -23,6 +23,6 @@ public sealed class PlatformNavigationModel
 
     public static IReadOnlyList<PlatformNavigationModel> All { get; } =
     [
-        AgentFramework
+        AgentStart
     ];
 }

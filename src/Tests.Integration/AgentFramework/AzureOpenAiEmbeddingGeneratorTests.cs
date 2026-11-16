@@ -1,11 +1,11 @@
 using System.Net;
 using System.Text;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public sealed class AzureOpenAiEmbeddingGeneratorTests

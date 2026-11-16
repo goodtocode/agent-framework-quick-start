@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Chats.Models;
 
 public class ChatSessionModel : INotifyPropertyChanged
 {

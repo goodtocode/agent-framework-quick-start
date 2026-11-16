@@ -1,10 +1,10 @@
 using System.Net;
 using System.Text.Json;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Providers;
 
 public sealed class BingSearchProvider(
     HttpClient httpClient,

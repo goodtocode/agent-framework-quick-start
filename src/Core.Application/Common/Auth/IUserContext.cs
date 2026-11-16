@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Common.Auth;
+﻿namespace Goodtocode.AgentStart.Core.Application.Common.Auth;
 
 /// <summary>
 /// Represents the authenticated user's context, including their identity, tenant association, and authorization permissions.

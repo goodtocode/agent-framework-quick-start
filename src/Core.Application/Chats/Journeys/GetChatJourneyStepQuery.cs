@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentStart.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+namespace Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
 /// <summary>
 /// Resolves the customer's current position in the chat journey for a session: the suggested
@@ -13,13 +13,13 @@ public class GetChatJourneyStepQuery : UserScopedRequest, IRequest<ChatJourneySt
 }
 
 public class GetChatJourneyStepQueryHandler(
-    IAgentFrameworkContext context,
+    IApplicationDbContext context,
     IChatJourneyProvider journeyProvider,
     IChatJourneyContextAccessor journeyContextAccessor,
     IChatSelectionTokenParser selectionTokenParser)
     : IRequestHandler<GetChatJourneyStepQuery, ChatJourneyStepDto>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
     private readonly IChatJourneyProvider _journeyProvider = journeyProvider;
     private readonly IChatJourneyContextAccessor _journeyContextAccessor = journeyContextAccessor;
     private readonly IChatSelectionTokenParser _selectionTokenParser = selectionTokenParser;

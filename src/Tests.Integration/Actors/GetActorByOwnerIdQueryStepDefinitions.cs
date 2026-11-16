@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Actors;
-using Goodtocode.AgentFramework.Core.Domain.Actors;
+using Goodtocode.AgentStart.Core.Application.Actors;
+using Goodtocode.AgentStart.Core.Domain.Actors;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Actors;
+namespace Goodtocode.AgentStart.Tests.Integration.Actors;
 
 [Binding]
 [Scope(Tag = "getAuthorByOwnerIdQuery")]

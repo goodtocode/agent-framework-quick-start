@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Chats.Models;
 
 /// <summary>
 /// The customer's current position in the chat journey: suggested prompts that start or continue

@@ -1,9 +1,9 @@
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Embeddings;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
+using Goodtocode.AgentStart.Infrastructure.SqlServer.Embeddings;
+using Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Infrastructure;
+namespace Goodtocode.AgentStart.Tests.Integration.Infrastructure;
 
 [TestClass]
 public sealed class SqlIntentEmbeddingStoreTests
@@ -47,15 +47,15 @@ public sealed class SqlIntentEmbeddingStoreTests
         Assert.IsFalse(await store.IsReadyAsync(CancellationToken.None));
     }
 
-    private static SqlIntentEmbeddingStore CreateStore(AgentFrameworkContext context)
+    private static SqlIntentEmbeddingStore CreateStore(ApplicationDbContext context)
         => new(context, NullLogger<SqlIntentEmbeddingStore>.Instance);
 
-    private static AgentFrameworkContext CreateContext()
+    private static ApplicationDbContext CreateContext()
     {
-        var options = new DbContextOptionsBuilder<AgentFrameworkContext>()
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new AgentFrameworkContext(options, new TestRlsContext());
+        return new ApplicationDbContext(options, new TestRlsContext());
     }
 
     private static IEnumerable<Embedding> CreateEmbeddings()

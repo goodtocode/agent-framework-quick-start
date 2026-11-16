@@ -1,9 +1,9 @@
-using Goodtocode.AgentFramework.Core.Application.Abstractions;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentStart.Core.Application.Abstractions;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public sealed class ChatMessageRouterTests : TestBase

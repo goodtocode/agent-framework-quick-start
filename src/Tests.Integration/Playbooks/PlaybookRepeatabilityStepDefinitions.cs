@@ -1,10 +1,10 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Common.Exceptions;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 using Goodtocode.Agents.Governance.Domain;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Playbooks;
+namespace Goodtocode.AgentStart.Tests.Integration.Playbooks;
 
 [Binding]
 [Scope(Tag = "playbookRepeatability")]

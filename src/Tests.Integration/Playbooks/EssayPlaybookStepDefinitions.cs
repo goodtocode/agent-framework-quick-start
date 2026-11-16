@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
-using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Playbooks;
+namespace Goodtocode.AgentStart.Tests.Integration.Playbooks;
 
 [Binding]
 [Scope(Tag = "essayPlaybook")]

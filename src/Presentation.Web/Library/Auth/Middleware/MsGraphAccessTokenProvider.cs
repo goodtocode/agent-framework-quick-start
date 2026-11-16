@@ -2,7 +2,7 @@ using Goodtocode.SecuredHttpClient.Middleware;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Middleware;
+namespace Goodtocode.AgentStart.Presentation.Web.Library.Auth.Middleware;
 
 public class MsGraphAccessTokenProvider(IHttpContextAccessor httpContextAccessor) : IAccessTokenProvider
 {

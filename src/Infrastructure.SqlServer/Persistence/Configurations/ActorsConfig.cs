@@ -1,6 +1,6 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
+﻿using Goodtocode.AgentStart.Core.Domain.Actors;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Configurations;
 
 public class ActorsConfig : IEntityTypeConfiguration<ActorEntity>
 {

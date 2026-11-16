@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Goodtocode.AgentFramework.Core.Application.Common.Behaviors;
+namespace Goodtocode.AgentStart.Core.Application.Common.Behaviors;
 
 public class CustomLoggingBehavior<TRequest>(ILogger<TRequest> logger) : IRequestPreProcessor<TRequest> where TRequest : notnull
 {

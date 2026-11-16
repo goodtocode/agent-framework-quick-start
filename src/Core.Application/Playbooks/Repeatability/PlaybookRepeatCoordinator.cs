@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Persistence;
 using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Repeatability;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Repeatability;
 
 /// <summary>
 /// Everything a Run*PlaybookCommand handler needs to execute a repeat: the Governance request, the Playbook
@@ -18,7 +18,7 @@ public sealed record PreparedRepeat<TEvidence, TFinding>(
 /// Resolves the source execution for a repeat and builds the Playbook execution request. Which stages run is
 /// decided by the Governance policy inside the Playbook executor, not here.
 /// </summary>
-public sealed class PlaybookRepeatCoordinator(IAgentFrameworkContext context)
+public sealed class PlaybookRepeatCoordinator(IApplicationDbContext context)
 {
     public async Task<PreparedRepeat<TEvidence, TFinding>> PrepareAsync<TEvidence, TFinding>(
         string playbookKey,

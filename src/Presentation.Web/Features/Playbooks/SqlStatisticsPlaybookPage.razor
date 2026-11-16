@@ -1,8 +1,8 @@
 @page "/playbooks/sql-statistics"
 
-@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Components
-@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models
-@using Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Services
+@using Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Components
+@using Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Models
+@using Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Services
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
@@ -21,7 +21,7 @@
 
     <FluentCard>
         <PlaybookRunForm Label="Database name"
-                         Placeholder="e.g. AgentFramework"
+                         Placeholder="e.g. AgentStart"
                          ButtonLabel="Run SQL Statistics Playbook"
                          Multiline="false"
                          OnSubmit="RunAsync" />

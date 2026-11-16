@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Chats;
+namespace Goodtocode.AgentStart.Core.Domain.Chats;
 
 public class ChatMessageEntity : SecuredEntity<ChatMessageEntity>, IDomainEntity<ChatMessageEntity>
 {

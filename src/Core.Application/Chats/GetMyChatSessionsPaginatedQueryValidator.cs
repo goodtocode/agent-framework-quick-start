@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Chats;
+﻿namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class GetMyChatSessionsPaginatedQueryValidator : SecuredValidator<GetMyChatSessionsPaginatedQuery>
 {

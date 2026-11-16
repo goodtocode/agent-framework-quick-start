@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 
 public sealed class WebSearchTool(IServiceProvider serviceProvider) : ScopedAgentTool(serviceProvider)
 {

@@ -1,10 +1,10 @@
 using DescriptionAttribute = System.ComponentModel.DescriptionAttribute;
 using System.Reflection;
 using System.Text.Json;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 using Microsoft.Extensions.AI;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.AgentFramework;
+namespace Goodtocode.AgentStart.Tests.Integration.AgentFramework;
 
 [TestClass]
 public sealed class AgentFunctionRegistrationTests

@@ -18,7 +18,7 @@ Notes:
 param (
 	[Parameter(Mandatory = $false)]
 	[array]$Products = @(
-		@{ Name = "AgentFramework"; Root = ".\src"; Database = "AgentFramework"; ApiProject = "Presentation.Api" }
+		@{ Name = "AgentStart"; Root = ".\src"; Database = "AgentStart"; ApiProject = "Presentation.Api" }
 	),
 	[switch]$DropDatabase,
 	[switch]$DropTables,

@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 
 /// <summary>
 /// Per-chat-session state for deterministic follow-up/parameter questions (e.g. "select actor

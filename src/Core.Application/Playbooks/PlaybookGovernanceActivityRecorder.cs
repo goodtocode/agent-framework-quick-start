@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Auth;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+using Goodtocode.AgentStart.Core.Application.Common.Auth;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 using Goodtocode.Agents.Governance.Application;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 /// <summary>
 /// Document Review example playbook's governance activity recorder: a thin specialization of

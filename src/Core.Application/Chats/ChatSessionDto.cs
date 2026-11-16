@@ -1,6 +1,6 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Chats;
+﻿using Goodtocode.AgentStart.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Core.Application.Chats;
+namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class ChatSessionDto
 {

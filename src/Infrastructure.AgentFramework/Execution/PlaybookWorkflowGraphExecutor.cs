@@ -4,7 +4,7 @@ using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Steps;
 using Microsoft.Agents.AI.Workflows;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
 
 /// <summary>
 /// Builds and runs the shared three-node Collect -&gt; Evaluate -&gt; Record Microsoft Agent
@@ -13,8 +13,7 @@ namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
 /// <see cref="ICollectStepTool{TCollectInput,TEvidence}"/>, <see cref="IEvaluateStepTool{TEvidence,TFinding}"/>,
 /// and <see cref="IRecordStepTool{TFinding,TMaterialization}"/> instances supplied to
 /// <see cref="ExecuteAsync"/> vary - deterministic for the hybrid workflow, agentic for the
-/// fully agentic workflow - mirroring the pattern already proven in crucible-web's
-/// PipelineWorkflowStepExecutor. Each node calls the shared
+/// fully agentic workflow. Each node calls the shared
 /// <see cref="IPlaybookStepActivityRecorder{TEvidence,TFinding,TMaterialization}"/> after its
 /// stage completes, so governance capture is identical regardless of orchestration model. When an
 /// optional <see cref="PlaybookExecutionRequest{TEvidence,TFinding}"/> skips any stage, the full

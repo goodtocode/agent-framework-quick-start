@@ -1,11 +1,11 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 using Goodtocode.Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks;
 
 /// <summary>
 /// Seeds the three built-in example Playbooks (SQL Statistics, Taxonomy, Essay) - their

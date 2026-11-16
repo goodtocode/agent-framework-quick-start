@@ -5,7 +5,7 @@ Creates or updates (upserts) GitHub Actions secrets in one repo, several repos, 
 .DESCRIPTION
 Requires GitHub CLI (gh) and an authenticated session. Installs GitHub CLI if it is not present and prompts for GitHub authentication if not already authenticated.
 A secret that already exists is overwritten, so rerunning is safe and rotates the value.
-Without -Environment the secrets are repository secrets. With -Environment they are environment secrets, and an environment that does not exist in a repo is skipped with a warning.
+Without -Environment the secrets are repository secrets. With -Environment they are environment secrets. Inaccessible targets and failed uploads fail the script.
 -AllRepos targets every non-archived, non-fork repo of -Owner. Use -WhatIf to list what would be set without changing anything.
 Secret values are sent to gh on stdin, never on the command line.
 
@@ -19,11 +19,11 @@ Secret values are sent to gh on stdin, never on the command line.
 
 .EXAMPLE
 # Upsert one secret in a list of repos, as repository secrets:
-.\New-GithubSecret.ps1 -Owner censicai -Repo crucible,compass -SecretName AZURE_OPENAI_ENDPOINT -SecretValue "https://ai-dev-wus2-100-aif.openai.azure.com/"
+.\New-GithubSecret.ps1 -Owner contoso -Repo assist,portal -SecretName AZURE_OPENAI_ENDPOINT -SecretValue "https://example.openai.azure.com/"
 
 .EXAMPLE
 # Set many secrets at once in one repo environment:
-.\New-GithubSecret.ps1 -Owner your-github-handle -Repo your-repo -Environment development -Secrets @{API_CLIENT_ID="your-api-client-id";AZURE_CLIENT_ID="your-azure-client-id";AZURE_OPENAI_APIKEY="your-azure-openai-apikey";AZURE_OPENAI_ENDPOINT="your-azure-openai-endpoint";AZURE_SUBSCRIPTION_ID="your-azure-subscription-id";AZURE_TENANT_ID="your-azure-tenant-id";E2E_CLIENT_ID="your-e2e-client-id";E2E_CLIENT_SECRET="your-e2e-client-secret";EEID_INSTANCE="your-eeid-instance-url";EEID_TENANT_ID="your-eeid-tenant-id";SQL_ADMIN_PASSWORD="your-sql-admin-password";SQL_ADMIN_USER="your-sql-admin-user";WEB_CLIENT_ID="your-web-client-id";WEB_CLIENT_SECRET="your-web-client-secret"}
+.\New-GithubSecret.ps1 -Owner your-github-handle -Repo your-repo -Environment development -Secrets @{API_CLIENT_ID="your-api-client-id";AZURE_CLIENT_ID="your-azure-client-id";AZURE_OPENAI_APIKEY="your-azure-openai-apikey";AZURE_OPENAI_ENDPOINT="your-azure-openai-endpoint";AZURE_SUBSCRIPTION_ID="your-azure-subscription-id";AZURE_TENANT_ID="your-azure-tenant-id";E2E_CLIENT_ID="your-e2e-client-id";E2E_CLIENT_SECRET="your-e2e-client-secret";EEID_INSTANCE="your-eeid-instance-url";EEID_TENANT_ID="your-eeid-tenant-id";WEB_CLIENT_ID="your-web-client-id";WEB_CLIENT_SECRET="your-web-client-secret"}
 #>
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Single')]
 param(
@@ -41,6 +41,14 @@ $ErrorActionPreference = 'Stop'
 if (-not $AllRepos -and -not $Repo) { throw 'Specify -Repo <name,...> or -AllRepos.' }
 if ($AllRepos -and $Repo) { throw 'Use either -Repo or -AllRepos, not both.' }
 
+if ($PSCmdlet.ParameterSetName -eq 'Single') { $Secrets = @{ $SecretName = $SecretValue } }
+if ($Secrets.Count -eq 0) { throw 'Specify at least one secret to upload.' }
+foreach ($name in $Secrets.Keys) {
+  if ([string]::IsNullOrWhiteSpace([string]$name) -or [string]::IsNullOrWhiteSpace([string]$Secrets[$name])) {
+    throw 'Secret names and values must be nonempty. No secrets were uploaded.'
+  }
+}
+
 if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
   Write-Host "GitHub CLI not found. Installing via winget..." -ForegroundColor Red
   winget install --id GitHub.cli -e --silent
@@ -52,9 +60,8 @@ gh auth status 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) {
   Write-Host "GitHub CLI not authenticated. Please login." -ForegroundColor Red
   gh auth login
+  if ($LASTEXITCODE -ne 0) { throw 'GitHub authentication failed. No secrets were uploaded.' }
 }
-
-if ($PSCmdlet.ParameterSetName -eq 'Single') { $Secrets = @{ $SecretName = $SecretValue } }
 
 if ($AllRepos) {
   Write-Host "Listing repos of $Owner..."
@@ -106,4 +113,6 @@ foreach ($r in $Repo) {
 }
 
 Write-Host "Done. Set: $set, skipped: $skipped, failed: $failed."
-if ($failed -gt 0) { exit 1 }
+if ($failed -gt 0 -or $skipped -gt 0) {
+  throw "GitHub secret upload incomplete. Set: $set, skipped: $skipped, failed: $failed."
+}

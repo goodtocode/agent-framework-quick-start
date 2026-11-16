@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Actors;
-using Goodtocode.AgentFramework.Core.Application.Chats;
+using Goodtocode.AgentStart.Core.Application.Actors;
+using Goodtocode.AgentStart.Core.Application.Chats;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Application;
+namespace Goodtocode.AgentStart.Tests.Integration.Application;
 
 [TestClass]
 public class NotFoundSemanticsTests : TestBase

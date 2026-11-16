@@ -1,6 +1,6 @@
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 
 /// <summary>
 /// Marks a Record-stage materialization as carrying a human-readable <see cref="Summary"/> string,

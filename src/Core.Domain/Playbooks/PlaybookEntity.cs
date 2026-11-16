@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Playbooks;
+namespace Goodtocode.AgentStart.Core.Domain.Playbooks;
 
 /// <summary>
 /// A Playbook's semi-static definition: its identity plus exactly one Collect, one Evaluate, and

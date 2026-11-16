@@ -2,12 +2,12 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
 using Goodtocode.Mediator;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 
 /// <summary>
 /// Shared base class for AI tools that execute application requests in an isolated scope.

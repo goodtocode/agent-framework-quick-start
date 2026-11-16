@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Routing;
+namespace Goodtocode.AgentStart.Presentation.Web.Library.Auth.Routing;
 
 public static class LoginLogoutEndpointRouteBuilderExtensions
 {

@@ -1,11 +1,11 @@
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
 
 /// <summary>
 /// Seeds intent example embeddings once at startup when semantic classification is enabled.

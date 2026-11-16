@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Chats;
-using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
+using Goodtocode.AgentStart.Core.Application.Chats;
+using Goodtocode.AgentStart.Core.Application.Common.Idempotency;
 
-namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints.Chats;
+namespace Goodtocode.AgentStart.Presentation.Api.Endpoints.Chats;
 
 /// <summary>
 /// Maps chat message endpoints.

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;
+namespace Goodtocode.AgentStart.Presentation.Web.Library.Auth.Services;
 
 public interface IUserSyncService
 {

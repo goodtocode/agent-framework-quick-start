@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Formatting;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Chats.Formatting;
 
 public interface IChatMessageFormatter
 {

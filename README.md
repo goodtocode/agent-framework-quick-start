@@ -3,17 +3,17 @@
 
 **Azure Bicep Infrastucture as Standalone Landing Zone**
 
-[![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-iac.yml)
+[![Landing Zone IaC](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentstart-iac.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentstart-iac.yml)
 
 **Clean Architecture C# Blazor Microapp and Web API Microservice**
 
-[![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-app.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agent-app.yml)
+[![Web & API & SQL CI/CD](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentstart-app.yml/badge.svg)](https://github.com/goodtocode/agent-framework-quick-start/actions/workflows/agentstart-app.yml)
 
 Microsoft Agent Framework Quick-start is a enterprise-ready starter kit for building modern, agentic applications with C#, Blazor (Fluent UI), and ASP.NET Core Web API. This solution demonstrates how to use the Microsoft Agent Framework to create a Copilot-style chat client, fully integrated with SQL Server for persistent storage of authors, chat sessions, and messages—all orchestrated through a clean architecture pattern. 
 
 With built-in tools (plugins) for querying and managing your own data, automated Azure infrastructure (Bicep), and seamless CI/CD (GitHub Actions), this repo provides everything you need to build, deploy, and extend real-world AI-powered apps on a traditional .NET stack—no JavaScript, no raw HTML, just pure Blazor and Fluent UI. Perfect for teams looking to modernize with AI while leveraging familiar, pragmatic enterprise patterns.
 
-![Microsoft Agent Framework Quick-start Blazor](./docs/AgentFramework-Quick-start-Blazor-Side-by-Side.png)
+![Microsoft Agent Framework Quick-start Blazor](./docs/AgentStart-Quick-start-Blazor-Side-by-Side.png)
 
 Agent Framework is an SDK that integrates Large Language Models (LLMs) like OpenAI, Azure OpenAI, and Hugging Face with conventional programming languages like C#, Python, and Java. Agent Framework allows developers to define plugins that can be chained together in just a few lines of code.
 
@@ -23,113 +23,49 @@ Agent Framework is an SDK that integrates Large Language Models (LLMs) like Open
 
 ---
 
-# Quick-Start Steps
-Use one of the two copy/paste options below.
+# First-Time Setup
+Run PowerShell 7 from the clone root. Supply an External ID sign-in tenant and an approved
+Azure OpenAI endpoint/key. Local development requires Windows and LocalDB; cloud setup needs
+a workload subscription and permission to create registrations and GitHub federation.
 
-## Quick-Start: Full Setup (new or first-time environment)
 ```powershell
-# Clone repository
-git clone https://github.com/goodtocode/agent-framework-quick-start.git
-
-# Enter repository root
-cd agent-framework-quick-start
-
-# Install .NET SDK 10
-winget install Microsoft.DotNet.SDK.10 --silent
-
-# Trust local ASP.NET Core HTTPS development certificate (first-time machine setup)
-dotnet dev-certs https --trust
-
-# Install EF CLI
-dotnet tool install --global dotnet-ef
-
-# Fill in the values below, then run the local install script. It creates the Entra app registrations and grants consent,
-# sets the user-secrets for Presentation.Api, Presentation.Web and Tests.Integration, and applies the EF migrations to
-# your local SQL Server (LocalDB). No copy/paste between steps. Omit AzureOpenAIApiKey to be prompted without echo.
-$install = @{
-    EntraInstanceUrl    = "https://<your-tenant-name>.ciamlogin.com"
-    EntraTenantId       = "<entra-tenant-id>"
-    AzureOpenAIEndpoint = "https://<resource>.openai.azure.com/openai/v1"
-    AzureOpenAIApiKey   = "<azure-openai-api-key>"
-}
-./Initialize-Local.ps1 @install
-
-# Run integration tests
-cd src/Tests.Integration
-dotnet test
-
-# Return to src and run API
-cd ../
-dotnet run --project Presentation.Api/Presentation.Api.csproj
-
-# Run Web app in a second terminal
-dotnet run --project Presentation.Web/Presentation.Web.csproj
+./Initialize-Installation.ps1 -Mode Local -InstallPrerequisites
+./Initialize-Installation.ps1 -Mode Cloud -SqlAuthentication SqlAuth -InstallPrerequisites
+# Run agentstart-iac.yml with runcd=true, then resume
+./Initialize-Installation.ps1 -Mode Cloud -Stage Complete
 ```
 
-## What the local install script does
-`Initialize-Local.ps1` sets up localhost only. It never touches GitHub, Azure Pipelines or Azure resources; see "Setting up GitHub Actions to Deploy to Azure" below for CI/CD.
-- **Entra:** creates `agent-api-dev-001` and `agent-web-dev-001` (rename with `-ProductName`, `-EnvironmentShort`, `-Instance`), grants admin consent, and writes the Entra user-secrets. The Web redirect and logout URIs are read from the HTTPS URL in `Presentation.Web/Properties/launchSettings.json`, so they always match your local port.
-- **User-secrets:** `AzureOpenAI:Endpoint` and `AzureOpenAI:ApiKey` for `Presentation.Api` and `Tests.Integration`, and an empty `ApplicationInsights:ConnectionString` for `Presentation.Api` and `Presentation.Web`.
-- **Database:** installs `dotnet-ef` if missing and applies the EF migrations to LocalDB (`Initial Catalog=AgentFramework`). Use `-DatabaseConnectionString` for another SQL Server, or `-SkipDatabase` to skip it.
-- **Existing Entra registrations:** add `-SkipEntra` to skip the first step, or use the re-setup block below.
+Then run `agentstart-app.yml` with `runcd=true`. Entra-only SQL uses
+`-SqlAuthentication EntraOnly`; resume as a member of its SQL administrator group.
+Rerun the same commands for an existing installation. `-Mode Both` prepares local and cloud;
+`-Environment production` selects production when its workflow/parameters are enabled;
+`-Stage Check` is read-only. Missing secrets are prompted privately, never silently rotated.
+No commits, pushes, database resets, or authentication-mode conversions occur.
 
-**Application Insights:** the apps start without a connection string, with no Azure telemetry (a warning is logged). The connection string only exists after the infrastructure PR deploys. Then set it for both apps from the repo root:
-```powershell
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "<connection-string>" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "<connection-string>" --project .\src\Presentation.Web\Presentation.Web.csproj
-```
-In Azure, the deployment sets the connection string for you.
+See [First-time setup](docs/first-time-setup.md) for phases and troubleshooting.
 
-**Azure OpenAI deployment names:** all committed environments use `chat-fast`, `tool-standard`, `tool-reasoning`, and `embedding-standard`, matching the shared `platform-azure` Foundry deployments. To use different purpose-compatible deployments, update `src/Presentation.Api/appsettings.*.json`, or pass `-ChatDeploymentName`, `-ToolDeploymentName`, `-ToolReasoningDeploymentName`, and `-EmbeddingDeploymentName` to `Initialize-Local.ps1` for local user-secret overrides only. Deployment names are not secrets.
-
-## Quick-Start: Re-Setup for Existing Entra (no Entra setup scripts)
-```powershell
-# Enter repository root
-cd <path-to-repo-root>
-
-# Set API secrets (run from the repository root)
-dotnet user-secrets set "EntraExternalId:Instance" "https://<your-tenant-name>.ciamlogin.com" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "EntraExternalId:TenantId" "<entra-tenant-id>" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "EntraExternalId:ClientId" "<api-client-id>" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Presentation.Api\Presentation.Api.csproj
-dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Presentation.Api\Presentation.Api.csproj
-
-# Set Web secrets
-dotnet user-secrets set "BackendApi:ClientId" "<api-client-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:Instance" "https://<your-tenant-name>.ciamlogin.com" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:TenantId" "<entra-tenant-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:ClientId" "<web-client-id>" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:ClientSecret" "<web-client-secret>" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "EntraExternalId:ValidateAuthority" "true" --project .\src\Presentation.Web\Presentation.Web.csproj
-dotnet user-secrets set "ApplicationInsights:ConnectionString" "" --project .\src\Presentation.Web\Presentation.Web.csproj
-
-# Set integration test Azure OpenAI secrets
-dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<resource>.openai.azure.com/openai/v1" --project .\src\Tests.Integration\Tests.Integration.csproj
-dotnet user-secrets set "AzureOpenAI:ApiKey" "<azure-openai-api-key>" --project .\src\Tests.Integration\Tests.Integration.csproj
-
-# Optional: EntraExternalId:PasswordResetUrl (Web), and AzureOpenAI:ChatDeploymentName / AzureOpenAI:EmbeddingDeploymentName
-# (Api and Tests.Integration) only when you need to override the appsettings values.
-
-# Create or update SQL schema
-dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
-```
-
-For detailed alternatives and troubleshooting, see the Authentication section below.
+Standalone prototype development uses F1 to minimize idle compute cost. Move to B1 when CPU
+quotas, cold starts or dedicated hosting features require it. Front Door is optional; the shared
+edge template defaults to Standard custom-rule WAF and skips creation when no origins are configured.
 
 ## Rebrand a clone for your organization
-After cloning, `Update-Branding.ps1` replaces the original organization and Quick-start product branding across the whole repo (source, solution files, GitHub Actions, Azure DevOps, IaC, docs). It is a dry run unless `-Apply` is given, never replaces the repo's NuGet package dependencies, Entra scopes, user-secrets keys or the `AgentFramework` EF context/database names, and regenerates the `UserSecretsId` values.
+AgentStart is the internal product identity (`Goodtocode.AgentStart`, database `AgentStart`, resource prefix `agentstart`). The repository and package display names remain Agent Framework Quick Start for Blazor/WebApi.
+
+After cloning, `Update-Branding.ps1` replaces organization and product branding across source, solution files, GitHub Actions, IaC, scripts, Swagger/OpenAPI titles, NSwag namespaces, and docs. It is a dry run unless `-Apply` is given. Both `-NewCompany` and `-NewProduct` are required; missing values fail before any writes. `IApplicationDbContext`, `ApplicationDbContext`, and their migration/snapshot filenames are deliberately brand-neutral and do not change during rebranding; their namespaces do. The replacement token is `AgentStart`, not `AgentFramework`, so `Infrastructure.AgentFramework` and Microsoft SDK names need no special-case exclusions. Library dependencies, Entra scopes and user-secrets keys are preserved. `UserSecretsId` values are regenerated unless `-KeepUserSecretsIds` is supplied.
 
 ```powershell
 # Preview (no changes)
-pwsh -File ./Update-Branding.ps1 -NewCompany "Contoso" -NewProduct "Contoso Assist" -Namespace "Contoso.Assist"
+pwsh -File ./Update-Branding.ps1 -NewCompany Contoso -NewProduct Assist
 
 # Apply on a clean working tree, then review the diff
-pwsh -File ./Update-Branding.ps1 -NewCompany "Contoso" -NewProduct "Contoso Assist" -Namespace "Contoso.Assist" -Apply
+pwsh -File ./Update-Branding.ps1 -NewCompany Contoso -NewProduct Assist -Apply
 ```
 
-See `branding.sample.json` (use with `-ConfigFile`) for all values. Rules are in `branding.map.json`. Afterwards, run the Entra setup steps above for the new product.
+The namespace defaults to `Company.Product`. For display names containing spaces, supply an explicit `-Namespace Contoso.Assist`; its company and product identifiers become the setup defaults. See `branding.sample.json` (use with `-ConfigFile`) for all values. Rules are in `branding.map.json`.
+
+Rebranding writes the company/product defaults into the root `Initialize-Installation.ps1`, which passes them explicitly to the shared initializer. Run it afterward without brand arguments; it is now locked to the clone's brand. Explicit `-CompanyName` / `-ProductName` overrides must match its solution. The shared initializer never guesses a product from known customer names. Installation does not run rebranding.
+
+The template's workflow/resource prefix is now `agentstart` (formerly `agent` / `agentframework`) and its default local database is `AgentStart`. Existing AFQS installations must explicitly reuse their existing database/resource group and review IaC naming before deployment; this is not a database or resource migration. Rebranding a fresh clone changes that prefix to the new product identifier in lowercase.
 
 ---
 
@@ -221,7 +157,7 @@ If you already have app registrations, re-run the orchestrator. It only adds wha
 pwsh -File ./.azure/scripts/New-EntraDotnetSolution.ps1 -EntraInstanceUrl "https://your-tenant-name.ciamlogin.com" -TenantId "<your-tenant-id>" -WebAppRegistrationName "myproduct-web-dev-001" -ApiAppRegistrationName "myproduct-api-dev-001" -WebProjectPath "./src/Presentation.Web" -ApiProjectPath "./src/Presentation.Api"
 ```
 ```
-pwsh -File ./.azure/scripts/dotnet/Sync-DotnetUserSecretKeyVault.ps1 -Direction FromKeyVault -TenantId "<your-tenant-id>" -SubscriptionId "<your-subscription-id>" -KeyVaultName "<key-vault-name>" -ProductName "agentframework" -ProjectName "Web" -ProjectPath "./src/Presentation.Web"
+pwsh -File ./.azure/scripts/dotnet/Sync-DotnetUserSecretKeyVault.ps1 -Direction FromKeyVault -TenantId "<your-tenant-id>" -SubscriptionId "<your-subscription-id>" -KeyVaultName "<key-vault-name>" -ProductName "agentstart" -ProjectName "Web" -ProjectPath "./src/Presentation.Web"
 ```
 
 **3. OR: Configure everything manually:**
@@ -319,12 +255,12 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" "YOUR_SQL_CONNECTI
 3. Deploy new entities and configurations to database
    
 	```	
-	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context ApplicationDbContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentStart;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
 	```
 4. When an entity changes, is created or deleted, create a new migration. Suggest doing this each new version.
 	```
-	dotnet ef migrations add v1.1.1 --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext
-	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context AgentFrameworkContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
+	dotnet ef migrations add v1.1.1 --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context ApplicationDbContext
+	dotnet ef database update --project .\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj --startup-project .\src\Presentation.Api\Presentation.Api.csproj --context ApplicationDbContext --connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentStart;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30"
 	```
 
 # Running the Application
@@ -441,7 +377,7 @@ doc's **UI Changes** and **API Changes** sections for details.
 # Github Actions for Azure IaC and CI/CD
 ## GitHub Actions (.github folder)
 
-The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agent-dev-wus2-100-rg`. Below is a summary of the workflow files, their purposes, and triggers:
+The `.github/workflows` folder contains the GitHub Actions pipelines for CI/CD. Workflows follow the [github-actions](https://github.com/goodtocode/github-actions) conventions and are named `{product}-{capability}.yml`. The naming slots (`PRODUCT`, `REGION`, `INSTANCE`, `MODE`) at the top of each workflow produce the Azure names `{product}-{env}-{region}-{instance}-{type}`, for example `agentstart-dev-wus2-100-rg`. Below is a summary of the workflow files, their purposes, and triggers:
 
 ### Triggers
 All workflow YAML files in this repo are designed to:
@@ -450,8 +386,8 @@ All workflow YAML files in this repo are designed to:
 
 | Workflow File                        | Purpose                                                                                 | CI Trigger (PR)         | CD Trigger (Push to main) |
 |--------------------------------------|-----------------------------------------------------------------------------------------|-------------------------|---------------------------|
-| `agent-app.yml`                      | Build, test and deploy the Blazor web, Web API and SQL migrations to Azure App Service   | Yes                    | Yes                      |
-| `agent-iac.yml`                      | Deploy the standalone Azure infrastructure (`.azure/templates/workload-digitalproduct.bicep`) | Yes (what-if)     | Yes                      |
+| `agentstart-app.yml`             | Build, test and deploy the Blazor web, Web API and SQL migrations to Azure App Service   | Yes                    | Yes                      |
+| `agentstart-iac.yml`             | Deploy the standalone Azure infrastructure (`.azure/templates/workload-digitalproduct.bicep`) | Yes (what-if)     | Yes                      |
 
 To add a production environment, add a `production` entry to the plan job of both workflows, add `.azure/variables/workload-digitalproduct-standalone-prod.bicepparam`, and require reviewers on the `production` GitHub environment.
 ---
@@ -495,8 +431,6 @@ $secrets = @{
 	AZURE_TENANT_ID      = "<azure-tenant-id>"
 	EEID_INSTANCE        = "<eeid-instance-url>"
 	EEID_TENANT_ID       = "<eeid-tenant-id>"
-	SQL_ADMIN_PASSWORD   = "<sql-admin-password>"
-	SQL_ADMIN_USER       = "<sql-admin-user>"
 	WEB_CLIENT_ID        = "<web-app-client-id>"
 	WEB_CLIENT_SECRET    = "<web-app-client-secret>"
 }

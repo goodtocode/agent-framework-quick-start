@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Presentation.Web.Library.Auth;
+﻿namespace Goodtocode.AgentStart.Presentation.Web.Library.Auth;
 
 /// <summary>
 /// Infrastructure implementation that reads user claims from the current HTTP request context.

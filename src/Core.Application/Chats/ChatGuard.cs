@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Domain.Chats;
+using Goodtocode.AgentStart.Core.Domain.Chats;
 using Microsoft.Extensions.AI;
 
-namespace Goodtocode.AgentFramework.Core.Application.Chats;
+namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public static class ChatGuard
 {

@@ -18,11 +18,11 @@ $install = @{
     EntraTenantId       = "<entra-tenant-id>"
     AzureOpenAIEndpoint = "https://<resource>.openai.azure.com/openai/v1"
 }
-./Initialize-Local.ps1 @install
+./.github/scripts/setup/Initialize-Development.ps1 @install
 
 .EXAMPLE
 # Existing Entra registrations: skip Entra and only (re)write the Azure OpenAI and Application Insights secrets:
-./Initialize-Local.ps1 -SkipEntra -AzureOpenAIEndpoint "https://<resource>.openai.azure.com/openai/v1" -ApplicationInsightsConnectionString "<connection-string>"
+./.github/scripts/setup/Initialize-Development.ps1 -SkipEntra -AzureOpenAIEndpoint "https://<resource>.openai.azure.com/openai/v1" -ApplicationInsightsConnectionString "<connection-string>"
 #>
 [CmdletBinding()]
 param(
@@ -46,12 +46,12 @@ param(
     [switch]$SkipEntra,
 
     # Local SQL database (LocalDB by default); the EF migrations are applied to it
-    [string]$DatabaseConnectionString = "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentFramework;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30",
+    [string]$DatabaseConnectionString = "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgentStart;Min Pool Size=3;MultipleActiveResultSets=True;Trusted_Connection=Yes;TrustServerCertificate=True;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30",
     [switch]$SkipDatabase
 )
 
 $ErrorActionPreference = 'Stop'
-$repoRoot = $PSScriptRoot
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
 . "$repoRoot\.azure\scripts\lib\Dotnet.Common.ps1"
 
 $apiProject = Join-Path $repoRoot 'src\Presentation.Api'
@@ -128,7 +128,7 @@ else {
     if (-not (Get-Command dotnet-ef -ErrorAction SilentlyContinue) -and -not (dotnet tool list --global | Select-String '^dotnet-ef\s')) {
         dotnet tool install --global dotnet-ef
     }
-    dotnet ef database update --project "$repoRoot\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj" --startup-project "$apiProject\Presentation.Api.csproj" --context AgentFrameworkContext --connection $DatabaseConnectionString
+    dotnet ef database update --project "$repoRoot\src\Infrastructure.SqlServer\Infrastructure.SqlServer.csproj" --startup-project "$apiProject\Presentation.Api.csproj" --context ApplicationDbContext --connection $DatabaseConnectionString
     if ($LASTEXITCODE -ne 0) { throw "dotnet ef database update failed. Stop any running Presentation.Api or Presentation.Web (they lock the build output), check that SQL Server LocalDB (or the server in -DatabaseConnectionString) is running, or re-run with -SkipDatabase." }
 }
 

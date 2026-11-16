@@ -1,6 +1,6 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Chats;
+﻿using Goodtocode.AgentStart.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Configurations;
 
 public class ChatMessagesConfig : IEntityTypeConfiguration<ChatMessageEntity>
 {

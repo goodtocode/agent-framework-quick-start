@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
 using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Tools;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Playbooks;
+namespace Goodtocode.AgentStart.Tests.Integration.Playbooks;
 
 [TestClass]
 public sealed class DocumentReviewPlaybookTests : TestBase

@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Presentation.Web.Library.Auth;
+﻿namespace Goodtocode.AgentStart.Presentation.Web.Library.Auth;
 
 /// <summary>
 /// Infrastructure service for reading user identity claims from HTTP authentication context.

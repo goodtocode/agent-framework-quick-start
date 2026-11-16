@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Common.Auth;
+﻿namespace Goodtocode.AgentStart.Core.Application.Common.Auth;
 
 /// <summary>
 /// Marker interface for requests that require user context to be injected via pipeline behavior.

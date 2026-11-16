@@ -56,7 +56,7 @@ extracting a new `Goodtocode.Agents.Playbook.AgentFramework` satellite package a
 - This follows the dependency-inversion and governance boundaries already documented for
   this repository.
 
-**Revisit when:** multiple repositories (for example `crucible-web` and this template)
+**Revisit when:** multiple template-derived repositories
 begin duplicating near-identical MAF graph construction logic. At that point, consider
 extracting `Goodtocode.Agents.Playbook.AgentFramework` as a satellite package that
 references both `Goodtocode.Agents.Playbook` and Microsoft Agent Framework, while the base
@@ -76,8 +76,7 @@ Each node wraps a resolved Playbook step tool (`ICollectStepTool<,>`,
 `IEvaluateStepTool<,>`, `IRecordStepTool<,>`) obtained from the same
 `IPlaybookStepToolResolver<...>` used by the deterministic workflow. Swapping a
 deterministic tool for an agentic one (or vice versa) for any one stage never changes the
-graph shape — only the tool registered for that stage's resolver key changes. This mirrors
-the pattern already proven in `crucible-web`'s `PipelineWorkflowStepExecutor`.
+graph shape — only the tool registered for that stage's resolver key changes.
 
 ## Governance Expectations
 

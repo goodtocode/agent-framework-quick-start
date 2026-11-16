@@ -1,29 +1,29 @@
-﻿using Goodtocode.AgentFramework.Core.Application;
-using Goodtocode.AgentFramework.Core.Application.Abstractions;
-using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
-using Goodtocode.AgentFramework.Core.Application.Governance;
-using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
+﻿using Goodtocode.AgentStart.Core.Application;
+using Goodtocode.AgentStart.Core.Application.Abstractions;
+using Goodtocode.AgentStart.Core.Application.Chats.Journeys;
+using Goodtocode.AgentStart.Core.Application.Governance;
+using Goodtocode.AgentStart.Core.Application.Common.Exceptions;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Governance;
 using Goodtocode.Agents.Governance.Application;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Providers;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
-using Goodtocode.AgentFramework.Tests.Integration.Mocks;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Essay;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Providers;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
+using Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Tests.Integration.Mocks;
 using Microsoft.Agents.AI;
 
-namespace Goodtocode.AgentFramework.Tests.Integration;
+namespace Goodtocode.AgentStart.Tests.Integration;
 
 public abstract class TestBase : IDisposable
 {
@@ -43,7 +43,7 @@ public abstract class TestBase : IDisposable
     internal CommandResponseType responseType;
     internal ValidationResult validationResponse = new();
 
-    internal AgentFrameworkContext context;
+    internal ApplicationDbContext context;
 
     internal IConfiguration configuration;
     internal IClaimsReader claimsReader;
@@ -109,18 +109,18 @@ public abstract class TestBase : IDisposable
         services.AddEssayPlaybookTools();
         services.AddScoped<IEssayEvaluationRunner, EssayEvaluationRunner>();
 
-        services.AddDbContext<AgentFrameworkContext>(options =>
-            options.UseInMemoryDatabase($"AgentFrameworkContext-{Guid.NewGuid()}")
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseInMemoryDatabase($"ApplicationDbContext-{Guid.NewGuid()}")
                 .UseLazyLoadingProxies());
-        services.AddScoped<IAgentFrameworkContext>(provider =>
-            provider.GetRequiredService<AgentFrameworkContext>());
+        services.AddScoped<IApplicationDbContext>(provider =>
+            provider.GetRequiredService<ApplicationDbContext>());
 
         ConfigureServices(services);
 
         ServiceProvider = services.BuildServiceProvider();
         claimsReader = ServiceProvider.GetRequiredService<IClaimsReader>();
         rlsContext = ServiceProvider.GetRequiredService<IRlsContext>();
-        context = ServiceProvider.GetRequiredService<AgentFrameworkContext>();
+        context = ServiceProvider.GetRequiredService<ApplicationDbContext>();
         Sender = ServiceProvider.GetRequiredService<ISender>();
     }
 

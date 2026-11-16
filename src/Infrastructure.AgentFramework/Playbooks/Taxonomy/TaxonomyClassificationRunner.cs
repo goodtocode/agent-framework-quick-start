@@ -1,10 +1,10 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Tools;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Taxonomy;
 
 /// <summary>
 /// MAF-backed implementation of <see cref="ITaxonomyClassificationRunner"/>: resolves the three

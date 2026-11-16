@@ -1,4 +1,4 @@
-global using Goodtocode.AgentFramework.Core.Application.Common.Auth;
+global using Goodtocode.AgentStart.Core.Application.Common.Auth;
 global using Goodtocode.Domain.Entities;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
