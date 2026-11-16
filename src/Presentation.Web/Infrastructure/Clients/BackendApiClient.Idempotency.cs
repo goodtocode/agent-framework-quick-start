@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Goodtocode.AgentFramework.Api.Clients;
+namespace Goodtocode.AgentStart.Api.Clients;
 
 public partial class BackendApiClient
 {

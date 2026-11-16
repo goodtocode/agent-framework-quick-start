@@ -1,6 +1,6 @@
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 
 /// <summary>
 /// Thin, per-playbook wrapper around a shared <see cref="PlaybookKnowledge"/> instance. Every

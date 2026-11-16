@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Common.Validators;
+namespace Goodtocode.AgentStart.Core.Application.Common.Validators;
 
 public abstract class SecuredValidator<TCommand> : Validator<TCommand>
     where TCommand : IRequiresUserContext

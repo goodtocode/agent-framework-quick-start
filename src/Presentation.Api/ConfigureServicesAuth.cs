@@ -1,9 +1,9 @@
-﻿using Goodtocode.AgentFramework.Presentation.Api.Common.Auth;
-using Goodtocode.AgentFramework.Presentation.Api.Options;
+﻿using Goodtocode.AgentStart.Presentation.Api.Common.Auth;
+using Goodtocode.AgentStart.Presentation.Api.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 
-namespace Goodtocode.AgentFramework.Presentation.Api;
+namespace Goodtocode.AgentStart.Presentation.Api;
 
 /// <summary>
 /// Presentation Layer WebApi Authentication Configuration

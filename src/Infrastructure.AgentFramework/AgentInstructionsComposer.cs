@@ -1,9 +1,9 @@
 using System.Text;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 using Microsoft.Extensions.Options;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework;
 
 /// <summary>
 /// Composes MAF's single instruction string from reloadable global and per-tool configuration.

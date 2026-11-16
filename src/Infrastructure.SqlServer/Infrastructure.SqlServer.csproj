@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<RootNamespace>Goodtocode.AgentFramework.Infrastructure.SqlServer</RootNamespace>
-		<AssemblyName>Goodtocode.AgentFramework.Infrastructure.SqlServer</AssemblyName>
+		<RootNamespace>Goodtocode.AgentStart.Infrastructure.SqlServer</RootNamespace>
+		<AssemblyName>Goodtocode.AgentStart.Infrastructure.SqlServer</AssemblyName>
 		<Version>1.0.0</Version>
 		<TargetFramework>net10.0</TargetFramework>
 		<IsPackable>false</IsPackable>

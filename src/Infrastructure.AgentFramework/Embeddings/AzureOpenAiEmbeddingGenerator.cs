@@ -1,12 +1,12 @@
 using System.ClientModel;
 using System.ClientModel.Primitives;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Options;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using OpenAI.Embeddings;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
 
 /// <summary>
 /// Implementation of IEmbeddingGenerator using Azure OpenAI (or Azure AI Foundry).

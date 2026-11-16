@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Chats;
+﻿namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class DeleteMyChatSessionCommand : UserScopedRequest, IRequest<CommandResult>
 {
@@ -6,9 +6,9 @@ public class DeleteMyChatSessionCommand : UserScopedRequest, IRequest<CommandRes
 
 }
 
-public class DeleteMyChatSessionCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeleteMyChatSessionCommand, CommandResult>
+public class DeleteMyChatSessionCommandHandler(IApplicationDbContext context) : IRequestHandler<DeleteMyChatSessionCommand, CommandResult>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<CommandResult> Handle(DeleteMyChatSessionCommand request, CancellationToken cancellationToken)
     {

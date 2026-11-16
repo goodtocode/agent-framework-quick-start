@@ -4,7 +4,7 @@
 
 This document defines two related but distinct controls used by the repositories:
 
-- **AI governance** is the runtime control for passing every Crucible pipeline inference through four pillars, recording the evidence that supports those pillars, and using the recorded history in future inference calls.
+- **AI governance** is the runtime control for passing every pipeline inference through four pillars, recording the evidence that supports those pillars, and using the recorded history in future inference calls.
 - **Responsible AI policy** is the safe-use control for developer prompts, model inputs, outputs, tools, and data. It covers secrets, PII, PAN numbers, regulated data, confidentiality, and approved overrides.
 
 Policy determines what data and actions are permitted. Governance records how an allowed inference was observed, attributed, justified, and made repeatable. A policy override never disables the four governance pillars, and governance is not a substitute for privacy, security, or data-handling policy.
@@ -22,7 +22,7 @@ Governance is a precondition, not an after-the-fact annotation. If the envelope 
 
 ## Pipeline Governance Flow
 
-A governed Crucible pipeline follows this order:
+A governed pipeline follows this order:
 
 ```text
 Pipeline request
@@ -84,7 +84,7 @@ var raw = new GovernanceEvaluationRequest
         },
         Defensibility = new DefensibilityRecord
         {
-            PoliciesApplied = [GovernanceReference.Parse(Curi.Build(CanTypes.CrucibleExecution).Value)],
+            PoliciesApplied = [GovernanceReference.Parse("policy://execution/default")],
             JustificationRefs = [GovernanceReference.Parse(playbook.Curi.Value)],
             ReasoningSummary = "Evaluation decisions must cite evidence and applicable policy profile.",
             ConfidenceScore = 1
@@ -190,6 +190,6 @@ The repository-level `.github/copilot-instructions.md` files enforce this docume
 
 Markdown is the preferred response format whenever an AI agent or tool needs structure beyond plain text, sentences, or paragraphs. Use Markdown tables for tabular data, Markdown lists for collections, and fenced code blocks for code or structured literals. Keep short status messages and ordinary prose as plain Markdown paragraphs.
 
-Tool and routing responses must return data in a consistent, readable Markdown shape. They must not emit ad hoc delimiter-separated text when a table is intended. Table headers, row separators, cell escaping, and invariant date formatting should be produced by the centralized `MarkdownTableFormatter` in each stack. The quick-start and Crucible implementations must remain behaviorally and structurally aligned, including actor, chat-session, chat-message, pipeline, execution, chronicle, timeline, and web-search tables.
+Tool and routing responses must return data in a consistent, readable Markdown shape. They must not emit ad hoc delimiter-separated text when a table is intended. Table headers, row separators, cell escaping, and invariant date formatting should be produced by the centralized `MarkdownTableFormatter` in each stack. Template-derived implementations should preserve the same formatting contracts for their supported resource tables.
 
 Formatting is presentation, not governance: formatting must never alter, invent, summarize, or replace the data returned by the application query or tool.

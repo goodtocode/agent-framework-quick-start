@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Goodtocode.AgentFramework.Core.Application.Common
+namespace Goodtocode.AgentStart.Core.Application.Common
 {
     public static partial class CustomLoggingBehaviorExtensions
     {

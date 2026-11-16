@@ -1,8 +1,8 @@
-﻿using Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http;
-using Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Models;
-using Goodtocode.AgentFramework.Presentation.Web.Library.Auth;
+﻿using Goodtocode.AgentStart.Presentation.Web.Infrastructure.Http;
+using Goodtocode.AgentStart.Presentation.Web.Features.Chats.Models;
+using Goodtocode.AgentStart.Presentation.Web.Library.Auth;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Chats.Services;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Chats.Services;
 
 public interface IChatService
 {

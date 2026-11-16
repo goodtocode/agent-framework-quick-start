@@ -1,10 +1,10 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 using Goodtocode.Agents.Governance.Domain;
 
-namespace Goodtocode.AgentFramework.Tests.Integration.Playbooks;
+namespace Goodtocode.AgentStart.Tests.Integration.Playbooks;
 
 /// <summary>
 /// Verifies the repeatability governance pillar end to end through the real Run*PlaybookCommand
@@ -12,7 +12,7 @@ namespace Goodtocode.AgentFramework.Tests.Integration.Playbooks;
 /// Recall re-renders the prior finding without any new Collect/Evaluate work, and Replay reuses
 /// the prior evidence while re-running Evaluate and Record. Covers both the deterministic SQL
 /// Statistics playbook (the package's own <c>PlaybookExecutor</c> replay overload) and the
-/// agentic Taxonomy playbook (the repo-owned <see cref="Goodtocode.AgentFramework.Infrastructure.AgentFramework.Execution.PlaybookWorkflowGraphExecutor{TCollectInput,TEvidence,TFinding,TMaterialization}"/>),
+/// agentic Taxonomy playbook (the repo-owned <see cref="Goodtocode.AgentStart.Infrastructure.AgentFramework.Execution.PlaybookWorkflowGraphExecutor{TCollectInput,TEvidence,TFinding,TMaterialization}"/>),
 /// since each uses a different replay mechanism.
 /// </summary>
 [TestClass]

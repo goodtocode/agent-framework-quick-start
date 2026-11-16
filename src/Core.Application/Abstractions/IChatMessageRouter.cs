@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Abstractions;
+namespace Goodtocode.AgentStart.Core.Application.Abstractions;
 
 /// <summary>
 /// Resolves an assistant reply while keeping chat presentation, intent routing, and AI integration

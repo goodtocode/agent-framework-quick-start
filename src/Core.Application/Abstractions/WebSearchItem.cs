@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Abstractions;
+namespace Goodtocode.AgentStart.Core.Application.Abstractions;
 
 public sealed class WebSearchItem
 {

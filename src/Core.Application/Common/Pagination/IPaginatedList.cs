@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Common.Pagination;
+namespace Goodtocode.AgentStart.Core.Application.Common.Pagination;
 
 public interface IPaginatedList<T>
 {

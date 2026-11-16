@@ -11,10 +11,10 @@
 
 param (
     [string]$SwaggerJsonPath = 'swagger',
-    [string]$ApiAssembly = 'Goodtocode.AgentFramework.Presentation.Api.dll',
+    [string]$ApiAssembly = 'Goodtocode.AgentStart.Presentation.Api.dll',
     [string]$ApiVersion = 'v1',
-    [string]$ClientPathFile = '../Goodtocode.AgentFramework.Web/Infrastructure/Clients/BackendApiClient.g.cs',
-    [string]$ClientNamespace = 'Goodtocode.AgentFramework.Web',
+    [string]$ClientPathFile = '../Presentation.Web/Infrastructure/Clients/BackendApiClient.g.cs',
+    [string]$ClientNamespace = 'Goodtocode.AgentStart.Api.Clients',
     [string]$Configuration = 'Debug',
     [string]$TargetFramework = 'net10.0',
     [switch]$SkipBuildRestore

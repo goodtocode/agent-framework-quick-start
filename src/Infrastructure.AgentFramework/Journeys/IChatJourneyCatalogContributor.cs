@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
 
 /// <summary>
 /// Extension point allowing downstream projects to contribute additional

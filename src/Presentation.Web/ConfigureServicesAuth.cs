@@ -1,12 +1,12 @@
-﻿using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Middleware;
-using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Services;
-using Goodtocode.AgentFramework.Presentation.Web.Options;
+﻿using Goodtocode.AgentStart.Presentation.Web.Library.Auth.Middleware;
+using Goodtocode.AgentStart.Presentation.Web.Library.Auth.Services;
+using Goodtocode.AgentStart.Presentation.Web.Options;
 using Goodtocode.SecuredHttpClient.Middleware;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Identity.Web;
 
-namespace Goodtocode.AgentFramework.Presentation.Web;
+namespace Goodtocode.AgentStart.Presentation.Web;
 
 public static class ConfigureServicesAuth
 {

@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Persistence;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Persistence;
 
 /// <summary>
 /// Shared helper so every example playbook's Run*PlaybookCommandHandler persists its execution the

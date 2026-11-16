@@ -1,9 +1,9 @@
-using Goodtocode.AgentFramework.Core.Application;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer;
-using Goodtocode.AgentFramework.Presentation.Api;
-using Goodtocode.AgentFramework.Presentation.Api.Common.Exceptions;
-using Goodtocode.AgentFramework.Presentation.Api.Endpoints;
+using Goodtocode.AgentStart.Core.Application;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework;
+using Goodtocode.AgentStart.Infrastructure.SqlServer;
+using Goodtocode.AgentStart.Presentation.Api;
+using Goodtocode.AgentStart.Presentation.Api.Common.Exceptions;
+using Goodtocode.AgentStart.Presentation.Api.Endpoints;
 
 [assembly: ApiConventionType(typeof(DefaultApiConventions))]
 

@@ -1,13 +1,13 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Actors;
+﻿namespace Goodtocode.AgentStart.Core.Application.Actors;
 
 public class GetOurActorQuery : UserScopedRequest, IRequest<ActorDto?>
 {
     public Guid ActorId { get; set; }
 }
 
-public class GetActorQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetOurActorQuery, ActorDto?>
+public class GetActorQueryHandler(IApplicationDbContext context) : IRequestHandler<GetOurActorQuery, ActorDto?>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<ActorDto?> Handle(GetOurActorQuery request, CancellationToken cancellationToken)
     {

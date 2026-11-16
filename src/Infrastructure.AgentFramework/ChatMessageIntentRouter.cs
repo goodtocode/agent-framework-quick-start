@@ -1,11 +1,11 @@
 using System.Globalization;
 using System.Text;
-using Goodtocode.AgentFramework.Core.Application.Chats;
-using Goodtocode.AgentFramework.Core.Application.Common.Auth;
-using Goodtocode.AgentFramework.Core.Application.Governance;
-using Goodtocode.AgentFramework.Core.Domain.Governance;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Governance;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Intents;
+using Goodtocode.AgentStart.Core.Application.Chats;
+using Goodtocode.AgentStart.Core.Application.Common.Auth;
+using Goodtocode.AgentStart.Core.Application.Governance;
+using Goodtocode.AgentStart.Core.Domain.Governance;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Governance;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Intents;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Governance.Domain;
 using Goodtocode.Mediator;
@@ -14,7 +14,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework;
 
 /// <summary>
 /// Resolves chat replies through deterministic intent routing and purpose-specific inference.
@@ -25,7 +25,7 @@ public sealed class ChatMessageIntentRouter(
     AIAgent agent,
     [FromKeyedServices(InferencePurpose.Chat)] AIAgent chatAgent,
     ISender sender,
-    IAgentFrameworkContext context,
+    IApplicationDbContext context,
     ChatGovernanceGate governanceGate,
     IRlsContext rlsContext,
     IWebSearchProvider webSearchProvider,
@@ -47,7 +47,7 @@ public sealed class ChatMessageIntentRouter(
     private static readonly string[] ChatHistoryIntentPhrases =
         ["chat sessions", "chat session history", "chat history", "chat messages", "my conversations", "previous conversations"];
     private readonly ISender _sender = sender;
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
     private readonly ChatGovernanceGate _governanceGate = governanceGate;
     private readonly IRlsContext _rlsContext = rlsContext;
     private readonly IWebSearchProvider _webSearchProvider = webSearchProvider;

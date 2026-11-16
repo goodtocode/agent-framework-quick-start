@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence;
 using Microsoft.Data.SqlClient;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Playbooks;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Playbooks;
 
 /// <summary>
 /// SQL Server-specific implementation of <see cref="ISqlDatabaseStatisticsProvider"/>: queries the
@@ -10,9 +10,9 @@ namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Playbooks;
 /// involvement; this is the Collect-stage data source for the SQL Statistics Classification
 /// example playbook.
 /// </summary>
-public sealed class SqlServerDatabaseStatisticsProvider(AgentFrameworkContext context) : ISqlDatabaseStatisticsProvider
+public sealed class SqlServerDatabaseStatisticsProvider(ApplicationDbContext context) : ISqlDatabaseStatisticsProvider
 {
-    private readonly AgentFrameworkContext _context = context;
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<SqlDatabaseStatisticsEvidence> GetStatisticsAsync(string databaseName, CancellationToken cancellationToken)
     {

@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Actors;
-using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Chats;
-using Goodtocode.AgentFramework.Presentation.Api.Endpoints.Playbooks;
+using Goodtocode.AgentStart.Presentation.Api.Endpoints.Actors;
+using Goodtocode.AgentStart.Presentation.Api.Endpoints.Chats;
+using Goodtocode.AgentStart.Presentation.Api.Endpoints.Playbooks;
 
-namespace Goodtocode.AgentFramework.Presentation.Api.Endpoints;
+namespace Goodtocode.AgentStart.Presentation.Api.Endpoints;
 
 /// <summary>
 /// Maps all minimal API endpoint groups for the Presentation API.

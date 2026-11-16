@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
 
 /// <summary>
 /// Framework-agnostic abstraction over the deterministic retrieval of SQL Server database

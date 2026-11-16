@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Playbooks;
+namespace Goodtocode.AgentStart.Core.Domain.Playbooks;
 
 /// <summary>
 /// Describes the shape of a <see cref="PlaybookStepEntity.ActionDefinition"/>, so the

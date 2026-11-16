@@ -1,9 +1,9 @@
 using Goodtocode.SecuredHttpClient.Middleware;
 using Microsoft.Identity.Web;
 using Microsoft.Extensions.Options;
-using Goodtocode.AgentFramework.Presentation.Web.Options;
+using Goodtocode.AgentStart.Presentation.Web.Options;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Middleware;
+namespace Goodtocode.AgentStart.Presentation.Web.Library.Auth.Middleware;
 
 public class DownstreamApiAccessTokenProvider(IHttpContextAccessor httpContextAccessor, ITokenAcquisition tokenAcquisition, IOptions<BackendApiOptions> backendApiOptions) : IAccessTokenProvider
 {

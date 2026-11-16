@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Common.Auth;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Governance;
+using Goodtocode.AgentStart.Core.Application.Common.Auth;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Governance;
 using Goodtocode.Agents.Governance.Application;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
 
 /// <summary>
 /// Projects the Essay Rubric Evaluation playbook's CER outputs into governance summaries,

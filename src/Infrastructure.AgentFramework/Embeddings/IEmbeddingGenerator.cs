@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Embeddings;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Embeddings;
 
 /// <summary>
 /// Abstracts embedding vector generation from a specific model/provider.

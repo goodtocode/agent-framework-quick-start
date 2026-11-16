@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Chats;
-using Goodtocode.AgentFramework.Core.Application.Common.Exceptions;
+using Goodtocode.AgentStart.Core.Application.Chats;
+using Goodtocode.AgentStart.Core.Application.Common.Exceptions;
 using Goodtocode.Agents.Playbook.Execution;
 
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
 
 /// <summary>
 /// Framework-agnostic abstraction over running the Essay Rubric Evaluation example playbook.

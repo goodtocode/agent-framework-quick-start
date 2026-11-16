@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Domain.Common;
+using Goodtocode.AgentStart.Core.Domain.Common;
 
-namespace Goodtocode.AgentFramework.Infrastructure.SqlServer.Persistence.Configurations;
+namespace Goodtocode.AgentStart.Infrastructure.SqlServer.Persistence.Configurations;
 
 public sealed class RequestIdempotencyConfig : IEntityTypeConfiguration<RequestIdempotencyEntity>
 {

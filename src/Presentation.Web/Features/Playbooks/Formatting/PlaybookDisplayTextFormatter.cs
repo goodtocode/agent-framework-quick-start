@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Formatting;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Formatting;
 
 public static partial class PlaybookDisplayTextFormatter
 {

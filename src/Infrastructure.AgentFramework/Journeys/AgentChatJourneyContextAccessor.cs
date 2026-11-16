@@ -1,7 +1,7 @@
-using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+using Goodtocode.AgentStart.Core.Application.Chats.Journeys;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
 
 /// <summary>
 /// Projects the per-chat-session tool selection state the chat router maintains into the

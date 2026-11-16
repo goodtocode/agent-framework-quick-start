@@ -1,16 +1,16 @@
-using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
-using Goodtocode.AgentFramework.Core.Application.Common.Behaviors;
-using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
-using Goodtocode.AgentFramework.Core.Application.Governance;
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.SqlStatistics;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Core.Application.Chats.Journeys;
+using Goodtocode.AgentStart.Core.Application.Common.Behaviors;
+using Goodtocode.AgentStart.Core.Application.Common.Idempotency;
+using Goodtocode.AgentStart.Core.Application.Governance;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Core.Application.Playbooks.SqlStatistics;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.Agents.Governance.Application;
 using Goodtocode.Agents.Playbook.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Core.Application;
+namespace Goodtocode.AgentStart.Core.Application;
 
 public static class ConfigureServices
 {

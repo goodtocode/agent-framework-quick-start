@@ -1,12 +1,12 @@
 using System.Text.Json.Serialization;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Taxonomy;
 
 /// <summary>
 /// Agentic Collect stage for the Taxonomy Extraction and Classification example playbook: asks the

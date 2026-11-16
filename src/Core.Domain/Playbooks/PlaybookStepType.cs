@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Playbooks;
+namespace Goodtocode.AgentStart.Core.Domain.Playbooks;
 
 /// <summary>
 /// The three, and only three, stages a Playbook step can be. Every <see cref="PlaybookEntity"/>

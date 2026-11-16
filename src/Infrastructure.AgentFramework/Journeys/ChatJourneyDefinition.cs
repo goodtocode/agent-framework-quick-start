@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Core.Application.Chats.Journeys;
+using Goodtocode.AgentStart.Core.Application.Chats.Journeys;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Journeys;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Journeys;
 
 /// <summary>
 /// Declarative definition of the suggested prompts offered at one <see cref="ChatJourneyLevel"/>.

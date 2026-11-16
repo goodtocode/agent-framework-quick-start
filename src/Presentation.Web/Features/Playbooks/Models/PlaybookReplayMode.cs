@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Presentation.Web.Features.Playbooks.Models;
+namespace Goodtocode.AgentStart.Presentation.Web.Features.Playbooks.Models;
 
 /// <summary>
 /// UI-facing mirror of <c>Goodtocode.Agents.Playbook.Execution.PlaybookReplayMode</c>: which of

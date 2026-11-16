@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework;
 
 /// <summary>Identifies the deployment contract required by an inference consumer.</summary>
 public enum InferencePurpose

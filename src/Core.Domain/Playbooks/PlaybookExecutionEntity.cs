@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Playbooks;
+namespace Goodtocode.AgentStart.Core.Domain.Playbooks;
 
 /// <summary>
 /// Persisted record of one actual run of a <see cref="PlaybookEntity"/>: the user-supplied

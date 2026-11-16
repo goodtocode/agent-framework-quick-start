@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Taxonomy;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Taxonomy;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Taxonomy;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Taxonomy;
 
 /// <summary>
 /// Discovers and registers the Taxonomy Extraction and Classification example playbook's

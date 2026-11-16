@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Domain.Playbooks;
+namespace Goodtocode.AgentStart.Core.Domain.Playbooks;
 
 /// <summary>
 /// The persisted, slow-moving "processing/action" portion of one Collect, Evaluate, or Record

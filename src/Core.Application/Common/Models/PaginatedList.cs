@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Common.Models;
+﻿namespace Goodtocode.AgentStart.Core.Application.Common.Models;
 
 public class PaginatedList<T>(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize) : IPaginatedList<T>
 {

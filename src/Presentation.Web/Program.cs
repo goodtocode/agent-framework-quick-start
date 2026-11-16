@@ -1,6 +1,6 @@
-using Goodtocode.AgentFramework.Presentation.Web;
-using Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Routing;
-using Goodtocode.AgentFramework.Presentation.Web.Shell;
+using Goodtocode.AgentStart.Presentation.Web;
+using Goodtocode.AgentStart.Presentation.Web.Library.Auth.Routing;
+using Goodtocode.AgentStart.Presentation.Web.Shell;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.FluentUI.AspNetCore.Components;
 

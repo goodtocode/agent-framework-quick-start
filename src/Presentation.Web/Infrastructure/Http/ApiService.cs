@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
-namespace Goodtocode.AgentFramework.Presentation.Web.Infrastructure.Http;
+namespace Goodtocode.AgentStart.Presentation.Web.Infrastructure.Http;
 
 public abstract class ApiService
 {

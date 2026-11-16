@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Core.Application.Actors;
+﻿namespace Goodtocode.AgentStart.Core.Application.Actors;
 
 public class DeleteOurActorCommand : UserScopedRequest, IRequest<CommandResult>
 {
@@ -6,9 +6,9 @@ public class DeleteOurActorCommand : UserScopedRequest, IRequest<CommandResult>
 
 }
 
-public class DeleteActorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<DeleteOurActorCommand, CommandResult>
+public class DeleteActorCommandHandler(IApplicationDbContext context) : IRequestHandler<DeleteOurActorCommand, CommandResult>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<CommandResult> Handle(DeleteOurActorCommand request, CancellationToken cancellationToken)
     {

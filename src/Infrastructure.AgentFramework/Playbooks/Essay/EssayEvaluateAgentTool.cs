@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
-using Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks;
 using Goodtocode.Agents.Playbook.Execution;
 using Goodtocode.Agents.Playbook.Steps;
 using Goodtocode.Agents.Playbook.Tools;
@@ -8,7 +8,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Essay;
 
 /// <summary>
 /// Agentic Evaluate stage for the Essay Rubric Evaluation example playbook: asks the model to

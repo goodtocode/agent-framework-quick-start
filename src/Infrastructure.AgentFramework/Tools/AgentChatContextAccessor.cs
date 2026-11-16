@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Tools;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Tools;
 
 public sealed class AgentChatContextAccessor : IAgentChatContextAccessor
 {

@@ -1,1 +1,1 @@
-﻿global using Goodtocode.AgentFramework.Api.Clients;
+﻿global using Goodtocode.AgentStart.Api.Clients;

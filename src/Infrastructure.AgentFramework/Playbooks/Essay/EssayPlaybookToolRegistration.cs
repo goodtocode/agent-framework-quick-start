@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks.Essay;
+using Goodtocode.AgentStart.Core.Application.Playbooks.Essay;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks.Essay;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks.Essay;
 
 /// <summary>
 /// Discovers and registers the Essay Rubric Evaluation example playbook's Collect/Evaluate/Record

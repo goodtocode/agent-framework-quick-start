@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Goodtocode.AgentFramework.Presentation.Api.Options;
+namespace Goodtocode.AgentStart.Presentation.Api.Options;
 
 /// <summary>
 /// Configuration values for API-side Entra External ID token validation.

@@ -1,8 +1,8 @@
-using Goodtocode.AgentFramework.Core.Application.Playbooks;
+using Goodtocode.AgentStart.Core.Application.Playbooks;
 using Goodtocode.Agents.Playbook.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Goodtocode.AgentFramework.Infrastructure.AgentFramework.Playbooks;
+namespace Goodtocode.AgentStart.Infrastructure.AgentFramework.Playbooks;
 
 /// <summary>
 /// Discovers and registers the Document Review example playbook's Collect/Evaluate/Record tools,

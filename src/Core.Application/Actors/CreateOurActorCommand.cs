@@ -1,6 +1,6 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
+﻿using Goodtocode.AgentStart.Core.Domain.Actors;
 
-namespace Goodtocode.AgentFramework.Core.Application.Actors;
+namespace Goodtocode.AgentStart.Core.Application.Actors;
 
 public class CreateOurActorCommand : UserScopedRequest, IRequest<ActorDto>
 {
@@ -9,9 +9,9 @@ public class CreateOurActorCommand : UserScopedRequest, IRequest<ActorDto>
     public string? Email { get; set; }
 }
 
-public class CreateOurActorCommandHandler(IAgentFrameworkContext context) : IRequestHandler<CreateOurActorCommand, ActorDto>
+public class CreateOurActorCommandHandler(IApplicationDbContext context) : IRequestHandler<CreateOurActorCommand, ActorDto>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<ActorDto> Handle(CreateOurActorCommand request, CancellationToken cancellationToken)
     {

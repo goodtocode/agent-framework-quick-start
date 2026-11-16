@@ -1,13 +1,13 @@
-﻿using Goodtocode.AgentFramework.Core.Domain.Actors;
-using Goodtocode.AgentFramework.Core.Domain.Chats;
-using Goodtocode.AgentFramework.Core.Domain.Common;
-using Goodtocode.AgentFramework.Core.Domain.Governance;
-using Goodtocode.AgentFramework.Core.Domain.Playbooks;
+﻿using Goodtocode.AgentStart.Core.Domain.Actors;
+using Goodtocode.AgentStart.Core.Domain.Chats;
+using Goodtocode.AgentStart.Core.Domain.Common;
+using Goodtocode.AgentStart.Core.Domain.Governance;
+using Goodtocode.AgentStart.Core.Domain.Playbooks;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Goodtocode.AgentFramework.Core.Application.Abstractions;
+namespace Goodtocode.AgentStart.Core.Application.Abstractions;
 
-public interface IAgentFrameworkContext
+public interface IApplicationDbContext
 {
     DbSet<ChatMessageEntity> ChatMessages { get; }
     DbSet<ChatSessionEntity> ChatSessions { get; }

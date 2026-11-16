@@ -1,7 +1,7 @@
-﻿using Goodtocode.AgentFramework.Core.Application.Common.Idempotency;
-using Goodtocode.AgentFramework.Core.Domain.Chats;
+﻿using Goodtocode.AgentStart.Core.Application.Common.Idempotency;
+using Goodtocode.AgentStart.Core.Domain.Chats;
 
-namespace Goodtocode.AgentFramework.Core.Application.Chats;
+namespace Goodtocode.AgentStart.Core.Application.Chats;
 
 public class CreateMyChatMessageCommand : IdempotentUserScopedRequest, IRequest<CommandResult<ChatMessageDto>>, IIdempotencyRequestMetadata
 {
@@ -20,11 +20,11 @@ public class CreateMyChatMessageCommand : IdempotentUserScopedRequest, IRequest<
 }
 
 public class CreateChatMessageCommandHandler(
-    IAgentFrameworkContext context,
+    IApplicationDbContext context,
     IChatMessageRouter routingService,
     IIdempotencyDuplicateWindowPolicy duplicateWindowPolicy) : IRequestHandler<CreateMyChatMessageCommand, CommandResult<ChatMessageDto>>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
     private readonly IChatMessageRouter _routingService = routingService;
     private readonly IIdempotencyDuplicateWindowPolicy _duplicateWindowPolicy = duplicateWindowPolicy;
 

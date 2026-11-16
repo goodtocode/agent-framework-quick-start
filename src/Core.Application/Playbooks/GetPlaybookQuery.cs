@@ -1,4 +1,4 @@
-namespace Goodtocode.AgentFramework.Core.Application.Playbooks;
+namespace Goodtocode.AgentStart.Core.Application.Playbooks;
 
 /// <summary>
 /// Retrieves one Playbook catalog entry, including its three CER steps, by either its Id or its
@@ -10,9 +10,9 @@ public class GetPlaybookQuery : IRequest<PlaybookDto?>
     public string? Key { get; init; }
 }
 
-public class GetPlaybookQueryHandler(IAgentFrameworkContext context) : IRequestHandler<GetPlaybookQuery, PlaybookDto?>
+public class GetPlaybookQueryHandler(IApplicationDbContext context) : IRequestHandler<GetPlaybookQuery, PlaybookDto?>
 {
-    private readonly IAgentFrameworkContext _context = context;
+    private readonly IApplicationDbContext _context = context;
 
     public async Task<PlaybookDto?> Handle(GetPlaybookQuery request, CancellationToken cancellationToken)
     {

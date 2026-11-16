@@ -1,4 +1,4 @@
-﻿namespace Goodtocode.AgentFramework.Presentation.Web.Library.Auth.Routing;
+﻿namespace Goodtocode.AgentStart.Presentation.Web.Library.Auth.Routing;
 
 public partial struct RouteConstants
 {

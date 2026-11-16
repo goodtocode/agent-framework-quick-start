@@ -11,7 +11,7 @@
 #region Designer generated code
 #pragma warning disable
 using Reqnroll;
-namespace Goodtocode.AgentFramework.Tests.Integration.Actors
+namespace Goodtocode.AgentStart.Tests.Integration.Actors
 {
     
     
