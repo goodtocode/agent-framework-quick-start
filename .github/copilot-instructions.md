@@ -48,7 +48,7 @@
 - Keep assistant markdown rendering isolated from user plain-text rendering. Use Fluent UI components and avoid JavaScript interop except where an existing component requires it.
 
 ## Scoped and Detailed Guidance
-- Before starting Sprint 0 for new or materially changed epic scope, follow the [Sprint 0 admission gate](../docs/governance/sprint-0-admission-gate-product-discovery.md); require a business-owned evidence packet and a recorded Admitted (GO) decision.
+- Use the [Sprint 0 discovery and readiness guidance](../docs/governance/sprint-0-admission-gate-product-discovery.md) in proportion to the team, resources, risk, and uncertainty; develop epic evidence and provisional Sprint 0 assets iteratively.
 - Apply the matching file-scoped rule in `.github/instructions/` when editing Application, Domain, Infrastructure, Presentation.Web, or Presentation.Api.
 - Use `docs/governance/` for detailed architecture, coding, tool, governance, runtime-observability, and administrative UX guidance.
 - Use `docs/product/` for product intent, ontology, user flows, feature definitions, and completion criteria.

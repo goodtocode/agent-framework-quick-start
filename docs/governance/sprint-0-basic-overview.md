@@ -17,9 +17,9 @@ Sprint 0 is **strictly time‑boxed to two weeks**.
 
 ---
 
-## Admission
+## Discovery and Readiness
 
-Before starting Sprint 0 for a new epic or materially changed epic scope, follow the [Sprint 0 admission gate](sprint-0-admission-gate-product-discovery.md). The business-owned packet must include outcome, scope, preliminary experience evidence, rules, feasibility, and an explicit Admitted (GO) decision. Admission does not replace the Sprint 0 outcomes or exit criteria below.
+Use the [discovery and readiness guidance](sprint-0-admission-gate-product-discovery.md) proportionately to the team, resources, risk, and uncertainty. Epic evidence and provisional Sprint 0 assets can be developed iteratively; a formal packet or GO decision is not universally required. This guidance does not replace any approvals required by the work's circumstances or the delivery outcomes below.
 
 ## 2. Definition of Sprint 0
 
