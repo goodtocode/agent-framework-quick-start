@@ -9,6 +9,8 @@ Define the repeatable Sprint 0 process for creating business context before impl
 - The sequence is intentional: meaning first, then behavior, then delivery setup.
 
 ## Preconditions
+- The Business/Product Owner supplies the evidence packet required by the [Sprint 0 admission gate](sprint-0-admission-gate-product-discovery.md).
+- The Admission Decision Owner records **Admitted (GO)** for the proposed scope and reviewed evidence revision. A meeting request or a packet marked Discovery Ready is not admission.
 - Epic scope is stated.
 - Participants agree to canonical language ownership.
 
@@ -24,6 +26,7 @@ Define the repeatable Sprint 0 process for creating business context before impl
 - Output: event storming artifact and boundary insights.
 
 ## Step 3: User Flows
+- Refine and validate the preliminary journeys, flows, use cases, and visual evidence supplied at admission; do not assume the intended experience is being invented here.
 - Capture success, alternate, and error paths.
 - Output: `docs/product/sprint-0/user-flows.md`.
 

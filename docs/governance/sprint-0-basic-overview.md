@@ -17,6 +17,10 @@ Sprint 0 is **strictly time‑boxed to two weeks**.
 
 ---
 
+## Admission
+
+Before starting Sprint 0 for a new epic or materially changed epic scope, follow the [Sprint 0 admission gate](sprint-0-admission-gate-product-discovery.md). The business-owned packet must include outcome, scope, preliminary experience evidence, rules, feasibility, and an explicit Admitted (GO) decision. Admission does not replace the Sprint 0 outcomes or exit criteria below.
+
 ## 2. Definition of Sprint 0
 
 Sprint 0 produces three categories of outcomes:

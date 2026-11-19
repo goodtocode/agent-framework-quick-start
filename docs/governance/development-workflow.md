@@ -3,6 +3,9 @@
 ## Purpose
 Define a practical implementation workflow for developers and AI agents.
 
+## Before Starting Sprint 0
+For a new epic or materially changed epic scope, require the business-owned packet and recorded Admitted (GO) decision defined by the [Sprint 0 admission gate](sprint-0-admission-gate-product-discovery.md) before beginning Sprint 0. Discovery preparation may help build that evidence, but is not Sprint 0 or implementation approval. Existing feature/bug intake remains available.
+
 ## Authoritative Developer-Agent Loop
 This loop is the default workflow for every session and branch unless the developer explicitly overrides it.
 
