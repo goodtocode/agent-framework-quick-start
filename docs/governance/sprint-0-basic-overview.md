@@ -17,6 +17,10 @@ Sprint 0 is **strictly time‑boxed to two weeks**.
 
 ---
 
+## Discovery and Readiness
+
+Use the [discovery and readiness guidance](sprint-0-admission-gate-product-discovery.md) proportionately to the team, resources, risk, and uncertainty. Epic evidence and provisional Sprint 0 assets can be developed iteratively; a formal packet or GO decision is not universally required. This guidance does not replace any approvals required by the work's circumstances or the delivery outcomes below.
+
 ## 2. Definition of Sprint 0
 
 Sprint 0 produces three categories of outcomes:

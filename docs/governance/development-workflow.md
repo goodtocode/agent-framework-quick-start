@@ -3,6 +3,9 @@
 ## Purpose
 Define a practical implementation workflow for developers and AI agents.
 
+## Epic Discovery and Sprint 0
+Use the [discovery and readiness guidance](sprint-0-admission-gate-product-discovery.md) in proportion to the team and the work. Develop epic evidence and provisional Sprint 0 assets iteratively, record important unknowns, and obtain any approvals appropriate to the circumstances. A draft alone is not implementation approval. Existing feature/bug intake remains available.
+
 ## Authoritative Developer-Agent Loop
 This loop is the default workflow for every session and branch unless the developer explicitly overrides it.
 

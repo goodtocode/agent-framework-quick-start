@@ -8,9 +8,11 @@ Define the repeatable Sprint 0 process for creating business context before impl
 - Sprint 0 is strictly time-boxed to two weeks.
 - The sequence is intentional: meaning first, then behavior, then delivery setup.
 
-## Preconditions
-- Epic scope is stated.
-- Participants agree to canonical language ownership.
+## Starting Context
+- Use the [discovery and readiness guidance](sprint-0-admission-gate-product-discovery.md) in proportion to the team, resources, risk, and uncertainty.
+- Start with the epic's available intent, an initial scope, and known questions; build the evidence and Sprint 0 assets iteratively.
+- Identify who can make product and terminology decisions. In a one-person organization, these responsibilities can belong to the same person.
+- Mark drafts and unresolved decisions clearly; use any formal approvals required by the work's circumstances.
 
 ## Step 1: Ontology Discovery (What Exists)
 - Identify and clarify core concepts, definitions, relationships, synonyms, and invariants.
@@ -24,6 +26,7 @@ Define the repeatable Sprint 0 process for creating business context before impl
 - Output: event storming artifact and boundary insights.
 
 ## Step 3: User Flows
+- Refine and validate the journeys, flows, use cases, and visual evidence available as discovery proceeds.
 - Capture success, alternate, and error paths.
 - Output: `docs/product/sprint-0/user-flows.md`.
 

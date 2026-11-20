@@ -8,19 +8,20 @@ This document defines how AI agents should operate in this repository to produce
 2. `docs/governance/architecture.md`
 3. `docs/governance/coding-standards.md`
 4. `docs/governance/development-workflow.md`
-5. `docs/governance/sprint-0-basic-overview.md`
-6. `docs/governance/sprint-0-basic-tools.md`
-7. `docs/governance/sprint-0-step-1-ontology.md`
-8. `docs/governance/sprint-0-step-2-event-storming.md`
-9. `docs/product/sprint-0/overview.md`
-10. `docs/product/sprint-0/ontology.md`
-11. `docs/product/sprint-0/user-flows.md`
-12. `docs/product/features/<feature>.md`
+5. [Sprint 0 discovery and readiness guidance](../docs/governance/sprint-0-admission-gate-product-discovery.md)
+6. `docs/governance/sprint-0-basic-overview.md`
+7. `docs/governance/sprint-0-basic-tools.md`
+8. `docs/governance/sprint-0-step-1-ontology.md`
+9. `docs/governance/sprint-0-step-2-event-storming.md`
+10. `docs/product/sprint-0/overview.md`
+11. `docs/product/sprint-0/ontology.md`
+12. `docs/product/sprint-0/user-flows.md`
+13. `docs/product/features/<feature>.md`
 
 ## Agent Workflow
 1. Understand architecture boundaries and allowed dependencies.
 2. Understand coding and testing standards.
-3. Confirm Sprint 0 scope and timebox intent before implementation.
+3. Apply discovery and readiness guidance proportionately; build epic evidence and provisional Sprint 0 assets iteratively. Preserve Sprint 0 scope and timebox intent before implementation.
 4. Use ontology to stabilize canonical language and definitions.
 5. Use event storming outputs to model behavior, commands, actors, and policies.
 6. Use user flows and feature requirements to implement the smallest vertical slice.
