@@ -481,10 +481,113 @@ Describe 'Root setup orchestration' {
         { Confirm-SqlAdministratorGroup -ObjectId '11111111-1111-1111-1111-111111111111' -TenantId 'tenant' } | Should -Throw '*Sign in to workload tenant*'
     }
 
-    It 'verifies deployment before SQL provisioning and scopes state per environment and instance' {
+    It 'resumes setup inputs from its own session instead of old API state' {
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($initializer, [ref]$null, [ref]$null)
+        $definition = $ast.Find({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Read-Setting' }, $true)
+        Invoke-Expression $definition.Extent.Text
+        $apiValues = @{ 'Setup:development:001:WorkloadTenantId' = 'old-tenant' }
+        $setupState = @{ WorkloadTenantId = 'session-tenant' }
+        function Save-SetupValue { param($Name, $Value) }
+        Mock Read-Host { 'new-tenant' }
+        Read-Setting 'WorkloadTenantId' '' | Should -Be 'session-tenant'
+        Read-Setting 'WorkloadTenantId' 'provided-tenant' | Should -Be 'provided-tenant'
+        $setupState.Clear()
+        Read-Setting 'WorkloadTenantId' '' | Should -Be 'new-tenant'
+        Should -Invoke Read-Host -Times 1 -Exactly
+    }
+
+    It 'repairs a changed registration and reuses a generated credential after a failed write' {
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($initializer, [ref]$null, [ref]$null)
+        $definition = $ast.Find({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Invoke-SetupRegistrations' }, $true)
+        Invoke-Expression $definition.Extent.Text
+        $RepositoryRoot = $setupRoot
+        $apiProject = 'api'
+        $webProject = 'web'
+        $e2eProject = ''
+        $SignInTenantId = 'synthetic-tenant'
+        $registrationArguments = @{ WebAppRegistrationName = 'synthetic-web' }
+        $script:setupState = @{}
+        $global:SetupTestStores = @{
+            api = @{ 'EntraExternalId:ClientId' = 'synthetic-api' }
+            web = @{ 'EntraExternalId:ClientId' = 'old-id'; 'EntraExternalId:ClientSecret' = 'synthetic-old' }
+        }
+        $global:SetupTestGenerated = 0
+        $global:SetupTestWriteFails = $true
+        New-Item -ItemType Directory -Force (Join-Path $setupRoot '.azure/scripts/entra') | Out-Null
+        Set-Content (Join-Path $setupRoot '.azure/scripts/New-EntraDotnetSolution.ps1') '$global:SetupTestStores.web["EntraExternalId:ClientId"] = "new-id"'
+        Set-Content (Join-Path $setupRoot '.azure/scripts/entra/New-EntraAppRegistration.ps1') @'
+param($Type, $TenantId, $AppRegistrationName, $SecretOnly, $SkipPrerequisites, $ProjectName)
+$global:SetupTestGenerated++
+[pscustomobject]@{ AppId = 'new-id'; Secret = 'synthetic-new' }
+'@
+        function Get-DotnetUserSecrets { param($ProjectPath) return $global:SetupTestStores[$ProjectPath].Clone() }
+        function Get-DotnetProjectName { param($ProjectPath) return $ProjectPath }
+        function Save-SetupValue { param($Name, $Value) $script:setupState[$Name] = $Value }
+        function Save-Settings {
+            param($Project, $Values)
+            if ($global:SetupTestWriteFails) { throw 'synthetic write failure' }
+            foreach ($key in $Values.Keys) { $global:SetupTestStores[$Project][$key] = $Values[$key] }
+        }
+        try {
+            { Invoke-SetupRegistrations } | Should -Throw '*synthetic write failure*'
+            $global:SetupTestStores.web['EntraExternalId:ClientSecret'] | Should -Be 'synthetic-old'
+            $script:setupState['WebRepairClientId'] | Should -Be 'new-id'
+            $global:SetupTestWriteFails = $false
+            { Invoke-SetupRegistrations } | Should -Not -Throw
+            $global:SetupTestStores.web['EntraExternalId:ClientSecret'] | Should -Be 'synthetic-new'
+            $script:setupState['WebCredentialsChanged'] | Should -Be 'true'
+            $global:SetupTestGenerated | Should -Be 1
+            { Invoke-SetupRegistrations } | Should -Not -Throw
+            $global:SetupTestGenerated | Should -Be 1
+
+            $script:setupState.Clear()
+            $global:SetupTestStores.api['EntraExternalId:TenantId'] = 'old-tenant'
+            $global:SetupTestStores.web['EntraExternalId:TenantId'] = 'old-tenant'
+            $global:SetupTestStores.web['EntraExternalId:ClientSecret'] = 'synthetic-old'
+            Set-Content (Join-Path $setupRoot '.azure/scripts/New-EntraDotnetSolution.ps1') '$global:SetupTestStores.api["EntraExternalId:TenantId"] = "new-tenant"; $global:SetupTestStores.web["EntraExternalId:TenantId"] = "new-tenant"'
+            { Invoke-SetupRegistrations } | Should -Not -Throw
+            $global:SetupTestStores.web['EntraExternalId:ClientSecret'] | Should -Be 'synthetic-new'
+            $script:setupState['WebCredentialsChanged'] | Should -Be 'true'
+            $script:setupState['SignInConfigurationChanged'] | Should -Be 'true'
+            $global:SetupTestGenerated | Should -Be 2
+            { Invoke-SetupRegistrations } | Should -Not -Throw
+            $global:SetupTestGenerated | Should -Be 2
+        }
+        finally {
+            Remove-Variable -Name SetupTestStores, SetupTestGenerated, SetupTestWriteFails -Scope Global
+        }
+    }
+
+    It 'uploads only missing secrets and credentials affected by registration changes' {
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($initializer, [ref]$null, [ref]$null)
+        $definition = $ast.Find({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Publish-SetupSecrets' }, $true)
+        Invoke-Expression $definition.Extent.Text
+        $RepositoryRoot = $setupRoot
+        $GitHubOwner = 'synthetic-owner'
+        $GitHubRepository = 'synthetic-repo'
+        $Environment = 'development'
+        $global:SetupTestUpload = @{}
+        Set-Content (Join-Path $setupRoot '.github/scripts/repo/New-GithubSecret.ps1') @'
+param($Owner, $Repo, $Environment, $Secrets)
+$global:SetupTestUpload = $Secrets
+'@
+        try {
+            $values = @{ EXISTING = 'synthetic-existing'; CHANGED = 'synthetic-updated'; MISSING = 'synthetic-new' }
+            Publish-SetupSecrets $values @('EXISTING', 'CHANGED') @('CHANGED')
+            @($global:SetupTestUpload.Keys | Sort-Object) | Should -Be @('CHANGED', 'MISSING')
+            $global:SetupTestUpload = @{}
+            Publish-SetupSecrets @{ EXISTING = 'synthetic-existing' } @('EXISTING') @()
+            $global:SetupTestUpload.Count | Should -Be 0
+        }
+        finally {
+            Remove-Variable -Name SetupTestUpload -Scope Global
+        }
+    }
+
+    It 'verifies deployment before SQL provisioning without persisting setup state in application stores' {
         $source = Get-Content $initializer -Raw
         $source.IndexOf('Get-WorkloadDeployment.ps1') | Should -BeLessThan $source.IndexOf('Set-AzureSqlManagedIdentityUsers.ps1')
-        $source | Should -Match 'Setup:\$\{Environment\}:\$\{Instance\}'
+        $source | Should -Not -Match 'Setup:\$\{Environment\}:\$\{Instance\}|Setup:SecretClientId'
         $source | Should -Match 'Set-GithubDeploymentEnvironments.ps1'
         $source | Should -Not -Match 'git (commit|push)|Remove-AzSql|DROP DATABASE'
     }
@@ -492,8 +595,7 @@ Describe 'Root setup orchestration' {
     It 'uses one configurable deployment identity across environments' {
         $source = Get-Content $initializer -Raw
         $source | Should -Match '\[string\]\$GitHubPrincipalName'
-        $source | Should -Match 'else \{ "github-\$product" \}'
-        $source | Should -Match '"\$\{setupPrefix\}:GitHubPrincipalName" = \$GitHubPrincipalName'
+        $source | Should -Match '\$setupState\[''GitHubPrincipalName''\]'
         $source | Should -Match '-PrincipalName \$GitHubPrincipalName'
         $source | Should -Match 'az ad app list --display-name \$GitHubPrincipalName'
     }

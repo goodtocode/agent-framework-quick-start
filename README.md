@@ -39,7 +39,7 @@ Then run `agentstart-app.yml` with `runcd=true`. Entra-only SQL uses
 `-SqlAuthentication EntraOnly`; resume as a member of its SQL administrator group.
 Rerun the same commands for an existing installation. `-Mode Both` prepares local and cloud;
 `-Environment production` selects production when its workflow/parameters are enabled;
-`-Stage Check` is read-only. Missing secrets are prompted privately, never silently rotated.
+`-Stage Check` is read-only. Missing registration credentials are added without revoking existing ones.
 No commits, pushes, database resets, or authentication-mode conversions occur.
 
 See [First-time setup](docs/first-time-setup.md) for phases and troubleshooting.

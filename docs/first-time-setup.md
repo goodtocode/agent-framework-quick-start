@@ -41,15 +41,23 @@ Pass `-SignInTenantId`, `-SignInInstanceUrl`, `-WorkloadTenantId`, `-Subscriptio
 parameter files and workflow planning to be enabled first; this script does not invent them.
 
 GitHub federation defaults to one `github-agentstart` application shared across environments. Pass
-`-GitHubPrincipalName` to reuse a differently named application; Prepare stores that name for
+`-GitHubPrincipalName` to reuse a differently named application; it is retained for
 Complete. Existing matching issuer, subject, and audience credentials are reused, including
 main and pull request subjects, and unrelated credentials are not deleted. Each environment
 still needs its own GitHub environment and deployment permissions in its subscription.
 
-Existing registrations/secrets are reused. On a new machine, privately enter missing existing
-client secrets; automatic retrieval from Entra/GitHub is impossible. `-RotateSecrets` is explicit
-and requires updating all consumers. State stays in local user-secrets per environment/instance;
-user-secrets are not encrypted storage and must not be committed, printed or exported.
+Existing registrations and available credentials are reused. Entra/GitHub cannot reveal old
+credentials, so setup creates an additional credential when a local one is missing. `-RotateSecrets`
+explicitly adds replacements. A dedicated setup user-secrets store retains session state
+across Prepare and Complete and on failure; successful Local Prepare or Cloud Complete removes
+only that session's entries. Runtime credentials stay in their owning project stores. User-secrets
+are not encrypted and must not be committed, printed or exported. Existing `Setup:*` entries in
+application stores are not automatically removed; review them manually, never clear the entire
+store. Missing or mismatched registration credentials are repaired without deleting old
+credentials; affected GitHub secrets are updated and unrelated existing values are preserved.
+
+The API, Web, and integration test projects now have secret stores distinct from Crucible.
+Reconfigure each project using its own store; the previous shared stores are left unchanged.
 
 For Entra-only, select `-SqlAuthentication EntraOnly`, configure an existing workload SQL administrator
 group, and resume as a group member. Prepare validates that the group exists in the workload tenant

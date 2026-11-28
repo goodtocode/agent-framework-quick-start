@@ -8,7 +8,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<UserSecretsId>bf5b92ab-f3fe-4af6-b299-583240397247</UserSecretsId>
+		<UserSecretsId>a5b998ce-ec0d-4e30-bc82-74bcfe349e40</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Remove="Common\Idempotency\**" />
